@@ -1,7 +1,7 @@
 let div = d3.select("#racers-list");
 
 d3.csv("/data/drivers.csv").then(drivers => {
-    d3.json("/res/images.json").then((images) => {
+    d3.json("/res/images.json").then(images => {
         let location = images.location;
         let racers = images.racers;
 

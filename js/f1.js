@@ -4,19 +4,9 @@ const margin = {top: 50, right: 50, bottom: 50, left: 50};
 const content_width = svg_width - margin.left - margin.right;
 const content_height = svg_height - margin.top - margin.bottom;
 
-let splitRacerContent = Split(['#racers', '#split-spider-detail'], {
-    sizes: [20, 80],
-    direction: 'vertical',
-});
-
-let splitSpiderDetail = Split(['#split-settings-spider', '#detail'], {
+let splitSpiderDetail = Split(['#settings-spider', '#detail'], {
     sizes: [50, 50],
     direction: 'horizontal',
-});
-
-let splitSettingsSpider = Split(['#settings', '#spider'], {
-    sizes: [20, 80],
-    direction: 'vertical',
 });
 
 // var svg = d3.select("svg")

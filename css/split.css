@@ -24,6 +24,23 @@
     cursor: row-resize;
 }
 
-#split-racers-content {
+#racers-content {
     height: 100%;
+}
+
+#racers {
+    max-height: 20%;
+}
+
+#settings-spider, #racers-content {
+    display: flex;
+    flex-direction: column;
+}
+
+#racers, #settings {
+    flex: 20;
+}
+
+#spider, #split-spider-detail {
+    flex: 80;
 }

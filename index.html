@@ -10,37 +10,66 @@
 
     <script async type="application/javascript" src="js/f1.js"></script>
     <script async type="application/javascript" src="js/racers.js"></script>
+    <script async type="application/javascript" src="js/slider.js"></script>
 
     <link rel="stylesheet" href="css/f1.css">
     <link rel="stylesheet" href="css/racers.css">
     <link rel="stylesheet" href="css/split.css">
+    <link rel="stylesheet" href="css/slider.css">
+    <link rel="stylesheet" href="css/checkboxes.css">
 </head>
 
 <body>
-    <div id="split-racers-content" class="split-col">
-        <div id="racers">
-            <div id="racers-list"></div>
-            <div id="racers-info">
-                Selected racer
-            </div>
+<div id="racers-content">
+    <div id="racers">
+        <div id="racers-list"></div>
+        <div id="racers-info">
+            Selected racer
         </div>
-        <div id="split-spider-detail" class="split-row">
-            <div id="split-settings-spider" class="split-col">
-                <div id="settings">
-                    Settings
+    </div>
+    <div id="split-spider-detail" class="split-row">
+        <div id="settings-spider">
+            <div id="settings">
+                <label>Year slider</label>
+                <div class="slider-wrapper">
+                    <span id="slider-range1">2010</span>
+                    <div class="slider-container">
+                        <div class="slider-track"></div>
+                        <input type="range" min="2002" max="2022" value="2010" id="slider-1" oninput="slideOne()">
+                        <input type="range" min="2002" max="2022" value="2020" id="slider-2" oninput="slideTwo()">
+                    </div>
+                    <span id="slider-range2">2020</span>
                 </div>
-                <div id="spider">
-                    <svg id="svg-spider">
-                        <text y="300" x="200">Spider svg</text>
-                    </svg>
+                <div id="choose-other-racers">
+                    <label id="choose-other-racers-label">Choose other racers</label>
+                    <input id="choose-other-racers-input" type="search">
+                </div>
+                <div id="checkboxes">
+                    <div><input type="checkbox"> checkbox 1</div>
+                    <div><input type="checkbox"> checkbox 2</div>
+                    <div><input type="checkbox"> checkbox 3</div>
+                    <div><input type="checkbox"> checkbox 4</div>
+                    <div><input type="checkbox"> checkbox 4</div>
+                    <div><input type="checkbox"> checkbox 4</div>
+                    <div><input type="checkbox"> checkbox 4</div>
+                    <div><input type="checkbox"> checkbox 4</div>
+                    <div><input type="checkbox"> checkbox 4</div>
+                    <div><input type="checkbox"> checkbox 4</div>
+                    <div><input type="checkbox"> checkbox 4</div>
                 </div>
             </div>
-            <div id="detail">
-                <svg id="svg-detail">
-                    <text y="350" x="200">Details svg</text>
+            <div id="spider">
+                <svg id="svg-spider">
+                    <text y="300" x="200">Spider svg</text>
                 </svg>
             </div>
         </div>
+        <div id="detail">
+            <svg id="svg-detail">
+                <text y="350" x="200">Details svg</text>
+            </svg>
+        </div>
     </div>
+</div>
 </body>
 </html>
