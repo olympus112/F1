@@ -6,6 +6,11 @@ import Filter from './filter';
 import SpiderGraph from './spidergraph';
 import Details from './details';
 
+const dimensions = {
+  width: 300,
+  height: 300,
+  margin: { top: 30, right: 30, bottom: 30, left: 60 }
+};
 
 class App extends Component {
   constructor(props){
@@ -21,7 +26,8 @@ class App extends Component {
     })
   }
 
-  render(){
+
+  render() {
     return (
       <Container maxWidth="xl">
         <Typography variant="h4" sx={{ mb: 5 }}>
@@ -42,7 +48,7 @@ class App extends Component {
             <Filter info={"INFO2"} outputinothercomponent={this.state.driver}/>
           </Grid>
           <Grid item xs={12} sm={12} md={6} lg={4}>
-            <SpiderGraph info={"INFO3"}/>
+            <SpiderGraph dimensions={dimensions}/>
           </Grid>
           <Grid item xs={12} sm={12} md={6} lg={8}>
             <Details info={"INFO4"}/> 
