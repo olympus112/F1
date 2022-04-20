@@ -45,10 +45,7 @@ class App extends Component {
 
             this.setState({drivers: drivers});
         });
-    }
 
-
-    render() {
         importRaceConsistencyData(this.state.driver, this.state.year, (retrievedData) => {
             this.setState({
                 raceConsistency: retrievedData
@@ -59,6 +56,9 @@ class App extends Component {
                 timeConsistency: retrievedData
             })
         })
+    }
+
+    render() {
         return (
             <Container maxWidth="xl">
                 <Typography variant="h4" sx={{mb: 5}}>

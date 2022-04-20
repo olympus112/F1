@@ -276,8 +276,8 @@ export default function SpiderGraph({dimensions}) {
         {
             id: 1,
             attributes: [//Samsung
-                {name: "Time consistency", value: 0.27},
-                {name: "Race consistency", value: 0.16},
+                {name: "Time consistency", value: 0.17},
+                {name: "Race consistency", value: 0.26},
                 {name: "Qualification", value: 0.35},
                 {name: "Overtaking", value: 0.19},
             ],
