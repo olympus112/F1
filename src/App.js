@@ -28,30 +28,18 @@ class App extends Component {
             raceConsistency: {data: [{value: 0, date: new Date()}], lsm: {lsmPoints: [{value: 0, date: new Date()}], score: 0}},
             timeConsistency: {data: [{value: 0, date: new Date()}], lsm: {lsmPoints: [{value: 0, date: new Date()}], score: 0}},
 
-            graphChoice: 1
+            graphChoice: 0
         }
     }
 
     selectedDriver = (given) => {
-        console.log("changed Role");
         this.setState({
             driver: given,
         });
-        importRaceConsistencyData(this.state.driver, this.state.year, (retrievedData) => {
-          console.log("retrieved data race cons: ", retrievedData);
-          this.setState({
-              raceConsistency: retrievedData
-          })
-        });
-        importTimeConsistencyData(this.state.driver, this.state.year, (retrievedData) => {
-            this.setState({
-                timeConsistency: retrievedData
-            })
-        });
+        console.log("driver: ", given);
     }
 
     componentDidMount() {
-      console.log("mount component");
         d3.csv(driversCSV).then((data) => {
             let drivers = {};
             data.forEach(driver => drivers[driver.driverId] = driver.forename + ' ' + driver.surname);
@@ -64,7 +52,6 @@ class App extends Component {
             })
         });
         importTimeConsistencyData(this.state.driver, this.state.year, (retrievedData) => {
-            console.log("retrieved data race cons: ", retrievedData);
             this.setState({
                 timeConsistency: retrievedData
             })

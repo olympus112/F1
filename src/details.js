@@ -44,8 +44,56 @@ const renderTimeC = function renderTimeConsistency(data, lsmPoints){
     .domain([0, d3.max(data, function(d) { return d.value; })])
     .range([ height, 0 ]);
     svg.append("g")
-    .call(d3.axisLeft(y))
-    renderGraph(data, lsmPoints, svg, x, y);
+    .call(d3.axisLeft(y));
+
+    var indexies = d3.range( data.length );
+    var area = d3.area()
+        .x(function (d) {
+            return x(data[d].date.getTime())
+        })
+        // .x1(function(d) {return d})
+        .y1(function (d) {
+            return y(data[d].value)
+        })
+        .y0(function (d) {
+            return y(0)
+        });
+    svg.append('path')
+        .datum(indexies)
+        .attr('class', 'area')
+        .attr('fill', 'red')
+        .attr('d', area);
+
+    // Add the line
+    svg.append("path")
+        .datum(data)
+        .attr("fill", "none")
+        .attr("stroke", "black")
+        .attr("stroke-width", 1.5)
+        .attr("d", d3.line()
+            .x(function (d) {
+                return x(d.date)
+            })
+            .y(function (d) {
+                return y(d.value)
+            })
+        )
+
+    svg.append("path")
+        .datum(lsmPoints)
+        .attr("fill", "none")
+        .attr("stroke", "black")
+        .attr("stroke-width", 3)
+        .attr("d", d3.line()
+            .x(function (d) {
+                return x(d.date)
+            })
+            .y(function (d) {
+                return y(d.value)
+            })
+        )
+
+    console.log("graph finished");
 }
 
 const renderRaceC = function renderRaceConsistency(data, lsmPoints){

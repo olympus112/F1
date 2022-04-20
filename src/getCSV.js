@@ -48,6 +48,7 @@ export function importRaceConsistencyData(driverId, year, callBack){
 
 //returns data to be used in details.js and a score. The score is the avarage standard deviation in laptimes over all the races.
 export function importTimeConsistencyData(driverId, year, callback){
+    console.log(driverId, year);
     d3.csv(races).then(function(races){ 
         d3.csv(lapTimes).then(function(lapTimes){
             races = races.filter(function(row) {
@@ -69,15 +70,15 @@ export function importTimeConsistencyData(driverId, year, callback){
                     return row.raceId == race.raceId;
                 });
 
-                var unfilteredMean = 0;
+                var unfilteredMean = [];
                 var unfilteredN = 0;
-                var filterVariance = 1.5;
+                var filterVariance = 1.3;
                 //calculate Mean of unfiltered lap times (including safety car, pitstop,...)
                 raceLaptimes.forEach(lapTime => {
-                    unfilteredMean += parseInt(lapTime.milliseconds);
+                    unfilteredMean.push(parseInt(lapTime.milliseconds));
                     unfilteredN++;
                 });
-                unfilteredMean = unfilteredMean / unfilteredN;
+                unfilteredMean = unfilteredMean[Math.round(unfilteredN/2)];
 
 
                 //list containing only the racetimes in milliseconds, nothing else
@@ -107,7 +108,7 @@ export function importTimeConsistencyData(driverId, year, callback){
                     });
 
                     var sd = Math.sqrt(diffMean/n);
-                    data.push({date: date, value: sd})
+                    data.push({date: date, value: sd/mean * 100})
                 }
             });
             data = data.sort((a, b) => (a.date > b.date) ? 1 : -1);
@@ -148,8 +149,11 @@ function leastSquareMethod(data){
         sqDiff += Math.pow((element.value - y), 2);
     });
     var avgDiff = Math.sqrt(sqDiff/data.length);
-    // console.log("average difference: ", avgDiff);
     return {lsmPoints: lsm, score: avgDiff};
 }
 
+//returns {years: [list of years the driver was active], competitors: [list of driverIds the driver raced against]} //TODO
+function importDriverInfo(driverId){
+
+}
   export default {importRaceConsistencyData, importTimeConsistencyData};
