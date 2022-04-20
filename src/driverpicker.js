@@ -3,43 +3,35 @@ import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import * as React from 'react';
 
-const drivers = [
-    { name: 'Max Verstappen', years: [2021,2020,2019,2018,2017] },
-    { name: 'Charles Leclerc', years: [2021,2020,2019] },
-    { name: 'Nico Rosberg', years: [2018] },
-];
+const drivers = ['Max Verstappen','Charles Leclerc','Nico Rosberg']
 
 export default function DriverPicker(props){
+    Object.keys(props.drivers)
+    console.log(props.drivers);
+    const [value, setValue] = React.useState(props.drivers[1]);
+    console.log(props.drivers[1]);
 
-    const options = drivers.map((option) => {
-        const lastYear = option.years[0];
-        return {
-          lastYear: "last driving year: " + lastYear,
-          ...option,
-        };
-    })
-    //javascript functies maak je hierboven
-    //still have to fix dis autocomplete stuffhttps://mui.com/material-ui/react-autocomplete/
-    // => dont get how the onChange works yet
+
+
     return(
         <div>
-            <p>Hier komt de driver pick component, dit is de doorgegeven gegevens: {props.info}</p>
             <Autocomplete
+                value={value}
+                onChange={(event, newValue) => {
+                    setValue(newValue); props.influencefunction(newValue)
+                }}
                 id="tags-standard"
-                options={options.sort((a, b) => a.lastYear < b.lastYear)}
-                getOptionLabel={(option) => option.name}
-                defaultValue={drivers[0]}
-                groupBy={(option) => option.lastYear}
+                options={Object.keys(props.drivers)}
+                // groupBy={(id) => props.drivers[id]}
+                getOptionLabel={(id) => props.drivers[id]}
+                defaultValue={props.drivers[1]}
                 renderInput={(params) => (
                 <TextField
                     {...params}
-                    variant="standard"
-                    label="Pick drivers"
+                    label="Pick driver"
                 />
                 )}
             />
-            {/* //VB van hoe je code catched van de top component app */}
-            <Button onClick={() => props.influencefunction("Leclerc")} variant="outlined">Change driver to Leclerc</Button>
         </div>
     )
 }
