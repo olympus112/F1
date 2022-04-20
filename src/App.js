@@ -7,7 +7,7 @@ import SpiderGraph from './spidergraph';
 import Details from './details';
 
 import * as d3 from "d3";
-import drivers from './data/drivers.csv'
+import driversCSV from './data/drivers.csv'
 
 const dimensions = {
     width: 400,
@@ -15,18 +15,24 @@ const dimensions = {
     margin: {top: 60, right: 60, bottom: 60, left: 60}
 };
 
+function getDrivers() {
+    let result = new Map();
+
+    d3.csv(driversCSV).then(drivers => {
+        drivers.forEach(driver => result.set(driver.driverId, driver.forename + ' ' + driver.surname));
+    });
+
+    return result;
+}
+
 class App extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            driver: "Max",
+            driver: 0,
+            drivers: getDrivers()
         }
-
-        d3.csv(drivers).then((driver) => {
-            console.log(driver);
-        });
-
     }
 
     selectedDriver = (given) => {
