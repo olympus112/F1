@@ -35,7 +35,12 @@ class App extends Component {
             driver: 0,
             drivers: getDrivers(),
             driverId: 1,
-            year: 2020
+            year: 2020,
+            data: {
+              raceConsistency: {data: [], lsm: {lsmPoints: [], score: 0}},
+              timeConsistency: {data: [], lsm: {lsmPoints: [], score: 0}}
+            },
+            showGraph: 0
         }
 
         d3.csv(drivers).then((driver) => {
@@ -51,11 +56,13 @@ class App extends Component {
 
 
     render() {        
-        importRaceConsistencyData(this.state.driverId, this.state.year, (scoredData) => {
-          console.log(scoredData.data, scoredData.score);
+        importRaceConsistencyData(this.state.driverId, this.state.year, (retrievedData) => {
+          console.log(retrievedData.data, retrievedData.lsm.score);
+          this.state.data.raceConsistency = retrievedData;
         });
-        importTimeConsistencyData(this.state.driverId, this.state.year, (scoredData) =>{
-          console.log(scoredData.data, scoredData.score);
+        importTimeConsistencyData(this.state.driverId, this.state.year, (retrievedData) =>{
+          console.log(retrievedData.data, retrievedData.lsm.score);
+          this.state.data.timeConsistency = retrievedData;
         })
         return (
             <Container maxWidth="xl">
@@ -80,7 +87,7 @@ class App extends Component {
                         <SpiderGraph dimensions={dimensions}/>
                     </Grid>
                     <Grid item xs={12} sm={12} md={6} lg={8}>
-                        <Details info={"INFO4"}/>
+                        <Details info={"INFO4"} data = {this.state.data} showGraph = {this.state.showGraph} />
                     </Grid>
                 </Grid>
             </Container>

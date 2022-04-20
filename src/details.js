@@ -5,6 +5,9 @@ export default function Details(props){
     
     //javascript functies maak je hierboven
     var s = "Hier komt de details component, dit is de doorgegeven gegevens: " + props.info;
+    console.log("props: ", props);
+
+
 
     return(
         <Card>
