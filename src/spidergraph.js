@@ -2,31 +2,21 @@ import {Card, CardHeader, Box} from '@mui/material';
 import React from 'react';
 import * as d3 from "d3";
 
-// export default function SpiderGraph(props) {
-//     //javascript functies maak je hierboven
-//     return (
-//         <Card
-//             sx={{
-//                 py: 5,
-//                 boxShadow: 0,
-//                 textAlign: 'center',
-//                 color: "#05171d",
-//                 bgcolor: "#e10500",
-//             }}>
-//             <p>Hier komt de spider graph component, dit is de doorgegeven gegevens: {props.info}</p>
-//         </Card>
-//     )
-// }
+const driverMapping = {
+    0: "Driver 0",
+    1: "Driver 1",
+    2: "Driver 1",
+}
 
-function SpiderChart(className, data, options) {
+function renderSpiderGraph(className, data, options) {
     const cfg = {
         width: options.width,			            // Width of the circle
         height: options.height,			            // Height of the circle
         margin: options.margin,                     // The margins of the SVG
         levels: 3,				                    // How many levels or inner circles should there be drawn
         maxValue: 0, 			                    // What is the value that the biggest circle will represent
-        labelFactor: 1.25, 	                        // How much farther than the radius of the outer circle should the labels be placed
-        wrapWidth: 60, 		                        // The number of pixels after which a label needs to be given a new line
+        labelFactor: 1.2, 	                        // How much farther than the radius of the outer circle should the labels be placed
+        wrapWidth: 40, 		                        // The number of pixels after which a label needs to be given a new line
         opacityArea: 0.35, 	                        // The opacity of the area of the blob
         dotRadius: 4, 			                    // The size of the colored circles of each blog
         opacityCircles: 0.1, 	                    // The opacity of the circles of each blob
@@ -37,9 +27,9 @@ function SpiderChart(className, data, options) {
 
     // Put all of the options into a variable called cfg
     if ('undefined' !== typeof options) {
-        for (var i in options) {
-            if ('undefined' !== typeof options[i]) {
-                cfg[i] = options[i];
+        for (const entry in options) {
+            if ('undefined' !== typeof options[entry]) {
+                cfg[entry] = options[entry];
             }
         }
     }
@@ -61,11 +51,11 @@ function SpiderChart(className, data, options) {
 
     // Initiate the radar chart SVG
     const svg = d3.select(className).append("svg")
-        .attr("width", cfg.width+ cfg.margin.left + cfg.margin.right)
+        .attr("width", cfg.width + cfg.margin.left + cfg.margin.right)
         .attr("height", cfg.height + cfg.margin.top + cfg.margin.bottom)
         .attr("class", "radar" + className);
     const g = svg.append("g")
-        .attr("transform", "translate(" + (cfg.width/ 2 + cfg.margin.left) + "," + (cfg.height / 2 + cfg.margin.top) + ")");
+        .attr("transform", "translate(" + (cfg.width / 2 + cfg.margin.left) + "," + (cfg.height / 2 + cfg.margin.top) + ")");
 
     //Filter for the outside glow
     const filter = g.append('defs').append('filter').attr('id', 'glow');
@@ -101,33 +91,48 @@ function SpiderChart(className, data, options) {
         .attr("fill", "#737373")
         .text(level => Format(maxValue * level / cfg.levels));
 
-
     // Create the straight lines radiating outward from the center
-    var axis = axisGrid.selectAll(".axis")
+    const axis = axisGrid.selectAll(".axis")
         .data(allAxis)
         .enter()
         .append("g")
         .attr("class", "axis");
+
     //Append the lines
     axis.append("line")
         .attr("x1", 0)
         .attr("y1", 0)
-        .attr("x2", function(d, i){ return rScale(maxValue*1.1) * Math.cos(angleSlice*i - Math.PI/2); })
-        .attr("y2", function(d, i){ return rScale(maxValue*1.1) * Math.sin(angleSlice*i - Math.PI/2); })
+        .attr("x2", (axis, index) => rScale(maxValue * 1.1) * Math.cos(angleSlice * index - Math.PI / 2))
+        .attr("y2", (axis, index) => rScale(maxValue * 1.1) * Math.sin(angleSlice * index - Math.PI / 2))
         .attr("class", "line")
         .style("stroke", "white")
         .style("stroke-width", "2px");
 
-    //Append the labels at each axis
+    // Append the labels at each axis
     axis.append("text")
         .attr("class", "legend")
         .style("font-size", "11px")
         .attr("text-anchor", "middle")
         .attr("dy", "0.35em")
-        .attr("x", function(d, i){ return rScale(maxValue * cfg.labelFactor) * Math.cos(angleSlice*i - Math.PI/2); })
-        .attr("y", function(d, i){ return rScale(maxValue * cfg.labelFactor) * Math.sin(angleSlice*i - Math.PI/2); })
-        .text(function(d){return d})
-        .call(wrap, cfg.wrapWidth);
+        .attr("x", (d, i) => rScale(maxValue * cfg.labelFactor) * Math.cos(angleSlice * i - Math.PI / 2))
+        .attr("y", (d, i) => rScale(maxValue * cfg.labelFactor) * Math.sin(angleSlice * i - Math.PI / 2))
+        .text(axis => axis)
+        .call(wrap, cfg.wrapWidth)
+        .on("mouseover", function (event, axis) {
+            d3.select(event.target.parentElement)
+                .transition()
+                .style('fill', 'darkOrange')
+                .style('font-size', '14px');
+        })
+        .on("mouseout", function (event, axis) {
+            d3.select(event.target.parentElement)
+                .transition()
+                .style('fill', 'black')
+                .style('font-size', '11px');
+        })
+        .on("click", function (event, axis) {
+           console.log(axis);
+        });
 
     // The radial line function
     const radarLine = d3.lineRadial()
@@ -205,7 +210,7 @@ function SpiderChart(className, data, options) {
         .attr("cy", (attribute, index) => rScale(attribute.value) * Math.sin(angleSlice * index - Math.PI / 2))
         .style("fill", "none")
         .style("pointer-events", "all")
-        .on("mouseover", function(event, attribute) {
+        .on("mouseover", function (event, attribute) {
             let newX = parseFloat(d3.select(this).attr('cx')) - 10;
             let newY = parseFloat(d3.select(this).attr('cy')) - 10;
 
@@ -300,11 +305,10 @@ export default function SpiderGraph({dimensions}) {
     };
 
     React.useEffect(() => {
-        SpiderChart(".radarChart", spiderData, radarChartOptions);
+        renderSpiderGraph(".radarChart", spiderData, radarChartOptions);
     }, []);
 
-
     return <div className="radarChart">
-        <svg ref={svgRef} />
+        <svg ref={svgRef}/>
     </div>;
 };
