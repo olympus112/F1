@@ -13,10 +13,10 @@ var margin = {top: 10, right: 100, bottom: 60, left: 200},
 export default function Details(props){
     const svgRef = React.useRef(null);
     //javascript functies maak je hierboven
-    console.log("props: ", props);
+
 
     React.useEffect(() => {
-        renderGraph(props.data.timeConsistency.data, props.data.timeConsistency.lsm.lsmPoints);
+        renderTimeConsistency(props.data.timeConsistency.data, props.data.timeConsistency.lsm.lsmPoints);
     }, []);
 
 
@@ -25,9 +25,7 @@ export default function Details(props){
             </div>;
 }
 
-
-
-function renderGraph(data, lsmPoints){
+function renderTimeConsistency(data, lsmPoints){
     //remove previous svg
     d3.select(".graph").select("svg").remove();
 
@@ -36,7 +34,6 @@ function renderGraph(data, lsmPoints){
        .append("svg")
        .attr("width", width + margin.left + margin.right)
        .attr("height", height + margin.top + margin.bottom)
-    //    .attr("font-size", '15px')
        .append("g")
        .attr("transform",
            "translate(" + margin.left + "," + margin.top + ")");
@@ -58,10 +55,16 @@ function renderGraph(data, lsmPoints){
 
     // Add Y axis
     var y = d3.scaleLinear()
-    .domain(d3.extent(data, function(d) { return d.value; }))
+    .domain([0, d3.max(data, function(d) { return d.value; })])
     .range([ height, 0 ]);
     svg.append("g")
     .call(d3.axisLeft(y))
+    renderGraph(data, lsmPoints, svg, x, y);
+}
+
+
+
+function renderGraph(data, lsmPoints, svg, x, y){
     var indexies = d3.range( data.length );
     var area = d3.area()
                     .x( function(d) { return x(data[d].date.getTime())} )
