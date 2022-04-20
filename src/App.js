@@ -21,9 +21,8 @@ class App extends Component {
         super(props);
         // this.getDrivers().then(data => {     
         this.state = {
-            driver: 0,
+            driver: 1,
             drivers: {},
-            driverId: 1,
             year: 2020,
             data: {
               raceConsistency: {data: [], lsm: {lsmPoints: [], score: 0}},
@@ -50,11 +49,11 @@ class App extends Component {
 
 
     render() {        
-        importRaceConsistencyData(this.state.driverId, this.state.year, (retrievedData) => {
+        importRaceConsistencyData(this.state.driver, this.state.year, (retrievedData) => {
           // console.log(retrievedData.data, retrievedData.lsm.score);
           this.state.data.raceConsistency = retrievedData;
         });
-        importTimeConsistencyData(this.state.driverId, this.state.year, (retrievedData) =>{
+        importTimeConsistencyData(this.state.driver, this.state.year, (retrievedData) =>{
           // console.log(retrievedData.data, retrievedData.lsm.score);
           this.state.data.timeConsistency = retrievedData;
         })

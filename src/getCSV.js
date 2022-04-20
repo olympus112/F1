@@ -7,6 +7,7 @@ import lapTimes from './data/lap_times.csv'
 
 var parseDate = d3.timeParse('%d/%m/%Y');
 
+//returns data to be used in details.js to make the graph and a score (avarage deviation of the data with the least square method)
 export function importRaceConsistencyData(driverId, year, callBack){
     d3.csv(races).then((races) => { 
       d3.csv(results).then((results) => {
@@ -45,6 +46,7 @@ export function importRaceConsistencyData(driverId, year, callBack){
     });
   }
 
+//returns data to be used in details.js and a score. The score is the avarage standard deviation in laptimes over all the races.
 export function importTimeConsistencyData(driverId, year, callback){
     d3.csv(races).then(function(races){ 
         d3.csv(lapTimes).then(function(lapTimes){
@@ -109,7 +111,7 @@ export function importTimeConsistencyData(driverId, year, callback){
                 }
             });
             data = data.sort((a, b) => (a.date > b.date) ? 1 : -1);
-            
+            console.log(data);
             //calculate leastSquares
             var lsm = leastSquareMethod(data);
 
