@@ -266,34 +266,36 @@ export default function SpiderGraph({dimensions}) {
         {
             id: 0,
             attributes: [
-                {name: "Battery Life", value: 0.22},
-                {name: "Brand", value: 0.28},
-                {name: "Contract Cost", value: 0.29},
-                {name: "Design And Quality", value: 0.17},
+                {name: "Time consistency", value: 0.22},
+                {name: "Race consistency", value: 0.28},
+                {name: "Qualification", value: 0.29},
+                {name: "Racing", value: 0.17},
+                {name: "Overtaking", value: 0.27},
             ]
         },
         {
             id: 1,
             attributes: [//Samsung
-                {name: "Battery Life", value: 0.27},
-                {name: "Brand", value: 0.16},
-                {name: "Contract Cost", value: 0.35},
-                {name: "Design And Quality", value: 0.13},
+                {name: "Time consistency", value: 0.27},
+                {name: "Race consistency", value: 0.16},
+                {name: "Qualification", value: 0.35},
+                {name: "Overtaking", value: 0.19},
             ],
         },
         {
             id: 2,
             attributes: [//Nokia Smartphone
-                {name: "Battery Life", value: 0.26},
-                {name: "Brand", value: 0.10},
-                {name: "Contract Cost", value: 0.20},
-                {name: "Design And Quality", value: 0.34},
+                {name: "Time consistency", value: 0.26},
+                {name: "Race consistency", value: 0.10},
+                {name: "Qualification", value: 0.20},
+                {name: "Racing", value: 0.34},
+                {name: "Overtaking", value: 0.14},
             ]
         }
     ];
 
     const color = d3.scaleOrdinal()
-        .range(["#EDC951", "#CC333F", "#00A0B0"]);
+        .range(["#EDC951", "#CC333F", "#00A0B0", "#3ba95f"]);
 
     const radarChartOptions = {
         width: dimensions.width,
