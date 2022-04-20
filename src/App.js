@@ -7,8 +7,6 @@ import SpiderGraph from './spidergraph';
 import Details from './details';
 
 import * as d3 from "d3";
-import drivers from './data/drivers.csv'
-import {importRaceConsistencyData, importTimeConsistencyData} from './getCSV'
 import driversCSV from './data/drivers.csv'
 
 const dimensions = {
@@ -17,30 +15,14 @@ const dimensions = {
     margin: {top: 60, right: 60, bottom: 60, left: 60}
 };
 
-function getDrivers() {
-    let result = new Map();
-
-    d3.csv(driversCSV).then(drivers => {
-        drivers.forEach(driver => result.set(driver.driverId, driver.forename + ' ' + driver.surname));
-    });
-
-    return result;
-}
-
 class App extends Component {
     constructor(props) {
         super(props);
-
+        // this.getDrivers().then(data => {     
         this.state = {
-            driver: 0,
-            drivers: getDrivers(),
-            driverId: 1,
-            year: 2020
+          driver: 0,
+          drivers: {},
         }
-
-        d3.csv(drivers).then((driver) => {
-            // console.log(driver);
-        });
     }
 
     selectedDriver = (given) => {
@@ -49,14 +31,23 @@ class App extends Component {
         })
     }
 
+    componentDidMount() {
+      d3.csv(driversCSV).then((data) => {
+          let drivers = {};
+          data.forEach(driver => drivers[driver.driverId] = driver.forename + ' ' + driver.surname);
 
-    render() {        
-        importRaceConsistencyData(this.state.driverId, this.state.year, (scoredData) => {
-          console.log(scoredData.data, scoredData.score);
-        });
-        importTimeConsistencyData(this.state.driverId, this.state.year, (scoredData) =>{
-          console.log(scoredData.data, scoredData.score);
-        })
+          this.setState({drivers: drivers});
+      });
+  }
+
+
+    render() {
+        // importRaceConsistencyData(this.state.driverId, this.state.year, (scoredData) => {
+        //   console.log(scoredData.data, scoredData.score);
+        // });
+        // importTimeConsistencyData(this.state.driverId, this.state.year, (scoredData) =>{
+        //   console.log(scoredData.data, scoredData.score);
+        // })
         return (
             <Container maxWidth="xl">
                 <Typography variant="h4" sx={{mb: 5}}>
@@ -71,7 +62,7 @@ class App extends Component {
           Verder gebruiken we callback functies en states zoals hieronder zichtbaar voor het aanpassen van gegevens
           en deze door te geven naar de andere components*/}
                     <Grid item xs={12} sm={12} md={6} lg={8}>
-                        <DriverPicker info={"INFO1"} influencefunction={this.selectedDriver}/>
+                        <DriverPicker info={"INFO1"} influencefunction={this.selectedDriver} drivers={this.state.drivers}/>
                     </Grid>
                     <Grid item xs={12} sm={12} md={6} lg={4}>
                         <Filter info={"INFO2"} outputinothercomponent={this.state.driver}/>
