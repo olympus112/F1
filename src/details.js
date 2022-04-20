@@ -6,32 +6,21 @@ import * as d3 from "d3";
 // set the dimensions and margins of the graph
 var margin = {top: 10, right: 100, bottom: 60, left: 200},
     width = 900 - margin.left - margin.right,
-    height = 450 - margin.top - margin.bottom;
+    height = 500 - margin.top - margin.bottom;
 
-export default function Details(props) {
-    const svgRef = React.useRef(null);
-
-    React.useEffect(() => {
-        renderTimeConsistency(props.data.timeConsistency.data, props.data.timeConsistency.lsm.lsmPoints);
-    }, []);
-
-    return <div className="graph">
-        <svg ref={svgRef}/>
-    </div>;
-}
-
-function renderTimeConsistency(data, lsmPoints){
+const renderTimeC = function renderTimeConsistency(data, lsmPoints){
+    console.log("data: ", data);
     //remove previous svg
     d3.select(".graph").select("svg").remove();
 
     // append the svg object to the body of the page
     var svg = d3.select(".graph")
-       .append("svg")
-       .attr("width", width + margin.left + margin.right)
-       .attr("height", height + margin.top + margin.bottom)
-       .append("g")
-       .attr("transform",
-           "translate(" + margin.left + "," + margin.top + ")");
+        .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform",
+            "translate(" + margin.left + "," + margin.top + ")");
 
     // Add X axis --> it is a date format
     var x = d3.scaleTime()
@@ -58,6 +47,47 @@ function renderTimeConsistency(data, lsmPoints){
     .call(d3.axisLeft(y))
     renderGraph(data, lsmPoints, svg, x, y);
 }
+
+const renderRaceC = function renderRaceConsistency(data, lsmPoints){
+    console.log("data: ", data);
+    //remove previous svg
+    d3.select(".graph").select("svg").remove();
+
+    // append the svg object to the body of the page
+    var svg = d3.select(".graph")
+        .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform",
+            "translate(" + margin.left + "," + margin.top + ")");
+
+    // Add X axis --> it is a date format
+    var x = d3.scaleTime()
+        .domain(d3.extent(data, function (d) {
+            return d.date;
+        }))
+        .range([0, width]);
+    svg.append("g")
+        .attr("transform", "translate(0," + height + ")")
+        .call(d3.axisBottom(x))
+        .selectAll("text")
+        .style("text-anchor", "end")
+        .attr("dx", "-.8em")
+        .attr("dy", ".15em")
+        .attr("transform", function (d) {
+            return "rotate(-65)"
+        });
+
+    // Add Y axis
+    var y = d3.scaleLinear()
+    .domain([0, 20])
+    .range([ height, 0 ]);
+    svg.append("g")
+    .call(d3.axisLeft(y))
+    renderGraph(data, lsmPoints, svg, x, y);
+}
+const graphChoices = [renderRaceC, renderTimeC];
 
 
 
@@ -110,4 +140,21 @@ function renderGraph(data, lsmPoints, svg, x, y){
         )
 
     console.log("graph finished");
+}
+
+export default function Details(props) {
+    const svgRef = React.useRef(null);
+    console.log("rendering graph: ", props);
+    var graphChoice = props.graphChoice;
+    var renderFunction = graphChoices[graphChoice];
+
+
+    React.useEffect(() => {
+        console.log("effect executing:");
+        renderFunction(props.data[graphChoice].data, props.data[graphChoice].lsm.lsmPoints);
+    }, [props]);
+
+    return <div className="graph">
+        <svg ref={svgRef}/>
+    </div>;
 }

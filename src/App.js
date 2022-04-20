@@ -25,24 +25,36 @@ class App extends Component {
             drivers: {},
             year: 2020,
 
-            raceConsistency: {data: [], lsm: {lsmPoints: [], score: 0}},
-            timeConsistency: {data: [], lsm: {lsmPoints: [], score: 0}},
+            raceConsistency: {data: [{value: 0, date: new Date()}], lsm: {lsmPoints: [{value: 0, date: new Date()}], score: 0}},
+            timeConsistency: {data: [{value: 0, date: new Date()}], lsm: {lsmPoints: [{value: 0, date: new Date()}], score: 0}},
 
-            showGraph: 0
+            graphChoice: 1
         }
     }
 
     selectedDriver = (given) => {
+        console.log("changed Role");
         this.setState({
             driver: given,
-        })
+        });
+        importRaceConsistencyData(this.state.driver, this.state.year, (retrievedData) => {
+          console.log("retrieved data race cons: ", retrievedData);
+          this.setState({
+              raceConsistency: retrievedData
+          })
+        });
+        importTimeConsistencyData(this.state.driver, this.state.year, (retrievedData) => {
+            this.setState({
+                timeConsistency: retrievedData
+            })
+        });
     }
 
     componentDidMount() {
+      console.log("mount component");
         d3.csv(driversCSV).then((data) => {
             let drivers = {};
             data.forEach(driver => drivers[driver.driverId] = driver.forename + ' ' + driver.surname);
-
             this.setState({drivers: drivers});
         });
 
@@ -52,13 +64,16 @@ class App extends Component {
             })
         });
         importTimeConsistencyData(this.state.driver, this.state.year, (retrievedData) => {
+            console.log("retrieved data race cons: ", retrievedData);
             this.setState({
                 timeConsistency: retrievedData
             })
-        })
+        });
+
     }
 
     render() {
+        var graphData = [this.state.raceConsistency, this.state.timeConsistency];
         return (
             <Container maxWidth="xl">
                 <Typography variant="h4" sx={{mb: 5}}>
@@ -76,7 +91,7 @@ class App extends Component {
                         <SpiderGraph dimensions={dimensions}/>
                     </Grid>
                     <Grid item xs={12} sm={12} md={6} lg={8}>
-                        <Details info={"INFO4"} data={this.state} showGraph={this.state.showGraph}/>
+                        <Details info={"INFO4"} data={graphData} graphChoice={this.state.graphChoice}/>
                     </Grid>
                 </Grid>
             </Container>
