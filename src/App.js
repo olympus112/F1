@@ -8,6 +8,7 @@ import Details from './details';
 
 import * as d3 from "d3";
 import drivers from './data/drivers.csv'
+import {importRaceConsistencyData, importTimeConsistencyData} from './getCSV'
 
 const dimensions = {
     width: 400,
@@ -21,10 +22,12 @@ class App extends Component {
 
         this.state = {
             driver: "Max",
+            driverId: 1,
+            year: 2020
         }
 
         d3.csv(drivers).then((driver) => {
-            console.log(driver);
+            // console.log(driver);
         });
 
     }
@@ -36,7 +39,13 @@ class App extends Component {
     }
 
 
-    render() {
+    render() {        
+        importRaceConsistencyData(this.state.driverId, this.state.year, (scoredData) => {
+          console.log(scoredData.data, scoredData.score);
+        });
+        importTimeConsistencyData(this.state.driverId, this.state.year, (scoredData) =>{
+          console.log(scoredData.data, scoredData.score);
+        })
         return (
             <Container maxWidth="xl">
                 <Typography variant="h4" sx={{mb: 5}}>
