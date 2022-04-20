@@ -111,7 +111,6 @@ export function importTimeConsistencyData(driverId, year, callback){
                 }
             });
             data = data.sort((a, b) => (a.date > b.date) ? 1 : -1);
-            console.log(data);
             //calculate leastSquares
             var lsm = leastSquareMethod(data);
 
