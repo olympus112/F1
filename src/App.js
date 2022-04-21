@@ -6,6 +6,7 @@ import Filter from './filter';
 import SpiderGraph from './spidergraph';
 import Details from './details';
 import {importRaceConsistencyData, importTimeConsistencyData} from './getCSV.js'
+import {preprocess} from "./preprocess";
 
 import * as d3 from "d3";
 import driversCSV from './data/drivers.csv'
