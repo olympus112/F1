@@ -32,58 +32,75 @@ import constructors from "./data/constructors.csv";
 //     }
 // ]
 
-export function preprocess() {
+async function preprocess() {
+    console.log('Started preprocessing');
+
     let result = [];
-    d3.csv(drivers).then(allDrivers => {
-        d3.csv(races).then(allRaces => {
-            d3.csv(results).then(allResults => {
-                d3.csv(lapTimes).then(allLapTimes => {
-                    d3.csv(constructors).then(constructors => {
-                        for (let currentDriver of allDrivers) {
-                            let currentDriverId = currentDriver.driverId;
-                            let currentDriverName = currentDriver.forename + ' ' + currentDriver.surname;
-                            let currentNationality = currentDriver.nationality;
-                            let currentWiki = currentDriver.url;
 
-                            let teams = {};
-                            constructors.forEach(team => teams[team.constructorId] = {
-                                name: team.name,
-                                nationality: team.nationality,
-                                wiki: team.url,
-                            })
+    let allDrivers = await d3.csv(drivers);
+    let allRaces = await d3.csv(races);
+    let allResults = await d3.csv(results);
+    let allConstructors = await d3.csv(constructors);
+    // let allLapTimes = await d3.csv(lapTimes);
 
-                            let currentResults = allResults.filter(result => result.driverId === currentDriverId);
-                            let currentRaces = currentResults.map(result => result.raceId);
-                            let currentTeamIds = [...new Set(currentResults.map(result => result.constructorId))];
-                            let currentTeams = currentTeamIds.map(teamId => {
-                                return {
-                                    id: teamId,
-                                    name: teams[teamId].name,
-                                    nationality: teams[teamId].nationality,
-                                    wiki: teams[teamId].wiki,
-                                }
-                            });
+    for (let currentDriver of allDrivers) {
+        let currentDriverId = parseInt(currentDriver.driverId);
+        let currentDriverName = currentDriver.forename + ' ' + currentDriver.surname;
+        let currentNationality = currentDriver.nationality;
+        let currentWiki = currentDriver.url;
 
-                            let filteredRaces = allRaces.filter(race => race.raceId in currentRaces);
-                            let filteredYears = filteredRaces.map(race => race.year);
-                            let currentYears = [...new Set(filteredYears)];
+        let teams = {};
+        allConstructors.forEach(team => teams[parseInt(team.constructorId)] = {
+            name: team.name,
+            nationality: team.nationality,
+            wiki: team.url,
+        })
 
-                            let driver = {
-                                id: currentDriverId,
-                                name: currentDriverName,
-                                nationality: currentNationality,
-                                years: currentYears,
-                                teams: currentTeams,
-                                wiki: currentWiki
-                            };
-
-                            result.push(driver);
-                        }
-                    });
-                });
-            });
+        let currentResults = allResults.filter(result => parseInt(result.driverId) === currentDriverId);
+        let currentRaces = currentResults.map(result => parseInt(result.raceId));
+        let currentTeamIds = [...new Set(currentResults.map(result => parseInt(result.constructorId)))];
+        let currentTeams = currentTeamIds.map(teamId => {
+            return {
+                id: teamId,
+                name: teams[teamId].name,
+                nationality: teams[teamId].nationality,
+                wiki: teams[teamId].wiki,
+            }
         });
-    });
+
+        let filteredRaces = allRaces.filter(race => currentRaces.includes(parseInt(race.raceId)));
+        let filteredYears = filteredRaces.map(race => parseInt(race.year));
+        let currentYears = [...new Set(filteredYears)];
+
+        let driver = {
+            id: currentDriverId,
+            name: currentDriverName,
+            nationality: currentNationality,
+            years: currentYears,
+            teams: currentTeams,
+            wiki: currentWiki
+        };
+
+        result.push(driver);
+    }
+
+    console.log('Finished preprocessing');
 
     return result;
+}
+
+export function exportToJsonFile(jsonData) {
+    let dataStr = JSON.stringify(jsonData);
+    let dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+
+    let exportFileDefaultName = 'preprocessed.json';
+
+    let linkElement = document.createElement('a');
+    linkElement.setAttribute('href', dataUri);
+    linkElement.setAttribute('download', exportFileDefaultName);
+    linkElement.click();
+}
+
+export async function downloadPreprocessedData() {
+	exportToJsonFile(await preprocess());
 }

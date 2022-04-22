@@ -6,10 +6,6 @@ import Filter from './filter';
 import SpiderGraph from './spidergraph';
 import Details from './details';
 import {importRaceConsistencyData, importTimeConsistencyData} from './getCSV.js'
-import {preprocess} from "./preprocess";
-
-import * as d3 from "d3";
-import driversCSV from './data/drivers.csv'
 
 const dimensions = {
     width: 400,
@@ -20,33 +16,36 @@ const dimensions = {
 class App extends Component {
     constructor(props) {
         super(props);
+        let defaultDriver = props.preprocessed[0];
 
         this.state = {
-            driver: 1,
-            drivers: {},
-            year: 2020,
+            // Current state
+            driver: defaultDriver, // An object containing all information on the driver, this comes from preprocessed.json
+            year: defaultDriver.years[0],
 
+            // Preloaded data
+            preprocessed: props.preprocessed,
+            drivers: props.drivers,
+            races: props.races,
+            results: props.results,
+            laptimes: props.laptimes,
+            constructors: props.constructors,
+
+            // Graph data
             raceConsistency: {data: [{value: 0, date: new Date()}], lsm: {lsmPoints: [{value: 0, date: new Date()}], score: 0}},
             timeConsistency: {data: [{value: 0, date: new Date()}], lsm: {lsmPoints: [{value: 0, date: new Date()}], score: 0}},
-
             graphChoice: 0
         }
     }
 
-    selectedDriver = (given) => {
+    selectDriver = (driver) => {
         this.setState({
-            driver: given,
+            driver: driver,
         });
-        console.log("driver: ", given);
+        console.log("Selected new driver: ", driver);
     }
 
     componentDidMount() {
-        d3.csv(driversCSV).then((data) => {
-            let drivers = {};
-            data.forEach(driver => drivers[driver.driverId] = driver.forename + ' ' + driver.surname);
-            this.setState({drivers: drivers});
-        });
-
         importRaceConsistencyData(this.state.driver, this.state.year, (retrievedData) => {
             this.setState({
                 raceConsistency: retrievedData
@@ -57,7 +56,6 @@ class App extends Component {
                 timeConsistency: retrievedData
             })
         });
-
     }
 
     render() {
@@ -65,12 +63,15 @@ class App extends Component {
         return (
             <Container maxWidth="xl">
                 <Typography variant="h4" sx={{mb: 5}}>
-                    {this.state.drivers[this.state.driver]}
+                    {this.state.driver.name}
                 </Typography>
                 <Grid container spacing={2}>
                     <Grid item xs={12} sm={12} md={6} lg={8}>
-                        <DriverPicker info={"INFO1"} influencefunction={this.selectedDriver}
-                                      drivers={this.state.drivers}/>
+                        <DriverPicker
+                            drivers={this.state.preprocessed}
+                            currentDriver={this.state.driver}
+                            selectDriver={this.selectDriver}
+                        />
                     </Grid>
                     <Grid item xs={12} sm={12} md={6} lg={4}>
                         <Filter info={"INFO2"} outputinothercomponent={this.state.driver}/>
