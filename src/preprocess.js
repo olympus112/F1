@@ -8,32 +8,81 @@ import constructors from "./data/constructors.csv";
 
 // [
 //     {
-//         id: "1",
+//         id: 1,
 //         name: "Lewis Hamiltion",
 //         nationality: "British",
 //         wiki: "http://en.wikipedia.org/wiki/Lewis_Hamilton",
-//         years: ["2008", "2009", ...],
-//         teams: [
-//             {
-//                 id: "1",
-//                 name: "McLaren",
-//                 nationality: "British",
-//                 wiki: "http://en.wikipedia.org/wiki/McLaren",
-//             }, {
-//                 id: "131",
-//                 name: "Mercedes",
-//                 nationality: "German",
-//                 wiki: "http://en.wikipedia.org/wiki/Mercedes-Benz_in_Formula_One",
-//             }
-//         ]
+//         years: [2008, 2009, ...],
+//         teams: [1, 32, ...]
 //     },
 //     {
 //         ...
 //     }
 // ]
 
-async function preprocess() {
-    console.log('Started preprocessing');
+async function getWikiImage(url) {
+    let wikiSubject = url.substring(url.lastIndexOf('/') + 1);
+    let wikiResponse = await fetch('https://en.wikipedia.org/w/api.php?action=query&origin=*&format=json&formatversion=2&prop=pageimages|pageterms&piprop=original&titles=' + wikiSubject);
+    let wikiContent = await wikiResponse.json();
+    let pages = wikiContent.query.pages;
+
+    if (pages === undefined || pages.length === 0)
+        return "";
+
+    let page = pages[0];
+    if (!page.hasOwnProperty('original')) {
+        return "";
+    }
+
+    let original = page.original;
+    if (!original.hasOwnProperty('source')) {
+        console.log(original)
+        return "";
+    }
+
+    return pages[0].original.source;
+}
+
+async function preprocessDriverImages() {
+    console.log('Started driver image preprocessing');
+
+    let result = {};
+    let allDrivers = await d3.csv(drivers);
+    for (let currentDriver of allDrivers) {
+        let currentDriverId = parseInt(currentDriver.driverId);
+        let currentDriverWiki = currentDriver.url;
+
+        result[currentDriverId] = await getWikiImage(currentDriverWiki);
+    }
+
+    console.log('Finished driver image preprocessing');
+
+    return result;
+}
+
+async function preprocessTeams() {
+    console.log('Started team preprocessing');
+
+    let result = {};
+
+    let allConstructors = await d3.csv(constructors);
+    for (const constructor of allConstructors) {
+        result[parseInt(constructor.constructorId)] = {
+            id: parseInt(constructor.constructorId),
+            name: constructor.name,
+            nationality: constructor.nationality,
+            wiki: constructor.url,
+            image: "", // image: await getWikiImage(team.url),
+        };
+    }
+
+    console.log('Finished team preprocessing');
+
+    return result;
+}
+
+async function preprocessDrivers() {
+    console.log('Started driver preprocessing');
 
     let result = [];
 
@@ -47,26 +96,12 @@ async function preprocess() {
         let currentDriverId = parseInt(currentDriver.driverId);
         let currentDriverName = currentDriver.forename + ' ' + currentDriver.surname;
         let currentNationality = currentDriver.nationality;
-        let currentWiki = currentDriver.url;
 
-        let teams = {};
-        allConstructors.forEach(team => teams[parseInt(team.constructorId)] = {
-            name: team.name,
-            nationality: team.nationality,
-            wiki: team.url,
-        })
+        let currentWiki = currentDriver.url;
 
         let currentResults = allResults.filter(result => parseInt(result.driverId) === currentDriverId);
         let currentRaces = currentResults.map(result => parseInt(result.raceId));
         let currentTeamIds = [...new Set(currentResults.map(result => parseInt(result.constructorId)))];
-        let currentTeams = currentTeamIds.map(teamId => {
-            return {
-                id: teamId,
-                name: teams[teamId].name,
-                nationality: teams[teamId].nationality,
-                wiki: teams[teamId].wiki,
-            }
-        });
 
         let filteredRaces = allRaces.filter(race => currentRaces.includes(parseInt(race.raceId)));
         let filteredYears = filteredRaces.map(race => parseInt(race.year));
@@ -77,30 +112,36 @@ async function preprocess() {
             name: currentDriverName,
             nationality: currentNationality,
             years: currentYears,
-            teams: currentTeams,
+            teams: currentTeamIds,
             wiki: currentWiki
         };
 
         result.push(driver);
     }
 
-    console.log('Finished preprocessing');
+    console.log('Finished driver preprocessing');
 
     return result;
 }
 
-export function exportToJsonFile(jsonData) {
+export function exportToJsonFile(file, jsonData) {
     let dataStr = JSON.stringify(jsonData);
     let dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
 
-    let exportFileDefaultName = 'preprocessed.json';
-
     let linkElement = document.createElement('a');
     linkElement.setAttribute('href', dataUri);
-    linkElement.setAttribute('download', exportFileDefaultName);
+    linkElement.setAttribute('download', file);
     linkElement.click();
 }
 
-export async function downloadPreprocessedData() {
-	exportToJsonFile(await preprocess());
+export async function downloadDrivers() {
+	exportToJsonFile('drivers.json', await preprocessDrivers());
+}
+
+export async function downloadDriverImages() {
+    exportToJsonFile('images.json', await preprocessDriverImages());
+}
+
+export async function downloadTeams() {
+    exportToJsonFile('teams.json', await preprocessTeams());
 }

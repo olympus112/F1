@@ -16,11 +16,11 @@ const dimensions = {
 class App extends Component {
     constructor(props) {
         super(props);
-        let defaultDriver = props.preprocessed[0];
+        let defaultDriver = props.preprocessed.drivers[0];
 
         this.state = {
             // Current state
-            driver: defaultDriver, // An object containing all information on the driver, this comes from preprocessed.json
+            driver: defaultDriver, // An object containing all information on the driver, this comes from drivers.json
             year: defaultDriver.years[0],
 
             // Preloaded data
@@ -68,8 +68,10 @@ class App extends Component {
                 <Grid container spacing={2}>
                     <Grid item xs={12} sm={12} md={6} lg={8}>
                         <DriverPicker
-                            drivers={this.state.preprocessed}
-                            currentDriver={this.state.driver}
+                            teams={this.state.preprocessed.teams}
+                            images={this.state.preprocessed.images}
+                            drivers={this.state.preprocessed.drivers}
+                            driver={this.state.driver}
                             selectDriver={this.selectDriver}
                         />
                     </Grid>

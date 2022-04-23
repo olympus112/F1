@@ -2,9 +2,11 @@
   "name": "f1-dashboard",
   "version": "0.1.0",
   "private": true,
+  "proxy": "http://localhost:3000/",
   "dependencies": {
     "@emotion/react": "^11.9.0",
     "@emotion/styled": "^11.8.1",
+    "@mui/icons-material": "^5.6.2",
     "@mui/material": "^5.6.1",
     "antd": "^4.19.5",
     "cra-template": "1.1.3",
