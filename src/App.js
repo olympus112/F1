@@ -34,7 +34,7 @@ class App extends Component {
             // Graph data
             raceConsistency: {data: [{value: 0, date: new Date()}], lsm: {lsmPoints: [{value: 0, date: new Date()}], score: 0}},
             timeConsistency: {data: [{value: 0, date: new Date()}], lsm: {lsmPoints: [{value: 0, date: new Date()}], score: 0}},
-            graphChoice: 0
+            graphChoice: 0  //0: raceConsistency, 1: timeConsistency, 2,3,4 todo!
         }
     }
 
@@ -43,18 +43,21 @@ class App extends Component {
             driver: driver,
         });
         console.log("Selected new driver: ", driver);
+        this.updateRacerData(driver.id);
     }
 
     componentDidMount() {
-        importRaceConsistencyData(this.state.driver, this.state.year, (retrievedData) => {
-            this.setState({
-                raceConsistency: retrievedData
-            })
-        });
-        importTimeConsistencyData(this.state.driver, this.state.year, (retrievedData) => {
-            this.setState({
-                timeConsistency: retrievedData
-            })
+        this.updateRacerData(this.state.driver.id);
+    }
+
+    updateRacerData(driverId){
+        console.log(this.state.year);
+        console.log(driverId);
+        var dataRaceCons = importRaceConsistencyData(driverId, this.state.year, this.state.races, this.state.results);
+        var dataTimeCons = importTimeConsistencyData(driverId, this.state.year, this.state.races, this.state.laptimes);
+        this.setState({
+            raceConsistency: dataRaceCons, 
+            timeConsistency: dataTimeCons
         });
     }
 

@@ -9,7 +9,6 @@ var margin = {top: 10, right: 100, bottom: 60, left: 200},
     height = 500 - margin.top - margin.bottom;
 
 const renderTimeC = function renderTimeConsistency(data, lsmPoints){
-    console.log("data: ", data);
     //remove previous svg
     d3.select(".graph").select("svg").remove();
 
@@ -97,7 +96,6 @@ const renderTimeC = function renderTimeConsistency(data, lsmPoints){
 }
 
 const renderRaceC = function renderRaceConsistency(data, lsmPoints){
-    console.log("data: ", data);
     //remove previous svg
     d3.select(".graph").select("svg").remove();
 
@@ -192,13 +190,11 @@ function renderGraph(data, lsmPoints, svg, x, y){
 
 export default function Details(props) {
     const svgRef = React.useRef(null);
-    console.log("rendering graph: ", props);
     var graphChoice = props.graphChoice;
     var renderFunction = graphChoices[graphChoice];
 
 
     React.useEffect(() => {
-        console.log("effect executing:");
         renderFunction(props.data[graphChoice].data, props.data[graphChoice].lsm.lsmPoints);
     }, [props]);
 
