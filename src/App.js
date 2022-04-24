@@ -16,7 +16,7 @@ const dimensions = {
 class App extends Component {
     constructor(props) {
         super(props);
-        let defaultDriver = props.preprocessed.drivers[0];
+        let defaultDriver = props.preprocessed.drivers[11]; // Lewis Hamilton
 
         this.state = {
             // Current state

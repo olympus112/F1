@@ -3,14 +3,16 @@ import TextField from '@mui/material/TextField';
 import * as React from 'react';
 import {Grid} from "@mui/material";
 import DriverCard from "./drivercard";
+import Typography from "@mui/material/Typography";
+import Avatar from "@mui/material/Avatar";
+import {Fragment} from "react";
 
 export default function DriverPicker(props) {
+    let images = props.images;
     return (
         <Grid container spacing={2}>
             <Grid item xs={4}>
-                <DriverCard driver={props.driver} images={props.images} teams={props.teams}>
-
-                </DriverCard>
+                <DriverCard driver={props.driver} images={props.images} teams={props.teams} />
             </Grid>
             <Grid item xs={8}>
                 <Autocomplete
@@ -22,12 +24,29 @@ export default function DriverPicker(props) {
                         props.selectDriver(newDriver)
                     }}
                     id="tags-standard"
-                    // groupBy={(driver) => Math.max(...driver.years)}
+                    groupBy={(driver) => Math.max(...driver.years)}
                     renderInput={(params) => (
                         <TextField
                             {...params}
                             label="Pick driver"
                         />
+                    )}
+                    filterOptions={(options) => options}
+                    renderOption={(props, option) => (
+                        <li {...props}>
+                            <Grid container alignItems={'space-between'}>
+                                <Grid item>{option.name}</Grid>
+                                {/*<Grid item>*/}
+                                {/*    <Avatar*/}
+                                {/*        alt={option.name}*/}
+                                {/*        src={images[option.id]}*/}
+                                {/*        sx={{width: 30, height: 30}}*/}
+                                {/*        variant={'circle'}*/}
+                                {/*        props={{loading:'lazy'}}>*/}
+                                {/*    </Avatar>*/}
+                                {/*</Grid>*/}
+                            </Grid>
+                        </li>
                     )}
                 />
             </Grid>

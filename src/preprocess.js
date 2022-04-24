@@ -119,6 +119,17 @@ async function preprocessDrivers() {
         result.push(driver);
     }
 
+    let compareYears = (driverA, driverB) => Math.max(...driverB.years) - Math.max(...driverA.years);
+    let compareNames = (driverA, driverB) => driverA.name < driverB.name ? -1 : driverA.name === driverB.name ? 0 : 1;
+
+    result.sort((driverA, driverB) => {
+        let years = compareYears(driverA, driverB);
+        if (years === 0)
+            return compareNames(driverA, driverB);
+
+        return years;
+    });
+
     console.log('Finished driver preprocessing');
 
     return result;
@@ -126,7 +137,7 @@ async function preprocessDrivers() {
 
 export function exportToJsonFile(file, jsonData) {
     let dataStr = JSON.stringify(jsonData);
-    let dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+    let dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
 
     let linkElement = document.createElement('a');
     linkElement.setAttribute('href', dataUri);
@@ -135,7 +146,7 @@ export function exportToJsonFile(file, jsonData) {
 }
 
 export async function downloadDrivers() {
-	exportToJsonFile('drivers.json', await preprocessDrivers());
+    exportToJsonFile('drivers.json', await preprocessDrivers());
 }
 
 export async function downloadDriverImages() {
