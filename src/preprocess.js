@@ -22,25 +22,31 @@ import constructors from "./data/constructors.csv";
 
 async function getWikiImage(url) {
     let wikiSubject = url.substring(url.lastIndexOf('/') + 1);
-    let wikiResponse = await fetch('https://en.wikipedia.org/w/api.php?action=query&origin=*&format=json&formatversion=2&prop=pageimages|pageterms&piprop=original&titles=' + wikiSubject);
+    let wikiResponse = await fetch('https://en.wikipedia.org/w/api.php?action=query&origin=*&format=json&prop=pageimages&piprop=thumbnail|original&titles=' + wikiSubject);
     let wikiContent = await wikiResponse.json();
     let pages = wikiContent.query.pages;
+    let keys = Object.keys(pages);
 
-    if (pages === undefined || pages.length === 0)
-        return "";
+    if (keys.length === 0)
+        return {
+            image: '',
+            thumbnail: ''
+        };
 
-    let page = pages[0];
-    if (!page.hasOwnProperty('original')) {
-        return "";
-    }
+    let page = pages[keys[0]];
 
-    let original = page.original;
-    if (!original.hasOwnProperty('source')) {
-        console.log(original)
-        return "";
-    }
+    let originalSource = ''
+    if (page.hasOwnProperty('original'))
+        originalSource = page.original.source;
 
-    return pages[0].original.source;
+    let thumbnailSource = ''
+    if (page.hasOwnProperty('thumbnail'))
+        thumbnailSource = page.thumbnail.source;
+
+    return {
+        image: originalSource,
+        thumbnail: thumbnailSource
+    };
 }
 
 async function preprocessDriverImages() {

@@ -32,7 +32,7 @@ export default function DriverCard(props) {
                     <Grid item p={2}>
                         <Avatar
                             alt={props.driver.name}
-                            src={props.images[props.driver.id]}
+                            src={props.images[props.driver.id].image}
                             sx={{width: 120, height: 120}}
                             variant={'circle'}>
                         </Avatar>
