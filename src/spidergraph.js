@@ -1,5 +1,5 @@
 import {Card, CardHeader, Box} from '@mui/material';
-import React from 'react';
+import React, {useLayoutEffect, useState} from 'react';
 import * as d3 from "d3";
 
 const driverMapping = {
@@ -131,7 +131,7 @@ function renderSpiderGraph(className, data, options) {
                 .style('font-size', '11px');
         })
         .on("click", function (event, axis) {
-           console.log(axis);
+            console.log(axis);
         });
 
     // The radial line function
@@ -227,7 +227,7 @@ function renderSpiderGraph(className, data, options) {
         });
 
     //Set up the small tooltip for when you hover over a circle
-    var tooltip = g.append("text")
+    let tooltip = g.append("text")
         .attr("class", "tooltip")
         .style("opacity", 0);
 
@@ -259,7 +259,7 @@ function renderSpiderGraph(className, data, options) {
     }
 }
 
-export default function SpiderGraph({dimensions}) {
+export default function SpiderGraph(props) {
     const svgRef = React.useRef(null);
 
     const spiderData = [
@@ -298,9 +298,9 @@ export default function SpiderGraph({dimensions}) {
         .range(["#EDC951", "#CC333F", "#00A0B0", "#3ba95f"]);
 
     const radarChartOptions = {
-        width: dimensions.width,
-        height: dimensions.height,
-        margin: dimensions.margin,
+        width: props.width,
+        height: props.height,
+        margin: {top: 60, right: 60, bottom: 60, left: 60},
         levels: 5,
         roundStrokes: false,
         color: color

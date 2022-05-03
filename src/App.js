@@ -2,26 +2,28 @@ import React, {Component} from 'react';
 import './App.css';
 import {Grid, Container, Typography} from '@mui/material';
 import DriverPicker from './driverpicker';
-import Filter from './filter';
+import YearPicker from './yearPicker';
 import SpiderGraph from './spidergraph';
 import Details from './details';
-import {importRaceConsistencyData, importTimeConsistencyData} from './getCSV.js'
-
-const dimensions = {
-    width: 400,
-    height: 400,
-    margin: {top: 60, right: 60, bottom: 60, left: 60}
-};
+import {computeRaceConsistency, computeTimeConsistency} from './getCSV.js'
+import useWindowDimensions from "./windowdimensions";
 
 class App extends Component {
     constructor(props) {
         super(props);
+
         let defaultDriver = props.preprocessed.drivers[11]; // Lewis Hamilton
+        let defaultYear = defaultDriver.years[0];
 
         this.state = {
+            // Dimensions
+            width: 0,
+            height: 0,
+
             // Current state
             driver: defaultDriver, // An object containing all information on the driver, this comes from drivers.json
-            year: defaultDriver.years[0],
+            compare: [],
+            year: defaultYear,
 
             // Preloaded data
             preprocessed: props.preprocessed,
@@ -32,10 +34,13 @@ class App extends Component {
             constructors: props.constructors,
 
             // Graph data
-            raceConsistency: {data: [{value: 0, date: new Date()}], lsm: {lsmPoints: [{value: 0, date: new Date()}], score: 0}},
-            timeConsistency: {data: [{value: 0, date: new Date()}], lsm: {lsmPoints: [{value: 0, date: new Date()}], score: 0}},
+            raceConsistency: computeRaceConsistency(defaultDriver.id, defaultYear, props.races, props.results), // {data: [{value: 0, date: new Date()}], lsm: {lsmPoints: [{value: 0, date: new Date()}], score: 0}},
+            timeConsistency: computeTimeConsistency(defaultDriver.id, defaultYear, props.races, props.results), // {data: [{value: 0, date: new Date()}], lsm: {lsmPoints: [{value: 0, date: new Date()}], score: 0}},
             graphChoice: 0  //0: raceConsistency, 1: timeConsistency, 2,3,4 todo!
         }
+
+        this.updateRacerData(this.state.driver.id);
+
     }
 
     selectDriver = (driver) => {
@@ -53,21 +58,58 @@ class App extends Component {
         });
 
         console.log("Selected new year: ", year);
-        // this.updateRacerData();
-    }
 
-    componentDidMount() {
         this.updateRacerData(this.state.driver.id);
     }
 
+    addCompare = (compare) => {
+        if (!this.state.compare.includes(compare)) {
+            this.setState({
+                compare: [...this.state.compare, compare]
+            })
+
+            console.log("Added new driver: ", compare.name);
+        }
+    }
+
+    removeCompare = (compare) => {
+        let index = this.state.compare.indexOf(compare);
+
+        if (index > -1) {
+            this.state.compare.splice(index, 1);
+            this.setState({
+                compare: [...this.state.compare]
+            })
+
+            console.log("Removed driver: ", compare.name);
+        }
+    }
+
     updateRacerData(driverId) {
-        let dataRaceCons = importRaceConsistencyData(driverId, this.state.year, this.state.races, this.state.results);
-        let dataTimeCons = importTimeConsistencyData(driverId, this.state.year, this.state.races, this.state.laptimes);
+        let raceConsistency = computeRaceConsistency(driverId, this.state.year, this.state.races, this.state.results);
+        let timeConsistency = computeTimeConsistency(driverId, this.state.year, this.state.races, this.state.laptimes);
 
         this.setState({
-            raceConsistency: dataRaceCons, 
-            timeConsistency: dataTimeCons
+            raceConsistency: raceConsistency,
+            timeConsistency: timeConsistency
         });
+    }
+
+    updateDimensions = () => {
+        this.setState({
+            width: window.innerWidth,
+            height: window.innerHeight
+        });
+        console.log("aaa", this.state.width)
+    };
+
+    componentDidMount() {
+        this.updateDimensions();
+        window.addEventListener('resize', this.updateDimensions);
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener('resize', this.updateDimensions);
     }
 
     render() {
@@ -83,16 +125,28 @@ class App extends Component {
                             images={this.state.preprocessed.images}
                             drivers={this.state.preprocessed.drivers}
                             driver={this.state.driver}
+                            year={this.state.year}
+                            compare={this.state.compare}
                             selectDriver={this.selectDriver}
                             selectYear={this.selectYear}
+                            addCompare={this.addCompare}
+                            removeCompare={this.removeCompare}
                         />
                     </Grid>
-                    <Grid item xs={12} sm={12} md={6} lg={4}>
-                        <SpiderGraph dimensions={dimensions}/>
+                    <Grid item xs={12} md={6}>
+                        <SpiderGraph
+                            width={300}
+                            height={300}
+
+                        />
                     </Grid>
-                    <Grid item xs={12} sm={12} md={6} lg={8}>
-                        <Details data={[this.state.raceConsistency, this.state.timeConsistency]} graphChoice={this.state.graphChoice}/>
+                    <Grid item xs={12} md={6}>
+                        <Details
+                            data={[this.state.raceConsistency, this.state.timeConsistency]}
+                            graphChoice={this.state.graphChoice}
+                        />
                     </Grid>
+                    {this.state.width}
                 </Grid>
             </Container>
         );

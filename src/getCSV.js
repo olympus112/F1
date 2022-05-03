@@ -1,13 +1,9 @@
 import * as d3 from "d3";
-import races from './data/races.csv'
-import results from './data/results.csv'
-import lapTimes from './data/lap_times.csv'
-
 
 const parseDate = d3.timeParse('%d/%m/%Y');
 
-//returns data to be used in details.js to make the graph and a score (avarage deviation of the data with the least square method)
-export function importRaceConsistencyData(driverId, year, races, results) {
+// Returns data to be used in details.js to make the graph and a score (avarage deviation of the data with the least square method)
+export function computeRaceConsistency(driverId, year, races, results) {
     let filteredRaces = races.filter(row => row.year === year);
     const maxRaceId = Math.max(...filteredRaces.map(race => race.raceId));
     const minRaceId = Math.min(...filteredRaces.map(race => race.raceId));
@@ -37,7 +33,7 @@ export function importRaceConsistencyData(driverId, year, races, results) {
 }
 
 //returns data to be used in details.js and a score. The score is the avarage standard deviation in laptimes over all the races.
-export function importTimeConsistencyData(driverId, year, races, lapTimes) {
+export function computeTimeConsistency(driverId, year, races, lapTimes) {
     let filteredRaces = races.filter(row => row.year === year);
     const maxRaceId = Math.max(...filteredRaces.map(race => race.raceId));
     const minRaceId = Math.min(...filteredRaces.map(race => race.raceId));
@@ -139,4 +135,4 @@ function importDriverInfo(driverId) {
 
 }
 
-export default {importRaceConsistencyData, importTimeConsistencyData};
+export default {computeRaceConsistency, computeTimeConsistency};

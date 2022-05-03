@@ -3,17 +3,18 @@ import TextField from '@mui/material/TextField';
 import * as React from 'react';
 import {Grid} from "@mui/material";
 import DriverCard from "./drivercard";
-import Typography from "@mui/material/Typography";
-import Avatar from "@mui/material/Avatar";
-import {Fragment} from "react";
-import Filter from "./filter";
+import YearPicker from "./yearPicker";
+import ComparePicker from "./comparepicker";
 
 export default function DriverPicker(props) {
-    let images = props.images;
     return (
-        <Grid container spacing={2}>
+        <Grid container spacing={5}>
             <Grid item xs={4}>
-                <DriverCard driver={props.driver} images={props.images} teams={props.teams} />
+                <DriverCard
+                    driver={props.driver}
+                    images={props.images}
+                    teams={props.teams}
+                />
             </Grid>
             <Grid item xs={8}>
                 <Grid container spacing={2}>
@@ -53,8 +54,27 @@ export default function DriverPicker(props) {
                             )}
                         />
                     </Grid>
+                    <Grid sx={{marginTop: 10}}>
+                    </Grid>
                     <Grid item xs={12}>
-                        <Filter driver={props.driver} selectYear={props.selectYear}/>
+                        <YearPicker
+                            driver={props.driver}
+                            year={props.year}
+                            selectYear={props.selectYear}
+                        />
+                    </Grid>
+                    <Grid sx={{width: '100%'}}>
+                        <hr style={{width: '20%', color: "lightgray"}}/>
+                    </Grid>
+                    <Grid item xs={12}>
+                        <ComparePicker
+                            addCompare={props.addCompare}
+                            removeCompare={props.removeCompare}
+                            driver={props.driver}
+                            year={props.year}
+                            compare={props.compare}
+                            drivers={props.drivers}
+                        />
                     </Grid>
                 </Grid>
             </Grid>
