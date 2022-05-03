@@ -15,8 +15,7 @@ export default function Filter(props){
     });
 
     return (
-        <Box sx={{ width: 500 }}>
-          <Slider
+        <Slider
             aria-label="Restricted values"
             defaultValue={maxYear}
             step={null}
@@ -27,7 +26,6 @@ export default function Filter(props){
             onChange={(event, newValue) => {
                 props.selectYear(newValue)
             }}
-          />
-        </Box>
+        />
       );
 }

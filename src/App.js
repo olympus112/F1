@@ -61,9 +61,6 @@ class App extends Component {
     }
 
     updateRacerData(driverId) {
-        console.log(this.state.year);
-        console.log(driverId);
-
         let dataRaceCons = importRaceConsistencyData(driverId, this.state.year, this.state.races, this.state.results);
         let dataTimeCons = importTimeConsistencyData(driverId, this.state.year, this.state.races, this.state.laptimes);
 
@@ -80,23 +77,21 @@ class App extends Component {
                     {this.state.driver.name}
                 </Typography>
                 <Grid container spacing={2}>
-                    <Grid item xs={12} sm={12} md={6} lg={8}>
+                    <Grid item xs={12}>
                         <DriverPicker
                             teams={this.state.preprocessed.teams}
                             images={this.state.preprocessed.images}
                             drivers={this.state.preprocessed.drivers}
                             driver={this.state.driver}
                             selectDriver={this.selectDriver}
+                            selectYear={this.selectYear}
                         />
-                    </Grid>
-                    <Grid item xs={12} sm={12} md={6} lg={4}>
-                        <Filter driver={this.state.driver} selectYear={this.selectYear}/>
                     </Grid>
                     <Grid item xs={12} sm={12} md={6} lg={4}>
                         <SpiderGraph dimensions={dimensions}/>
                     </Grid>
                     <Grid item xs={12} sm={12} md={6} lg={8}>
-                        <Details info={"INFO4"} data={[this.state.raceConsistency, this.state.timeConsistency]} graphChoice={this.state.graphChoice}/>
+                        <Details data={[this.state.raceConsistency, this.state.timeConsistency]} graphChoice={this.state.graphChoice}/>
                     </Grid>
                 </Grid>
             </Container>
