@@ -22,6 +22,7 @@ class App extends Component {
             // Current state
             driver: defaultDriver, // An object containing all information on the driver, this comes from drivers.json
             year: defaultDriver.years[0],
+            years: defaultDriver.years,
 
             // Preloaded data
             preprocessed: props.preprocessed,
@@ -44,6 +45,14 @@ class App extends Component {
         });
         console.log("Selected new driver: ", driver);
         this.updateRacerData(driver.id);
+    }
+
+    selectYear = (year) => {
+        this.setState({
+            year: year,
+        });
+        console.log("Selected new year: ", year);
+        // this.updateRacerData();
     }
 
     componentDidMount() {
@@ -79,7 +88,7 @@ class App extends Component {
                         />
                     </Grid>
                     <Grid item xs={12} sm={12} md={6} lg={4}>
-                        <Filter info={"INFO2"} outputinothercomponent={this.state.driver}/>
+                        <Filter years={this.state.years} selectYear={this.selectYear}/>
                     </Grid>
                     <Grid item xs={12} sm={12} md={6} lg={4}>
                         <SpiderGraph dimensions={dimensions}/>
