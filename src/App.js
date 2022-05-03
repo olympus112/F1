@@ -22,7 +22,6 @@ class App extends Component {
             // Current state
             driver: defaultDriver, // An object containing all information on the driver, this comes from drivers.json
             year: defaultDriver.years[0],
-            years: defaultDriver.years,
 
             // Preloaded data
             preprocessed: props.preprocessed,
@@ -44,6 +43,7 @@ class App extends Component {
             driver: driver,
         });
         console.log("Selected new driver: ", driver);
+
         this.updateRacerData(driver.id);
     }
 
@@ -51,6 +51,7 @@ class App extends Component {
         this.setState({
             year: year,
         });
+
         console.log("Selected new year: ", year);
         // this.updateRacerData();
     }
@@ -59,11 +60,13 @@ class App extends Component {
         this.updateRacerData(this.state.driver.id);
     }
 
-    updateRacerData(driverId){
+    updateRacerData(driverId) {
         console.log(this.state.year);
         console.log(driverId);
-        var dataRaceCons = importRaceConsistencyData(driverId, this.state.year, this.state.races, this.state.results);
-        var dataTimeCons = importTimeConsistencyData(driverId, this.state.year, this.state.races, this.state.laptimes);
+
+        let dataRaceCons = importRaceConsistencyData(driverId, this.state.year, this.state.races, this.state.results);
+        let dataTimeCons = importTimeConsistencyData(driverId, this.state.year, this.state.races, this.state.laptimes);
+
         this.setState({
             raceConsistency: dataRaceCons, 
             timeConsistency: dataTimeCons
@@ -71,7 +74,6 @@ class App extends Component {
     }
 
     render() {
-        var graphData = [this.state.raceConsistency, this.state.timeConsistency];
         return (
             <Container maxWidth="xl">
                 <Typography variant="h4" sx={{mb: 5}}>
@@ -88,13 +90,13 @@ class App extends Component {
                         />
                     </Grid>
                     <Grid item xs={12} sm={12} md={6} lg={4}>
-                        <Filter years={this.state.years} selectYear={this.selectYear}/>
+                        <Filter driver={this.state.driver} selectYear={this.selectYear}/>
                     </Grid>
                     <Grid item xs={12} sm={12} md={6} lg={4}>
                         <SpiderGraph dimensions={dimensions}/>
                     </Grid>
                     <Grid item xs={12} sm={12} md={6} lg={8}>
-                        <Details info={"INFO4"} data={graphData} graphChoice={this.state.graphChoice}/>
+                        <Details info={"INFO4"} data={[this.state.raceConsistency, this.state.timeConsistency]} graphChoice={this.state.graphChoice}/>
                     </Grid>
                 </Grid>
             </Container>
