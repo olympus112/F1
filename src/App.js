@@ -6,7 +6,9 @@ import YearPicker from './yearPicker';
 import SpiderGraph from './spidergraph';
 import Details from './details';
 import {computeRaceConsistency, computeTimeConsistency} from './getCSV.js'
-import useWindowDimensions from "./windowdimensions";
+import {computePositionsGainedLost} from './positionsGainedLost.js'
+import {computeRacing} from './positions.js'
+// import useWindowDimensions from "./windowdimensions";
 
 class App extends Component {
     constructor(props) {
@@ -36,6 +38,9 @@ class App extends Component {
             // Graph data
             raceConsistency: computeRaceConsistency(defaultDriver.id, defaultYear, props.races, props.results), // {data: [{value: 0, date: new Date()}], lsm: {lsmPoints: [{value: 0, date: new Date()}], score: 0}},
             timeConsistency: computeTimeConsistency(defaultDriver.id, defaultYear, props.races, props.results), // {data: [{value: 0, date: new Date()}], lsm: {lsmPoints: [{value: 0, date: new Date()}], score: 0}},
+            positionsGainedLost: computePositionsGainedLost(defaultDriver.id, defaultYear, props.races, props.results),
+            racing: computeRacing(defaultDriver.id, defaultYear, props.races, props.results),
+
             graphChoice: 0  //0: raceConsistency, 1: timeConsistency, 2,3,4 todo!
         }
 
@@ -88,10 +93,14 @@ class App extends Component {
     updateRacerData(driverId) {
         let raceConsistency = computeRaceConsistency(driverId, this.state.year, this.state.races, this.state.results);
         let timeConsistency = computeTimeConsistency(driverId, this.state.year, this.state.races, this.state.laptimes);
+        let positionsGainedLost = computePositionsGainedLost(driverId, this.state.year, this.state.races, this.state.results);
+        let racing = computeRacing(driverId, this.state.year, this.state.races, this.state.results);
 
         this.setState({
             raceConsistency: raceConsistency,
-            timeConsistency: timeConsistency
+            timeConsistency: timeConsistency,
+            positionsGainedLost: positionsGainedLost,
+            racing: racing
         });
     }
 
@@ -142,7 +151,7 @@ class App extends Component {
                     </Grid>
                     <Grid item xs={12} md={6}>
                         <Details
-                            data={[this.state.raceConsistency, this.state.timeConsistency]}
+                            data={[this.state.raceConsistency, this.state.timeConsistency, this.state.positionsGainedLost, this.state.racing]}
                             graphChoice={this.state.graphChoice}
                         />
                     </Grid>
