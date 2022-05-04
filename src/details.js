@@ -162,6 +162,13 @@ const renderRaceC = function renderRaceConsistency(inputData) {
 const renderPosG = function renderPositionsGained(inputData) {
   let data = inputData.data;
 
+  let width = 960 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+  data.sort(function (a, b) {
+    return a[1] - b[1];
+  });
+
   //remove previous svg
   d3.select(".graph").select("svg").remove();
 
@@ -173,7 +180,93 @@ const renderPosG = function renderPositionsGained(inputData) {
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-  console.log(data);
+  // Config
+  let cfg = {
+    labelMargin: 5,
+    xAxisMargin: 10,
+    legendRightMargin: 0,
+  };
+
+  let x = d3.scaleLinear().range([0, width]);
+
+  let colour = d3.scaleSequential(d3.interpolatePRGn);
+
+  let y = d3.scaleBand().range([height, 0]).padding(0.1);
+
+  y.domain(
+    data.map(function (d) {
+      return d[0];
+    })
+  );
+  x.domain(
+    d3.extent(data, function (d) {
+      return d[2];
+    })
+  );
+
+  let max = d3.max(data, function (d) {
+    return d[2];
+  });
+  colour.domain([-max, max]);
+
+  let yAxis = svg
+    .append("g")
+    .attr("class", "y-axis")
+    .attr("transform", "translate(" + x(0) + ",0)")
+    .append("line")
+    .attr("y1", 0)
+    .attr("y2", height);
+
+  let xAxis = svg
+    .append("g")
+    .attr("class", "x-axis")
+    .attr("transform", "translate(0," + (height + cfg.xAxisMargin) + ")")
+    .call(d3.axisBottom(x).tickSizeOuter(0));
+
+  let bars = svg.append("g").attr("class", "bars");
+
+  bars
+    .selectAll("rect")
+    .data(data)
+    .enter()
+    .append("rect")
+    .attr("class", "annual-growth")
+    .attr("x", function (d) {
+      return x(Math.min(0, d[2]));
+    })
+    .attr("y", function (d) {
+      return y(d[0]);
+    })
+    .attr("height", y.bandwidth())
+    .attr("width", function (d) {
+      return Math.abs(x(d[2]) - x(0));
+    })
+    .style("fill", function (d) {
+      return colour(d[2]);
+    });
+
+  let labels = svg.append("g").attr("class", "labels");
+
+  labels
+    .selectAll("text")
+    .data(data)
+    .enter()
+    .append("text")
+    .attr("class", "bar-label")
+    .attr("x", x(0))
+    .attr("y", function (d) {
+      return y(d[0]);
+    })
+    .attr("dx", function (d) {
+      return d[2] < 0 ? cfg.labelMargin : -cfg.labelMargin;
+    })
+    .attr("dy", y.bandwidth())
+    .attr("text-anchor", function (d) {
+      return d[2] < 0 ? "start" : "end";
+    })
+    .text(function (d) {
+      return d[0];
+    });
 };
 
 const renderRacing = function renderRacing(inputData) {
