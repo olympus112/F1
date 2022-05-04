@@ -59,9 +59,9 @@ export function computeRacing(driverId, year, races, results) {
     });
   });
 
-  score = score/filteredData.length;
-  console.log({data: filteredData, score: score});
-  return {data: filteredData, score: score};
+  score = score / filteredData.length;
+  // console.log({ data: filteredData, score: score });
+  return { data: filteredData, score: score };
 }
 
 export default { computeRacing };
