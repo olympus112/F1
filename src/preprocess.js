@@ -4,6 +4,7 @@ import drivers from "./data/drivers.csv";
 import races from "./data/races.csv";
 import results from "./data/results.csv";
 import lapTimes from "./data/lap_times.csv";
+import qualifying from "./data/qualifying.csv";
 import constructors from "./data/constructors.csv";
 
 // [
@@ -205,13 +206,14 @@ export async function testCharacteristics() {
     let allRaces = await d3.csv(races);
     let allResults = await d3.csv(results);
     let allLapTimes = await d3.csv(lapTimes);
+    let allQualifications = await d3.csv(qualifying);
 
-    let a = preprocessCharacteristics(allRaces, allResults, allLapTimes, 14, 1994);
+    let a = preprocessCharacteristics(allRaces, allResults, allLapTimes, allQualifications, 1, 2021);
     console.log(a);
 }
 
 
-function preprocessCharacteristics(allRaces, allResults, allLapTimes, driverId, year) {
+function preprocessCharacteristics(allRaces, allResults, allLapTimes, allQualifications, driverId, year) {
     const parseDate = d3.timeParse('%d/%m/%Y');
 
     let filteredRaces = allRaces.filter(race => parseInt(race.year) === year);
@@ -238,6 +240,7 @@ function preprocessCharacteristics(allRaces, allResults, allLapTimes, driverId, 
     // Time consistency
     let tcData = [];
     let tcScore = 0;
+
 
     filteredRaces.forEach(race => {
         let found = false;

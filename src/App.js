@@ -5,7 +5,6 @@ import DriverPicker from "./driverpicker";
 import YearPicker from "./yearPicker";
 import SpiderGraph from "./spidergraph";
 import Details from "./details";
-import { computeRaceConsistency, computeTimeConsistency, computeTimeRacing} from "./getCSV.js";
 import {computePositionsGainedLost} from "./positionsGainedLost.js";
 import {computeRacing} from "./positions.js";
 import {downloadCharacteristics, testCharacteristics} from "./preprocess";
@@ -27,7 +26,7 @@ class App extends Component {
             driver: defaultDriver, // An object containing all information on the driver, this comes from drivers.json
             compare: [],
             year: defaultYear,
-            graphChoice: 2, //0: raceConsistency, 1: timeConsistency, 2: positionsGainedLost, 3: racing, 4 todo!
+            graphChoice: 0, //0: raceConsistency, 1: timeConsistency, 2: positionsGainedLost, 3: racing, 4 todo, 5: qualification!
 
             // Preloaded data
             preprocessed: props.preprocessed,
@@ -94,6 +93,7 @@ class App extends Component {
             timeConsistency: this.state.preprocessed.characteristics[driverId][year].timeConsistency,
             positionsGainedLost: this.state.preprocessed.characteristics[driverId][year].positionsGainedLost,
             racing: this.state.preprocessed.characteristics[driverId][year].racing,
+            timeRacing: this.state.preprocessed.characteristics[driverId][year].timeRacing
         });
     }
 
@@ -146,6 +146,7 @@ class App extends Component {
                                 this.state.timeConsistency,
                                 this.state.positionsGainedLost,
                                 this.state.racing,
+                                this.state.timeRacing
                             ]}
                             graphChoice={this.state.graphChoice}
                         />

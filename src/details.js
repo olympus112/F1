@@ -2,6 +2,9 @@ import { Card, CardHeader, Box } from "@mui/material";
 import React from "react";
 import * as d3 from "d3";
 
+const parseDate = d3.timeParse('%d/%m/%Y');
+
+
 // set the dimensions and margins of the graph
 var margin = { top: 10, right: 100, bottom: 60, left: 200 },
   width = 900 - margin.left - margin.right,
@@ -10,6 +13,23 @@ var margin = { top: 10, right: 100, bottom: 60, left: 200 },
 const renderTimeC = function renderTimeConsistency(inputData) {
   let data = inputData.data;
   let lsmPoints = inputData.lsm.lsmPoints;
+
+   //convert data.date to date object
+   data = data.map(entry => {
+    var newEntry = {
+      value: entry.value,
+    date: new Date(entry.date)}
+    return newEntry;
+  });
+
+  //convert lsm.date to date object
+  lsmPoints = lsmPoints.map(point => {
+    var newPoint = {
+      value: point.value,
+    date: new Date(point.date)}
+    return newPoint;
+  });
+
 
   //remove previous svg
   d3.select(".graph").select("svg").remove();
@@ -24,6 +44,7 @@ const renderTimeC = function renderTimeConsistency(inputData) {
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
   // Add X axis --> it is a date format
+  console.log(data);
   var x = d3
     .scaleTime()
     .domain(
@@ -49,9 +70,10 @@ const renderTimeC = function renderTimeConsistency(inputData) {
     .scaleLinear()
     .domain([
       0,
-      d3.max(data, function (d) {
-        return d.value;
-      }),
+      15
+      // d3.max(data, function (d) {  //Auto adjust => less clear which is better between drivers.
+      //   return d.value;            //set domain => less red means better => very obvious and can directly be seen
+      // }),
     ])
     .range([height, 0]);
   svg.append("g").call(d3.axisLeft(y));
@@ -60,7 +82,7 @@ const renderTimeC = function renderTimeConsistency(inputData) {
   var area = d3
     .area()
     .x(function (d) {
-      return x(data[d].date.getTime());
+      return x(Date.parse(data[d].date));
     })
     // .x1(function(d) {return d})
     .y1(function (d) {
@@ -119,6 +141,14 @@ const renderTimeC = function renderTimeConsistency(inputData) {
 const renderRaceC = function renderRaceConsistency(inputData) {
   let data = inputData.data;
   let lsmPoints = inputData.lsm.lsmPoints;
+
+    //convert data to date object
+    data = data.map(entry => {
+      var newEntry = {
+        value: entry.value,
+      date: new Date(entry.date)}
+      return newEntry;
+    });
 
   //remove previous svg
   d3.select(".graph").select("svg").remove();
@@ -360,7 +390,8 @@ function renderGraph(data, lsmPoints, svg, x, y) {
   var area = d3
     .area()
     .x(function (d) {
-      return x(data[d].date.getTime());
+      var date = new Date(data[d].date);
+      return x(date);
     })
     // .x1(function(d) {return d})
     .y1(function (d) {
@@ -388,7 +419,7 @@ function renderGraph(data, lsmPoints, svg, x, y) {
       d3
         .line()
         .x(function (d) {
-          return x(d.date);
+          return x(new Date(d.date));
         })
         .y(function (d) {
           return y(d.value);
@@ -406,7 +437,7 @@ function renderGraph(data, lsmPoints, svg, x, y) {
       d3
         .line()
         .x(function (d) {
-          return x(d.date);
+          return x(new Date(d.date));
         })
         .y(function (d) {
           return y(d.value);
