@@ -7,7 +7,9 @@ export function computeRaceConsistency(driverId, year, races, results) {
     let filteredRaces = races.filter(row => row.year === year);
     const maxRaceId = Math.max(...filteredRaces.map(race => race.raceId));
     const minRaceId = Math.min(...filteredRaces.map(race => race.raceId));
-    let filteredResults = results.filter(row => row.driverId === driverId && row.raceId >= minRaceId && row.raceId <= maxRaceId);
+    let filteredResults = results.filter(
+        row => row.driverId === driverId && row.raceId >= minRaceId && row.raceId <= maxRaceId
+    );
     let data = [];
     filteredRaces.forEach(race => {
         let found = false;

@@ -128,30 +128,30 @@
 // }
 
 export function computePositionsGainedLost(driverId, year, races, results) {
-  let filteredData = [];
-  let score = 0;
+    let filteredData = [];
+    let score = 0;
 
-  races.forEach((race) => {
-    results.forEach((res) => {
-      if (
-        race["year"] == year &&
-        race["raceId"] == res["raceId"] &&
-        res["driverId"] == driverId
-      ) {
-        filteredData.push([
-          race["name"],
-          race["round"],
-          res["grid"] - (res["position"] == "\\N" ? 20 : res["position"]),
-        ]);
+    races.forEach(race => {
+        results.forEach(res => {
+            if (
+                race["year"] === year &&
+                race["raceId"] === res["raceId"] &&
+                res["driverId"] === driverId
+            ) {
+                filteredData.push([
+                    race["name"],
+                    race["round"],
+                    res["grid"] - (res["position"] === "\\N" ? 20 : res["position"]),
+                ]);
 
-        score = score + (res["grid"] - (res["position"] == "\\N" ? 20 : res["position"]));
-      }
+                score = score + (res["grid"] - (res["position"] === "\\N" ? 20 : res["position"]));
+            }
+        });
     });
-  });
 
-  score = score/filteredData.length;
-  // console.log({data: filteredData, score: score})
-  return {data: filteredData, score: score};
+    score = score / filteredData.length;
+    // console.log({data: filteredData, score: score})
+    return {data: filteredData, score: score};
 }
 
-export default { computePositionsGainedLost };
+export default {computePositionsGainedLost};

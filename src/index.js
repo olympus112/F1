@@ -14,6 +14,7 @@ import constructors from "./data/constructors.csv";
 const preprocessedTeams = require('./data/teams.json');
 const preprocessedImages = require('./data/images.json');
 const preprocessedDrivers = require('./data/drivers.json');
+const preprocessedCharacteristics = require('./data/characteristics.json');
 
 const rootElement = document.getElementById('root');
 const root = createRoot(rootElement);
@@ -25,7 +26,12 @@ d3.csv(drivers).then(drivers => {
                 d3.csv(constructors).then(constructors => {
                     root.render(
                         <StrictMode>
-                            <App preprocessed={{drivers: preprocessedDrivers, teams: preprocessedTeams, images: preprocessedImages}}
+                            <App preprocessed={{
+                                    drivers: preprocessedDrivers,
+                                    teams: preprocessedTeams,
+                                    images: preprocessedImages,
+                                    characteristics: preprocessedCharacteristics
+                                }}
                                  drivers={drivers}
                                  races={races}
                                  results={results}

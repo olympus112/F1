@@ -215,11 +215,13 @@ function preprocessCharacteristics(allRaces, allResults, allLapTimes, driverId, 
     const parseDate = d3.timeParse('%d/%m/%Y');
 
     let filteredRaces = allRaces.filter(race => parseInt(race.year) === year);
-    const maxRaceId = Math.max(...filteredRaces.map(race => parseInt(race.raceId)));
-    const minRaceId = Math.min(...filteredRaces.map(race => parseInt(race.raceId)));
+    // const maxRaceId = Math.max(...filteredRaces.map(race => parseInt(race.raceId)));
+    // const minRaceId = Math.min(...filteredRaces.map(race => parseInt(race.raceId)));
 
-    let filteredResults = allResults.filter(race => parseInt(race.driverId) === driverId && parseInt(race.raceId) >= minRaceId && parseInt(race.raceId) <= maxRaceId);
-    let filteredLapTimes = allLapTimes.filter(lapTime => parseInt(lapTime.driverId) === driverId && parseInt(lapTime.raceId) >= minRaceId && parseInt(lapTime.raceId) <= maxRaceId);
+    // let filteredResults = allResults.filter(race => parseInt(race.driverId) === driverId && parseInt(race.raceId) >= minRaceId && parseInt(race.raceId) <= maxRaceId);
+    // let filteredLapTimes = allLapTimes.filter(lapTime => parseInt(lapTime.driverId) === driverId && parseInt(lapTime.raceId) >= minRaceId && parseInt(lapTime.raceId) <= maxRaceId);
+    let filteredResults = allResults.filter(race => parseInt(race.driverId) === driverId);
+    let filteredLapTimes = allLapTimes.filter(lapTime => parseInt(lapTime.driverId) === driverId);
 
     // Positions gained lost
     let pglData = [];
@@ -243,7 +245,7 @@ function preprocessCharacteristics(allRaces, allResults, allLapTimes, driverId, 
         let date = new Date(race.year, parsedDate.getMonth(), parsedDate.getDate());
 
         // Time Consistency
-        const raceLapTimes = filteredLapTimes.filter(row => parseInt(row.raceId) === parseInt(race.raceId));
+        const raceLapTimes = filteredLapTimes.filter(lapTime => parseInt(lapTime.raceId) === parseInt(race.raceId));
         let timeConsistency = preprocessTimeConsistency(raceLapTimes);
         if (timeConsistency !== null)
             tcData.push({date: date, value: timeConsistency})
