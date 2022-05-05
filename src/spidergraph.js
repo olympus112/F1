@@ -3,7 +3,7 @@ import React from 'react';
 import * as d3 from "d3";
 import {Graphs} from "./App";
 
-function renderSpiderGraph(className, data, options) {
+function renderSpiderGraph(className, data, options, selectGraph) {
     const cfg = {
         width: options.width,			            // Width of the circle
         height: options.height,			            // Height of the circle
@@ -144,7 +144,11 @@ function renderSpiderGraph(className, data, options) {
                 .style('font-size', '11px');
         })
         .on("click", function (event, axis) {
-            console.log(axis);
+            for (const [key, graph] of Object.entries(Graphs)) {
+                if (graph.name === axis) {
+                    selectGraph(graph);
+                }
+            }
         });
 
     // The radial line function
@@ -339,7 +343,7 @@ console.log(props.compare)
     };
 
     React.useEffect(() => {
-        renderSpiderGraph(".radarChart", spiderData, radarChartOptions);
+        renderSpiderGraph(".radarChart", spiderData, radarChartOptions, props.selectGraph);
     }, [spiderData]);
 
     return <div className="radarChart">
