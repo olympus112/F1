@@ -20,6 +20,37 @@ import constructors from "./data/constructors.csv";
 //     }
 // ]
 
+function leastSquareMethod(data) {
+    const n = data.length;
+    let sumXY = 0;
+    let sumX = 0;
+    let sumY = 0;
+    let sumXSquared = 0;
+
+    data.forEach(element => {
+        const date = element.date.getTime();
+        const value = parseInt(element.value);
+        sumXY += date * value;
+        sumX += date;
+        sumY += value;
+        sumXSquared += date * date;
+    });
+
+    const b = (n * sumXY - sumX * sumY) / (n * sumXSquared - sumX * sumX);
+    const a = sumY / n - b * sumX / n;
+
+    const lsm = [];
+    let sqDiff = 0;
+    data.forEach(element => {
+        const x = element.date;
+        const y = a + b * x;
+        lsm.push({value: y, date: x});
+        sqDiff += Math.pow((element.value - y), 2);
+    });
+    const avgDiff = Math.sqrt(sqDiff / data.length);
+    return {lsmPoints: lsm, score: avgDiff};
+}
+
 async function getWikiImage(url) {
     let wikiSubject = url.substring(url.lastIndexOf('/') + 1);
     let wikiResponse = await fetch('https://en.wikipedia.org/w/api.php?action=query&origin=*&format=json&prop=pageimages&piprop=thumbnail|original&titles=' + wikiSubject);
@@ -87,6 +118,202 @@ async function preprocessTeams() {
     return result;
 }
 
+function preprocessTimeConsistency(raceLapTimes) {
+    let unfilteredMean = [];
+    let unfilteredN = 0;
+    let filterVariance = 1.3;
+
+    //calculate Mean of unfiltered lap times (including safety car, pitstop,...)
+    raceLapTimes.forEach(lapTime => {
+        unfilteredMean.push(parseInt(lapTime.milliseconds));
+        unfilteredN++;
+    });
+
+    unfilteredMean = unfilteredMean[Math.round(unfilteredN / 2)];
+
+    //list containing only the racetimes in milliseconds, nothing else
+    //Filtering applied
+    const times = [];
+    raceLapTimes.forEach(lapTime => {
+        const t = parseInt(lapTime.milliseconds);
+        if (t <= filterVariance * unfilteredMean) {
+            times.push(t);
+        }
+    });
+
+    if (times.length !== 0) {
+        let mean = 0;
+        let n = 0;
+        // calculate avarage and deviation
+        times.forEach(time => {
+            mean += time;
+            n++;
+        });
+        mean = mean / n;
+
+        //sum of difference between values and mean squared
+        let diffMean = 0;
+        times.forEach(time => {
+            diffMean += Math.pow(Math.abs(time - mean), 2);
+        });
+
+        const sd = Math.sqrt(diffMean / n);
+
+        return sd / mean * 100;
+    }
+
+    return null;
+}
+
+async function preprocessAllCharacteristics() {
+    console.log('Started characteristics preprocessing');
+
+    let allDrivers = await d3.csv(drivers);
+    let allRaces = await d3.csv(races);
+    let allResults = await d3.csv(results);
+    let allLapTimes = await d3.csv(lapTimes);
+
+    let characteristics = {};
+    allDrivers.forEach(currentDriver => {
+        let currentDriverId = parseInt(currentDriver.driverId);
+        let currentResults = allResults.filter(result => parseInt(result.driverId) === currentDriverId);
+        let currentRaces = currentResults.map(result => parseInt(result.raceId));
+        let filteredRaces = allRaces.filter(race => currentRaces.includes(parseInt(race.raceId)));
+        let filteredYears = filteredRaces.map(race => parseInt(race.year));
+        let currentYears = [...new Set(filteredYears)];
+
+        let driverCharacteristics = {};
+        currentYears.forEach(currentYear => {
+            driverCharacteristics[currentYear] = preprocessCharacteristics(allRaces, allResults, allLapTimes, currentDriverId, currentYear);
+        });
+
+        characteristics[currentDriverId] = driverCharacteristics;
+
+        if (currentDriverId % 10 === 0)
+            console.log(`${currentDriverId / 855.0 * 100}`, "%");
+    });
+
+    console.log('Finished characteristics preprocessing');
+
+    return characteristics;
+}
+
+export async function testCharacteristics() {
+    console.log('Started characteristics preprocessing');
+
+    let allDrivers = await d3.csv(drivers);
+    let allRaces = await d3.csv(races);
+    let allResults = await d3.csv(results);
+    let allLapTimes = await d3.csv(lapTimes);
+
+    let a = preprocessCharacteristics(allRaces, allResults, allLapTimes, 14, 1994);
+    console.log(a);
+}
+
+
+function preprocessCharacteristics(allRaces, allResults, allLapTimes, driverId, year) {
+    const parseDate = d3.timeParse('%d/%m/%Y');
+
+    let filteredRaces = allRaces.filter(race => parseInt(race.year) === year);
+    // const maxRaceId = Math.max(...filteredRaces.map(race => parseInt(race.raceId)));
+    // const minRaceId = Math.min(...filteredRaces.map(race => parseInt(race.raceId)));
+
+    // let filteredResults = allResults.filter(race => parseInt(race.driverId) === driverId && parseInt(race.raceId) >= minRaceId && parseInt(race.raceId) <= maxRaceId);
+    // let filteredLapTimes = allLapTimes.filter(lapTime => parseInt(lapTime.driverId) === driverId && parseInt(lapTime.raceId) >= minRaceId && parseInt(lapTime.raceId) <= maxRaceId);
+    let filteredResults = allResults.filter(race => parseInt(race.driverId) === driverId);
+    let filteredLapTimes = allLapTimes.filter(lapTime => parseInt(lapTime.driverId) === driverId);
+
+    // Positions gained lost
+    let pglData = [];
+    let pglScore = 0;
+
+    // Racing
+    let rData = [];
+    let rScore = 0;
+
+    // Race consistency
+    let rcData = [];
+    let rcScore = 0;
+
+    // Time consistency
+    let tcData = [];
+    let tcScore = 0;
+
+    filteredRaces.forEach(race => {
+        let found = false;
+        let parsedDate = parseDate(race.date);
+        let date = new Date(race.year, parsedDate.getMonth(), parsedDate.getDate());
+
+        // Time Consistency
+        const raceLapTimes = filteredLapTimes.filter(lapTime => parseInt(lapTime.raceId) === parseInt(race.raceId));
+        let timeConsistency = preprocessTimeConsistency(raceLapTimes);
+        if (timeConsistency !== null)
+            tcData.push({date: date, value: timeConsistency})
+
+        // Other characteristics
+        filteredResults.forEach(result => {
+            if (parseInt(race.raceId) === parseInt(result.raceId)) {
+                found = true;
+
+                // Positions gained lost
+                pglData.push([
+                    race.name,
+                    race.round,
+                    parseInt(result.grid) - (result.position === "\\N" ? 20 : parseInt(result.position))
+                ])
+                pglScore = pglScore + (parseInt(result.grid) - (result.position === "\\N" ? 20 : parseInt(result.position)));
+
+                // Racing
+                rData.push([
+                    race.name,
+                    race.round,
+                    result.position === "\\N" ? 20 : parseInt(result.position),
+                ]);
+                rScore = rScore + (result.position === "\\N" ? 20 : parseInt(result.position));
+
+                // Race consistency
+                rcData.push({
+                    date: date,
+                    value: result.position === '\\N' ? 20 : parseInt(result.position)
+                });
+            }
+        });
+
+        if (!found) {
+            // Race consistency
+            rcData.push({
+                date: date,
+                value: 20
+            })
+        }
+    });
+
+    // Positions gained lost
+    pglScore = pglScore / pglData.length;
+    let positionsGainedLost = {data: pglData, score: pglScore};
+
+    // Racing
+    rScore = rScore / rData.length;
+    let racing = {data: rData, score: rScore};
+
+    // Race consistency
+    rcData = rcData.sort((a, b) => (a.date > b.date) ? 1 : -1)
+    rcScore = leastSquareMethod(rcData);
+    let raceConsistency = {data: rcData, lsm: rcScore};
+
+    // Time consistency
+    tcData = tcData.sort((a, b) => (a.date > b.date) ? 1 : -1);
+    tcScore = leastSquareMethod(tcData);
+    let timeConsistency = {data: tcData, lsm: tcScore};
+
+    return {
+        positionsGainedLost: positionsGainedLost,
+        racing: racing,
+        raceConsistency: raceConsistency,
+        timeConsistency: timeConsistency
+    };
+}
+
 async function preprocessDrivers() {
     console.log('Started driver preprocessing');
 
@@ -149,6 +376,10 @@ export function exportToJsonFile(file, jsonData) {
     linkElement.setAttribute('href', dataUri);
     linkElement.setAttribute('download', file);
     linkElement.click();
+}
+
+export async function downloadCharacteristics() {
+    exportToJsonFile("characteristics.json", await preprocessAllCharacteristics());
 }
 
 export async function downloadDrivers() {

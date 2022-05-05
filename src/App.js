@@ -1,211 +1,160 @@
-import React, { Component } from "react";
+import React, {Component} from "react";
 import "./App.css";
-import { Grid, Container, Typography } from "@mui/material";
+import {Grid, Container, Typography} from "@mui/material";
 import DriverPicker from "./driverpicker";
 import YearPicker from "./yearPicker";
 import SpiderGraph from "./spidergraph";
 import Details from "./details";
 import { computeRaceConsistency, computeTimeConsistency, computeTimeRacing} from "./getCSV.js";
-import { computePositionsGainedLost } from "./positionsGainedLost.js";
-import { computeRacing } from "./positions.js";
-// import useWindowDimensions from "./windowdimensions";
+import {computePositionsGainedLost} from "./positionsGainedLost.js";
+import {computeRacing} from "./positions.js";
+import {downloadCharacteristics, testCharacteristics} from "./preprocess";
 
+testCharacteristics()
 class App extends Component {
-  constructor(props) {
-    super(props);
+    constructor(props) {
+        super(props);
 
-    let defaultDriver = props.preprocessed.drivers[11]; // Lewis Hamilton
-    let defaultYear = defaultDriver.years[0];
+        let defaultDriver = props.preprocessed.drivers[11]; // Lewis Hamilton
+        let defaultYear = defaultDriver.years[0];
 
-    this.state = {
-      // Dimensions
-      width: 0,
-      height: 0,
+        this.state = {
+            // Dimensions
+            width: 0,
+            height: 0,
 
-      // Current state
-      driver: defaultDriver, // An object containing all information on the driver, this comes from drivers.json
-      compare: [],
-      year: defaultYear,
+            // Current state
+            driver: defaultDriver, // An object containing all information on the driver, this comes from drivers.json
+            compare: [],
+            year: defaultYear,
+            graphChoice: 2, //0: raceConsistency, 1: timeConsistency, 2: positionsGainedLost, 3: racing, 4 todo!
 
-      // Preloaded data
-      preprocessed: props.preprocessed,
-      drivers: props.drivers,
-      races: props.races,
-      results: props.results,
-      laptimes: props.laptimes,
-      constructors: props.constructors,
+            // Preloaded data
+            preprocessed: props.preprocessed,
+            drivers: props.drivers,
+            races: props.races,
+            results: props.results,
+            laptimes: props.laptimes,
+            constructors: props.constructors,
 
-      // Graph data
-      raceConsistency: computeRaceConsistency(
-        defaultDriver.id,
-        defaultYear,
-        props.races,
-        props.results
-      ), // {data: [{value: 0, date: new Date()}], lsm: {lsmPoints: [{value: 0, date: new Date()}], score: 0}},
-      timeConsistency: computeTimeConsistency(
-        defaultDriver.id,
-        defaultYear,
-        props.races,
-        props.results
-      ), // {data: [{value: 0, date: new Date()}], lsm: {lsmPoints: [{value: 0, date: new Date()}], score: 0}},
-      positionsGainedLost: computePositionsGainedLost(
-        defaultDriver.id,
-        defaultYear,
-        props.races,
-        props.results
-      ),
-      racing: computeRacing(
-        defaultDriver.id,
-        defaultYear,
-        props.races,
-        props.results
-      ),
-      timeRacing: computeTimeRacing(
-        defaultDriver.id,
-        defaultYear,
-        props.races,
-        props.qualifying
-      ),
+            // Graph data
+            raceConsistency: props.preprocessed.characteristics[defaultDriver.id][defaultYear].raceConsistency,
+            timeConsistency: props.preprocessed.characteristics[defaultDriver.id][defaultYear].timeConsistency,
+            positionsGainedLost: props.preprocessed.characteristics[defaultDriver.id][defaultYear].positionsGainedLost,
+            racing: props.preprocessed.characteristics[defaultDriver.id][defaultYear].racing,
+            timeRacing: props.preprocessed.characteristics[defaultDriver.id][defaultYear].timeRacing
+        };
+    }
 
-      graphChoice: 3, //0: raceConsistency, 1: timeConsistency, 2,3,4 todo!
+    selectDriver = (driver) => {
+        this.setState({
+            driver: driver,
+        });
+        console.log("Selected new driver: ", driver);
+
+        this.updateRacerData(driver.id,  this.state.year);
     };
 
-    this.updateRacerData(this.state.driver.id);
-  }
+    selectYear = (year) => {
+        this.setState({
+            year: year,
+        });
 
-  selectDriver = (driver) => {
-    this.setState({
-      driver: driver,
-    });
-    console.log("Selected new driver: ", driver);
+        console.log("Selected new year: ", year);
 
-    this.updateRacerData(driver.id);
-  };
+        this.updateRacerData(this.state.driver.id, year);
+    };
 
-  selectYear = (year) => {
-    this.setState({
-      year: year,
-    });
+    addCompare = (compare) => {
+        if (!this.state.compare.includes(compare)) {
+            this.setState({
+                compare: [...this.state.compare, compare],
+            });
 
-    console.log("Selected new year: ", year);
+            console.log("Added new driver: ", compare.name);
+        }
+    };
 
-    this.updateRacerData(this.state.driver.id);
-  };
+    removeCompare = (compare) => {
+        let index = this.state.compare.indexOf(compare);
 
-  addCompare = (compare) => {
-    if (!this.state.compare.includes(compare)) {
-      this.setState({
-        compare: [...this.state.compare, compare],
-      });
+        if (index > -1) {
+            this.state.compare.splice(index, 1);
+            this.setState({
+                compare: [...this.state.compare],
+            });
 
-      console.log("Added new driver: ", compare.name);
+            console.log("Removed driver: ", compare.name);
+        }
+    };
+
+    updateRacerData = (driverId, year) => {
+        this.setState({
+            raceConsistency: this.state.preprocessed.characteristics[driverId][year].raceConsistency,
+            timeConsistency: this.state.preprocessed.characteristics[driverId][year].timeConsistency,
+            positionsGainedLost: this.state.preprocessed.characteristics[driverId][year].positionsGainedLost,
+            racing: this.state.preprocessed.characteristics[driverId][year].racing,
+        });
     }
-  };
 
-  removeCompare = (compare) => {
-    let index = this.state.compare.indexOf(compare);
+    updateDimensions = () => {
+        this.setState({
+            width: window.innerWidth,
+            height: window.innerHeight,
+        });
+    };
 
-    if (index > -1) {
-      this.state.compare.splice(index, 1);
-      this.setState({
-        compare: [...this.state.compare],
-      });
+    componentDidMount() {
+        this.updateDimensions();
+        window.addEventListener("resize", this.updateDimensions);
 
-      console.log("Removed driver: ", compare.name);
+        this.updateRacerData(this.state.driver.id, this.state.year);
     }
-  };
 
-  updateRacerData(driverId) {
-    let raceConsistency = computeRaceConsistency(
-      driverId,
-      this.state.year,
-      this.state.races,
-      this.state.results
-    );
-    let timeConsistency = computeTimeConsistency(
-      driverId,
-      this.state.year,
-      this.state.races,
-      this.state.laptimes
-    );
-    let positionsGainedLost = computePositionsGainedLost(
-      driverId,
-      this.state.year,
-      this.state.races,
-      this.state.results
-    );
-    let racing = computeRacing(
-      driverId,
-      this.state.year,
-      this.state.races,
-      this.state.results
-    );
+    componentWillUnmount() {
+        window.removeEventListener("resize", this.updateDimensions);
+    }
 
-    this.setState({
-      raceConsistency: raceConsistency,
-      timeConsistency: timeConsistency,
-      positionsGainedLost: positionsGainedLost,
-      racing: racing,
-    });
-  }
-
-  updateDimensions = () => {
-    this.setState({
-      width: window.innerWidth,
-      height: window.innerHeight,
-    });
-    console.log("aaa", this.state.width);
-  };
-
-  componentDidMount() {
-    this.updateDimensions();
-    window.addEventListener("resize", this.updateDimensions);
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener("resize", this.updateDimensions);
-  }
-
-  render() {
-    return (
-      <Container maxWidth="xl">
-        <Typography variant="h4" sx={{ mb: 5 }}>
-          {this.state.driver.name}
-        </Typography>
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
-            <DriverPicker
-              teams={this.state.preprocessed.teams}
-              images={this.state.preprocessed.images}
-              drivers={this.state.preprocessed.drivers}
-              driver={this.state.driver}
-              year={this.state.year}
-              compare={this.state.compare}
-              selectDriver={this.selectDriver}
-              selectYear={this.selectYear}
-              addCompare={this.addCompare}
-              removeCompare={this.removeCompare}
-            />
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <SpiderGraph width={300} height={300} />
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <Details
-              data={[
-                this.state.raceConsistency,
-                this.state.timeConsistency,
-                this.state.positionsGainedLost,
-                this.state.racing,
-              ]}
-              graphChoice={this.state.graphChoice}
-            />
-          </Grid>
-          {this.state.width}
-        </Grid>
-      </Container>
-    );
-  }
+    render() {
+        return (
+            <Container maxWidth="xl">
+                <Typography variant="h4" sx={{mb: 5}}>
+                    {this.state.driver.name}
+                </Typography>
+                <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                        <DriverPicker
+                            teams={this.state.preprocessed.teams}
+                            images={this.state.preprocessed.images}
+                            drivers={this.state.preprocessed.drivers}
+                            driver={this.state.driver}
+                            year={this.state.year}
+                            compare={this.state.compare}
+                            selectDriver={this.selectDriver}
+                            selectYear={this.selectYear}
+                            addCompare={this.addCompare}
+                            removeCompare={this.removeCompare}
+                        />
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                        <SpiderGraph width={300} height={300}/>
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                        <Details
+                            data={[
+                                this.state.raceConsistency,
+                                this.state.timeConsistency,
+                                this.state.positionsGainedLost,
+                                this.state.racing,
+                            ]}
+                            graphChoice={this.state.graphChoice}
+                        />
+                    </Grid>
+                    {this.state.width}
+                </Grid>
+            </Container>
+        );
+    }
 }
 
 export default App;

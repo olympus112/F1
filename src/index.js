@@ -15,6 +15,7 @@ import qualifying from "./data/qualifying.csv";
 const preprocessedTeams = require('./data/teams.json');
 const preprocessedImages = require('./data/images.json');
 const preprocessedDrivers = require('./data/drivers.json');
+const preprocessedCharacteristics = require('./data/characteristics.json');
 
 const rootElement = document.getElementById('root');
 const root = createRoot(rootElement);
@@ -27,13 +28,19 @@ d3.csv(drivers).then(drivers => {
                     d3.csv(qualifying).then(qualifying => {
                         root.render(
                             <StrictMode>
-                                <App preprocessed={{drivers: preprocessedDrivers, teams: preprocessedTeams, images: preprocessedImages}}
-                                    drivers={drivers}
-                                    races={races}
-                                    results={results}
-                                    laptimes={laptimes}
-                                    constructors={constructors}
-                                    qualifying = {qualifying}/>
+                                <App preprocessed={{
+                                        drivers: preprocessedDrivers, 
+                                        teams: preprocessedTeams, 
+                                        images: preprocessedImages,
+                                        characteristics: preprocessedCharacteristics
+                                    }}
+                                        drivers={drivers}
+                                        races={races}
+                                        results={results}
+                                        laptimes={laptimes}
+                                        constructors={constructors}
+                                        qualifying = {qualifying}
+                                />
                             </StrictMode>
                         );
                     });
