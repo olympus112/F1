@@ -67,7 +67,7 @@ class App extends Component {
         props.qualifying
       ),
 
-      graphChoice: 2, //0: raceConsistency, 1: timeConsistency, 2,3,4 todo!
+      graphChoice: 3, //0: raceConsistency, 1: timeConsistency, 2,3,4 todo!
     };
 
     this.updateRacerData(this.state.driver.id);
