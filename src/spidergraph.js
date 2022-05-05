@@ -1,12 +1,7 @@
 import {Card, CardHeader, Box} from '@mui/material';
-import React, {useLayoutEffect, useState} from 'react';
+import React from 'react';
 import * as d3 from "d3";
-
-const driverMapping = {
-    0: "Driver 0",
-    1: "Driver 1",
-    2: "Driver 1",
-}
+import {Graphs} from "./App";
 
 function renderSpiderGraph(className, data, options) {
     const cfg = {
@@ -280,38 +275,57 @@ function renderSpiderGraph(className, data, options) {
 export default function SpiderGraph(props) {
     const svgRef = React.useRef(null);
 
-    const spiderData = [
-        {
-            id: 0,
-            attributes: [
-                {name: "Time consistency", value: 0.22},
-                {name: "Race consistency", value: 0.28},
-                {name: "Qualification", value: 0.29},
-                {name: "Racing", value: 0.17},
-                {name: "Overtaking", value: 0.27},
-            ]
-        },
-        {
-            id: 1,
-            attributes: [//Samsung
-                {name: "Time consistency", value: 0.17},
-                {name: "Race consistency", value: 0.26},
-                {name: "Qualification", value: 0.35},
-                {name: "Overtaking", value: 0.19},
-            ],
-        },
-        {
-            id: 2,
-            attributes: [//Nokia Smartphone
-                {name: "Time consistency", value: 0.26},
-                {name: "Race consistency", value: 0.10},
-                {name: "Qualification", value: 0.20},
-                {name: "Racing", value: 0.34},
-                {name: "Overtaking", value: 0.14},
-            ]
+    let spiderData = [];
+    let addSpiderData = (driver) => {
+        let attributes = [];
+        for (const [key, graph] of Object.entries(Graphs)) {
+            attributes.push({
+                name: graph.name,
+                // value: props.data[graph.id].data.score
+                value: Math.random()
+            });
         }
-    ];
 
+        spiderData.push({
+            id: driver.id,
+            name: driver.name,
+            attributes: attributes
+        });
+    }
+
+    addSpiderData(props.driver)
+    for (let compare of props.compare)
+        addSpiderData(compare);
+
+    // const spidderData = [
+    //     {
+    //         attributes: [
+    //             {name: "Time consistency", value: 0.22},
+    //             {name: "Race consistency", value: 0.28},
+    //             {name: "Qualification", value: 0.29},
+    //             {name: "Racing", value: 0.17},
+    //             {name: "Overtaking", value: 0.27},
+    //         ]
+    //     },
+    //     {
+    //         attributes: [//Samsung
+    //             {name: "Time consistency", value: 0.17},
+    //             {name: "Race consistency", value: 0.26},
+    //             {name: "Qualification", value: 0.35},
+    //             {name: "Overtaking", value: 0.19},
+    //         ],
+    //     },
+    //     {
+    //         attributes: [//Nokia Smartphone
+    //             {name: "Time consistency", value: 0.26},
+    //             {name: "Race consistency", value: 0.10},
+    //             {name: "Qualification", value: 0.20},
+    //             {name: "Racing", value: 0.34},
+    //             {name: "Overtaking", value: 0.14},
+    //         ]
+    //     }
+    // ];
+console.log(props.compare)
     const color = d3.scaleOrdinal()
         .range(["#EDC951", "#CC333F", "#00A0B0", "#3ba95f"]);
 
@@ -326,7 +340,7 @@ export default function SpiderGraph(props) {
 
     React.useEffect(() => {
         renderSpiderGraph(".radarChart", spiderData, radarChartOptions);
-    }, []);
+    }, [spiderData]);
 
     return <div className="radarChart">
         <svg ref={svgRef}/>

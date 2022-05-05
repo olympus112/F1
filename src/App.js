@@ -5,12 +5,27 @@ import DriverPicker from "./driverpicker";
 import YearPicker from "./yearPicker";
 import SpiderGraph from "./spidergraph";
 import Details from "./details";
-import { computeRaceConsistency, computeTimeConsistency, computeTimeRacing} from "./getCSV.js";
-import {computePositionsGainedLost} from "./positionsGainedLost.js";
-import {computeRacing} from "./positions.js";
 import {downloadCharacteristics, testCharacteristics} from "./preprocess";
 
-testCharacteristics()
+export const Graphs = {
+    raceConsistency: {
+        id: 0,
+        name: "Race Consistency"
+    },
+    timeConsistency: {
+        id: 1,
+        name: "Time Consistency"
+    },
+    positionsGainedLost: {
+        id: 2,
+        name: "Positions gained/lost"
+    },
+    racing: {
+        id: 3,
+        name: "Racing"
+    },
+};
+
 class App extends Component {
     constructor(props) {
         super(props);
@@ -27,7 +42,7 @@ class App extends Component {
             driver: defaultDriver, // An object containing all information on the driver, this comes from drivers.json
             compare: [],
             year: defaultYear,
-            graphChoice: 2, //0: raceConsistency, 1: timeConsistency, 2: positionsGainedLost, 3: racing, 4 todo!
+            graph: Graphs.positionsGainedLost, //0: raceConsistency, 1: timeConsistency, 2: positionsGainedLost, 3: racing, 4 todo!
 
             // Preloaded data
             preprocessed: props.preprocessed,
@@ -38,11 +53,12 @@ class App extends Component {
             constructors: props.constructors,
 
             // Graph data
-            raceConsistency: props.preprocessed.characteristics[defaultDriver.id][defaultYear].raceConsistency,
-            timeConsistency: props.preprocessed.characteristics[defaultDriver.id][defaultYear].timeConsistency,
-            positionsGainedLost: props.preprocessed.characteristics[defaultDriver.id][defaultYear].positionsGainedLost,
-            racing: props.preprocessed.characteristics[defaultDriver.id][defaultYear].racing,
-            timeRacing: props.preprocessed.characteristics[defaultDriver.id][defaultYear].timeRacing
+            data: [
+                props.preprocessed.characteristics[defaultDriver.id][defaultYear].raceConsistency,
+                props.preprocessed.characteristics[defaultDriver.id][defaultYear].timeConsistency,
+                props.preprocessed.characteristics[defaultDriver.id][defaultYear].positionsGainedLost,
+                props.preprocessed.characteristics[defaultDriver.id][defaultYear].racing,
+            ]
         };
     }
 
@@ -52,7 +68,7 @@ class App extends Component {
         });
         console.log("Selected new driver: ", driver);
 
-        this.updateRacerData(driver.id,  this.state.year);
+        this.updateRacerData(driver.id, this.state.year);
     };
 
     selectYear = (year) => {
@@ -64,6 +80,12 @@ class App extends Component {
 
         this.updateRacerData(this.state.driver.id, year);
     };
+
+    selectGraph = (graph) => {
+        this.setState({
+            graph: graph
+        });
+    }
 
     addCompare = (compare) => {
         if (!this.state.compare.includes(compare)) {
@@ -90,10 +112,12 @@ class App extends Component {
 
     updateRacerData = (driverId, year) => {
         this.setState({
-            raceConsistency: this.state.preprocessed.characteristics[driverId][year].raceConsistency,
-            timeConsistency: this.state.preprocessed.characteristics[driverId][year].timeConsistency,
-            positionsGainedLost: this.state.preprocessed.characteristics[driverId][year].positionsGainedLost,
-            racing: this.state.preprocessed.characteristics[driverId][year].racing,
+            data: [
+                this.state.preprocessed.characteristics[driverId][year].raceConsistency,
+                this.state.preprocessed.characteristics[driverId][year].timeConsistency,
+                this.state.preprocessed.characteristics[driverId][year].positionsGainedLost,
+                this.state.preprocessed.characteristics[driverId][year].racing,
+            ]
         });
     }
 
@@ -137,20 +161,22 @@ class App extends Component {
                         />
                     </Grid>
                     <Grid item xs={12} md={6}>
-                        <SpiderGraph width={300} height={300}/>
+                        <SpiderGraph
+                            width={300}
+                            height={300}
+                            driver={this.state.driver}
+                            compare={this.state.compare}
+                            year={this.state.year}
+                            data={this.state.data}
+                            selectGraph={this.selectGraph}
+                        />
                     </Grid>
                     <Grid item xs={12} md={6}>
                         <Details
-                            data={[
-                                this.state.raceConsistency,
-                                this.state.timeConsistency,
-                                this.state.positionsGainedLost,
-                                this.state.racing,
-                            ]}
-                            graphChoice={this.state.graphChoice}
+                            data={this.state.data}
+                            graph={this.state.graph.id}
                         />
                     </Grid>
-                    {this.state.width}
                 </Grid>
             </Container>
         );

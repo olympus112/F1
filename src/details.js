@@ -162,7 +162,7 @@ const renderRaceC = function renderRaceConsistency(inputData) {
 const renderPosG = function renderPositionsGained(inputData) {
   let data = inputData.data;
 
-  let width = 960 - margin.left - margin.right,
+  let width = 500 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
 
   data.sort(function (a, b) {
@@ -418,13 +418,12 @@ function renderGraph(data, lsmPoints, svg, x, y) {
 
 export default function Details(props) {
   const svgRef = React.useRef(null);
-  let graphChoice = props.graphChoice;
-  let renderFunction = graphChoices[graphChoice];
+  let renderFunction = graphChoices[props.graph];
 
   React.useEffect(() => {
     console.log(props);
 
-    renderFunction(props.data[graphChoice]);
+    renderFunction(props.data[props.graph]);
   }, [props]);
 
   // React.useEffect(() => {
