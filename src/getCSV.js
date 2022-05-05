@@ -98,6 +98,52 @@ export function computeTimeConsistency(driverId, year, races, lapTimes) {
     return {data: data, lsm: lsm};
 };
 
+export function computeTimeRacing(driverId, year, races, qualification){
+    let filteredRaces = races.filter(row => parseInt(row.year) === year);
+    var timeDifferences = [];
+    filteredRaces.forEach(race => {
+        var raceId = race.raceId;
+        var filteredQual = qualification.filter(row => row.raceId === raceId);
+        var minTime = 100 * 60 //100 minutes => just to initialize. 
+        var racerTime = -1; //default value, if not changed, value does not count. 
+        filteredQual.forEach(qual => {
+            var qualTime = qual.q3;
+            if (qualTime === "\\N"){
+                qualTime = qual.q2;
+            }
+            if (qualTime === "\\N"){
+                qualTime = qual.q1;
+            }
+
+            qualTime = qualTime.split(":");
+            var minutes = parseInt(qualTime[0]);
+            var seconds = parseFloat(qualTime[1]);
+            var finalTime = minutes * 60 + seconds;
+            if (finalTime < minTime){
+                minTime = finalTime;
+            }
+            if (parseInt(qual.driverId) === driverId) {
+                racerTime = finalTime;
+            }
+        })
+        if (racerTime !== -1){  
+        var timeDiff = racerTime - minTime;
+        timeDifferences.push({date: parseDate(race.date), timeDiff: timeDiff});
+        }
+    });
+
+    var avgTimeDiff = 0;
+    timeDifferences.forEach(race => {
+        avgTimeDiff +=race.timeDiff;
+    });
+    avgTimeDiff /= timeDifferences.length;
+    console.log(avgTimeDiff);
+
+    return {score: avgTimeDiff, data: timeDifferences};
+}
+
+
+
 
 function leastSquareMethod(data) {
     const n = data.length;
@@ -128,11 +174,6 @@ function leastSquareMethod(data) {
     });
     const avgDiff = Math.sqrt(sqDiff / data.length);
     return {lsmPoints: lsm, score: avgDiff};
-}
-
-//returns {years: [list of years the driver was active], competitors: [list of driverIds the driver raced against]} //TODO
-function importDriverInfo(driverId) {
-
 }
 
 export default {computeRaceConsistency, computeTimeConsistency};

@@ -5,7 +5,7 @@ import DriverPicker from "./driverpicker";
 import YearPicker from "./yearPicker";
 import SpiderGraph from "./spidergraph";
 import Details from "./details";
-import { computeRaceConsistency, computeTimeConsistency } from "./getCSV.js";
+import { computeRaceConsistency, computeTimeConsistency, computeTimeRacing} from "./getCSV.js";
 import { computePositionsGainedLost } from "./positionsGainedLost.js";
 import { computeRacing } from "./positions.js";
 // import useWindowDimensions from "./windowdimensions";
@@ -59,6 +59,12 @@ class App extends Component {
         defaultYear,
         props.races,
         props.results
+      ),
+      timeRacing: computeTimeRacing(
+        defaultDriver.id,
+        defaultYear,
+        props.races,
+        props.qualifying
       ),
 
       graphChoice: 2, //0: raceConsistency, 1: timeConsistency, 2,3,4 todo!

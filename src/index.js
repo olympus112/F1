@@ -10,6 +10,7 @@ import races from "./data/races.csv";
 import results from "./data/results.csv";
 import laptimes from "./data/lap_times.csv";
 import constructors from "./data/constructors.csv";
+import qualifying from "./data/qualifying.csv";
 
 const preprocessedTeams = require('./data/teams.json');
 const preprocessedImages = require('./data/images.json');
@@ -23,16 +24,19 @@ d3.csv(drivers).then(drivers => {
         d3.csv(results).then(results => {
             d3.csv(laptimes).then(laptimes => {
                 d3.csv(constructors).then(constructors => {
-                    root.render(
-                        <StrictMode>
-                            <App preprocessed={{drivers: preprocessedDrivers, teams: preprocessedTeams, images: preprocessedImages}}
-                                 drivers={drivers}
-                                 races={races}
-                                 results={results}
-                                 laptimes={laptimes}
-                                 constructors={constructors}/>
-                        </StrictMode>
-                    );
+                    d3.csv(qualifying).then(qualifying => {
+                        root.render(
+                            <StrictMode>
+                                <App preprocessed={{drivers: preprocessedDrivers, teams: preprocessedTeams, images: preprocessedImages}}
+                                    drivers={drivers}
+                                    races={races}
+                                    results={results}
+                                    laptimes={laptimes}
+                                    constructors={constructors}
+                                    qualifying = {qualifying}/>
+                            </StrictMode>
+                        );
+                    });
                 });
             });
         });
