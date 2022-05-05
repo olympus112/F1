@@ -272,6 +272,10 @@ const renderPosG = function renderPositionsGained(inputData) {
 const renderRacing = function renderRacing(inputData) {
   let data = inputData.data;
 
+  data.sort(function (a, b) {
+    return a[1] - b[1];
+  });
+
   //remove previous svg
   d3.select(".graph").select("svg").remove();
 
@@ -279,9 +283,74 @@ const renderRacing = function renderRacing(inputData) {
     .select(".graph")
     .append("svg")
     .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
+    .attr("height", height + margin.top + 2.3*margin.bottom)
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  let xScale = d3.scaleBand().range([0, width]).padding(0.4),
+    yScale = d3.scaleLinear().range([height, 0]);
+
+  let g = svg.append("g");
+
+  xScale.domain(
+    data.map(function (d) {
+      return d[0];
+    })
+  );
+  yScale.domain([
+    0,
+    d3.max(data, function (d) {
+      return d[2];
+    }),
+  ]);
+
+  g.append("g")
+    .attr("transform", "translate(0," + height + ")")
+    .call(d3.axisBottom(xScale))
+    .selectAll("text")
+    .style("text-anchor", "end")
+    .attr("dx", "-.8em")
+    .attr("dy", ".15em")
+    .attr("transform", "rotate(-65)")
+    .append("text")
+    .attr("y", height - 250)
+    .attr("x", width - 100)
+    .attr("text-anchor", "end")
+    .attr("stroke", "black")
+    .text("Year");
+
+  g.append("g")
+    .call(
+      d3
+        .axisLeft(yScale)
+        .tickFormat(function (d) {
+          return d;
+        })
+        .ticks(10)
+    )
+    .append("text")
+    .attr("transform", "rotate(-90)")
+    .attr("y", 6)
+    .attr("dy", "-5.1em")
+    .attr("text-anchor", "end")
+    .attr("stroke", "black")
+    .text("Finishing position");
+
+  g.selectAll(".bar")
+    .data(data)
+    .enter()
+    .append("rect")
+    .attr("class", "bar")
+    .attr("x", function (d) {
+      return xScale(d[0]);
+    })
+    .attr("y", function (d) {
+      return yScale(d[2]);
+    })
+    .attr("width", xScale.bandwidth())
+    .attr("height", function (d) {
+      return height - yScale(d[2]);
+    });
 };
 
 const graphChoices = [renderRaceC, renderTimeC, renderPosG, renderRacing];
