@@ -98,7 +98,7 @@ export function computeTimeConsistency(driverId, year, races, lapTimes) {
     const lsm = leastSquareMethod(data);
 
     return {data: data, lsm: lsm};
-};
+}
 
 export function computeTimeRacing(driverId, year, races, qualification){
     let filteredRaces = races.filter(row => parseInt(row.year) === year);

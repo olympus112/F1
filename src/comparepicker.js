@@ -15,20 +15,26 @@ export default function ComparePicker(props) {
         driver => driver.years.includes(props.year) && driver !== props.driver && !props.compare.includes(driver)
     );
 
+    let getLabel = (driver) => {
+        return (
+            <Typography>{props.flags[driver.nationality] + " " + driver.name}</Typography>
+        );
+    };
+
     return (
         <Grid container spacing={2}>
             <Grid item xs={6}>
                 <FormControl style={{width: '100%'}} component="fieldset" variant="standard">
                     <FormLabel component="legend">
-                        <Typography>
-                            Chosen drivers <Chip label={props.compare.length} size={'small'} />
+                        <Typography component={"span"}>
+                            Chosen drivers <Chip label={props.compare.length} size={'small'}/>
                         </Typography>
                     </FormLabel>
                     <List style={{maxHeight: 250, overflow: 'auto'}}>
                         <ListItem key={props.driver.id} disablePadding>
                             <FormControlLabel
                                 control={<Checkbox checked disabled/>}
-                                label={props.driver.name}
+                                label={getLabel(props.driver)}
                             />
                         </ListItem>
                         {props.compare.map(driver => {
@@ -36,7 +42,7 @@ export default function ComparePicker(props) {
                                 <ListItem key={driver.id} disablePadding>
                                     <FormControlLabel
                                         control={<Checkbox checked onChange={event => props.removeCompare(driver)}/>}
-                                        label={driver.name}
+                                        label={getLabel(driver)}
                                     />
                                 </ListItem>
                             );
@@ -53,14 +59,19 @@ export default function ComparePicker(props) {
                             return (
                                 <ListItem key={driver.id} disablePadding>
                                     <FormControlLabel
-                                        control={<Checkbox checked={false} disabled={props.compare.length >= compareLimit} onChange={event => props.addCompare(driver)}/>}
-                                        label={driver.name}
+                                        style={{width: "100%"}}
+                                        control={<Checkbox checked={false}
+                                                           disabled={props.compare.length >= compareLimit}
+                                                           onChange={event => props.addCompare(driver)}/>}
+                                        label={getLabel(driver)}
                                     />
                                 </ListItem>
                             );
                         })}
                     </List>
-                    <FormHelperText>You can compare {compareLimit === props.compare.length ?  "no" : compareLimit - props.compare.length} more drivers</FormHelperText>
+                    <FormHelperText>You can
+                        compare {compareLimit === props.compare.length ? "no" : compareLimit - props.compare.length} more
+                        drivers</FormHelperText>
                 </FormControl>
             </Grid>
         </Grid>

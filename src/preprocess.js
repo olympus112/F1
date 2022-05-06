@@ -6,6 +6,8 @@ import results from "./data/results.csv";
 import lapTimes from "./data/lap_times.csv";
 import qualifying from "./data/qualifying.csv";
 import constructors from "./data/constructors.csv";
+const countries = require('./data/countries.json');
+
 
 // [
 //     {
@@ -166,6 +168,38 @@ function preprocessTimeConsistency(raceLapTimes) {
     return null;
 }
 
+function preprocessTimeRacing(driverId, race, qualifications) {
+    let parseDate = d3.timeParse('%d/%m/%Y')
+    const filteredQualifications = qualifications.filter(qualification => parseInt(qualification.raceId) === parseInt(race.raceId));
+
+    let minTime = 100 * 60; // 100 minutes => just to initialize.
+    let racerTime = -1; // default value, if not changed, value does not count.
+    filteredQualifications.forEach(qualification => {
+        let qualTime = qualification.q3;
+        if (qualTime === "\\N")
+            qualTime = qualification.q2;
+        if (qualTime === "\\N")
+            qualTime = qualification.q1;
+        qualTime = qualTime.split(":");
+
+        const minutes = parseInt(qualTime[0]);
+        const seconds = parseFloat(qualTime[1]);
+        const finalTime = minutes * 60 + seconds;
+
+        if (finalTime < minTime)
+            minTime = finalTime;
+
+        if (parseInt(qualification.driverId) === driverId)
+            racerTime = finalTime;
+    })
+
+    if (racerTime !== -1) {
+        return racerTime - minTime;
+    }
+
+    return null;
+}
+
 async function preprocessAllCharacteristics() {
     console.log('Started characteristics preprocessing');
 
@@ -173,6 +207,7 @@ async function preprocessAllCharacteristics() {
     let allRaces = await d3.csv(races);
     let allResults = await d3.csv(results);
     let allLapTimes = await d3.csv(lapTimes);
+    let allQualifications = await d3.csv(qualifying);
 
     let characteristics = {};
     allDrivers.forEach(currentDriver => {
@@ -185,7 +220,7 @@ async function preprocessAllCharacteristics() {
 
         let driverCharacteristics = {};
         currentYears.forEach(currentYear => {
-            driverCharacteristics[currentYear] = preprocessCharacteristics(allRaces, allResults, allLapTimes, currentDriverId, currentYear);
+            driverCharacteristics[currentYear] = preprocessCharacteristics(allRaces, allResults, allLapTimes, allQualifications, currentDriverId, currentYear);
         });
 
         characteristics[currentDriverId] = driverCharacteristics;
@@ -197,6 +232,16 @@ async function preprocessAllCharacteristics() {
     console.log('Finished characteristics preprocessing');
 
     return characteristics;
+}
+
+function countryCodes() {
+    let res = {};
+    for (let country of countries) {
+        let demonym = country.demonyms.eng;
+        res[demonym.m] = country.flag;
+    }
+
+    return res;
 }
 
 export async function testCharacteristics() {
@@ -211,7 +256,6 @@ export async function testCharacteristics() {
     let a = preprocessCharacteristics(allRaces, allResults, allLapTimes, allQualifications, 1, 2021);
     console.log(a);
 }
-
 
 function preprocessCharacteristics(allRaces, allResults, allLapTimes, allQualifications, driverId, year) {
     const parseDate = d3.timeParse('%d/%m/%Y');
@@ -241,6 +285,9 @@ function preprocessCharacteristics(allRaces, allResults, allLapTimes, allQualifi
     let tcData = [];
     let tcScore = 0;
 
+    // Time racing
+    let trData = [];
+    let trScore = 0;
 
     filteredRaces.forEach(race => {
         let found = false;
@@ -252,6 +299,11 @@ function preprocessCharacteristics(allRaces, allResults, allLapTimes, allQualifi
         let timeConsistency = preprocessTimeConsistency(raceLapTimes);
         if (timeConsistency !== null)
             tcData.push({date: date, value: timeConsistency})
+
+        // Time racing
+        let timeRacing = preprocessTimeRacing(driverId, race, allQualifications);
+        if (timeRacing !== null)
+            trData.push({date: date, timeDiff: timeRacing});
 
         // Other characteristics
         filteredResults.forEach(result => {
@@ -309,11 +361,17 @@ function preprocessCharacteristics(allRaces, allResults, allLapTimes, allQualifi
     tcScore = leastSquareMethod(tcData);
     let timeConsistency = {data: tcData, lsm: tcScore};
 
+    // Time racing
+    let timeRacingSum = trData.reduce((total, timeRacing) => total + timeRacing.timeDiff, 0);
+    let timeRacingAverage = (timeRacingSum / trData.length) || 0;
+    let timeRacing = {data: trData, score: timeRacingAverage};
+
     return {
+        raceConsistency: raceConsistency,
+        timeConsistency: timeConsistency,
         positionsGainedLost: positionsGainedLost,
         racing: racing,
-        raceConsistency: raceConsistency,
-        timeConsistency: timeConsistency
+        timeRacing: timeRacing
     };
 }
 
@@ -379,6 +437,10 @@ export function exportToJsonFile(file, jsonData) {
     linkElement.setAttribute('href', dataUri);
     linkElement.setAttribute('download', file);
     linkElement.click();
+}
+
+export async function downloadCountries() {
+    exportToJsonFile("countries.json", await countryCodes());
 }
 
 export async function downloadCharacteristics() {

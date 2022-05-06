@@ -280,13 +280,23 @@ export default function SpiderGraph(props) {
     const svgRef = React.useRef(null);
 
     let spiderData = [];
-    let addSpiderData = (driver) => {
+
+    let getValue = (graph) => {
+        if (graph.hasOwnProperty("score")) {
+            return graph.score;
+        } else if (graph.hasOwnProperty("lsm")) {
+            return graph.lsm.score;
+        } else {
+            return 0;
+        }
+    };
+
+    let addSpiderData = (driver, data) => {
         let attributes = [];
         for (const [key, graph] of Object.entries(Graphs)) {
             attributes.push({
                 name: graph.name,
-                // value: props.data[graph.id].data.score
-                value: Math.random()
+                value: getValue(data[graph.id])
             });
         }
 
@@ -297,9 +307,10 @@ export default function SpiderGraph(props) {
         });
     }
 
-    addSpiderData(props.driver)
-    for (let compare of props.compare)
-        addSpiderData(compare);
+    addSpiderData(props.driver, props.data)
+    props.compare.forEach((compare, index) => {
+        addSpiderData(compare, props.compareData[index]);
+    });
 
     // const spidderData = [
     //     {
@@ -311,25 +322,8 @@ export default function SpiderGraph(props) {
     //             {name: "Overtaking", value: 0.27},
     //         ]
     //     },
-    //     {
-    //         attributes: [//Samsung
-    //             {name: "Time consistency", value: 0.17},
-    //             {name: "Race consistency", value: 0.26},
-    //             {name: "Qualification", value: 0.35},
-    //             {name: "Overtaking", value: 0.19},
-    //         ],
-    //     },
-    //     {
-    //         attributes: [//Nokia Smartphone
-    //             {name: "Time consistency", value: 0.26},
-    //             {name: "Race consistency", value: 0.10},
-    //             {name: "Qualification", value: 0.20},
-    //             {name: "Racing", value: 0.34},
-    //             {name: "Overtaking", value: 0.14},
-    //         ]
-    //     }
-    // ];
-console.log(props.compare)
+    // ]
+
     const color = d3.scaleOrdinal()
         .range(["#EDC951", "#CC333F", "#00A0B0", "#3ba95f"]);
 

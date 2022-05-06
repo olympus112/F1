@@ -5,6 +5,8 @@ import {Grid} from "@mui/material";
 import DriverCard from "./drivercard";
 import YearPicker from "./yearPicker";
 import ComparePicker from "./comparepicker";
+import Typography from "@mui/material/Typography";
+import Avatar from "@mui/material/Avatar";
 
 export default function DriverPicker(props) {
     return (
@@ -14,6 +16,7 @@ export default function DriverPicker(props) {
                     driver={props.driver}
                     images={props.images}
                     teams={props.teams}
+                    flags={props.flags}
                 />
             </Grid>
             <Grid item xs={8}>
@@ -36,20 +39,19 @@ export default function DriverPicker(props) {
                                 />
                             )}
                             filterOptions={(options) => options}
-                            renderOption={(props, option) => (
-                                <li {...props}>
-                                    <Grid container alignItems={'space-between'}>
-                                        <Grid item>{option.name}</Grid>
-                                        {/*<Grid item>*/}
-                                        {/*    <Avatar*/}
-                                        {/*        alt={option.name}*/}
-                                        {/*        src={images[option.id]}*/}
-                                        {/*        sx={{width: 30, height: 30}}*/}
-                                        {/*        variant={'circle'}*/}
-                                        {/*        props={{loading:'lazy'}}>*/}
-                                        {/*    </Avatar>*/}
-                                        {/*</Grid>*/}
-                                    </Grid>
+                            renderOption={(properties, option) => (
+                                <li {...properties}>
+                                    <Typography>
+                                        {props.flags[option.nationality] + " " + option.name}
+                                    </Typography>
+
+                                    {/*<Avatar*/}
+                                    {/*    alt={option.name}*/}
+                                    {/*    src={props.images[`${option.id}`]}*/}
+                                    {/*    sx={{width: 30, height: 30}}*/}
+                                    {/*    variant={'circle'}*/}
+                                    {/*    props={{loading:'lazy'}}>*/}
+                                    {/*</Avatar>*/}
                                 </li>
                             )}
                         />
@@ -74,6 +76,7 @@ export default function DriverPicker(props) {
                             year={props.year}
                             compare={props.compare}
                             drivers={props.drivers}
+                            flags={props.flags}
                         />
                     </Grid>
                 </Grid>

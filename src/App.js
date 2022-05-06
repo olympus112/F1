@@ -5,7 +5,7 @@ import DriverPicker from "./driverpicker";
 import YearPicker from "./yearPicker";
 import SpiderGraph from "./spidergraph";
 import Details from "./details";
-import {downloadCharacteristics, testCharacteristics} from "./preprocess";
+import {downloadCharacteristics, downloadCountries, testCharacteristics} from "./preprocess";
 
 export const Graphs = {
     raceConsistency: {
@@ -24,6 +24,10 @@ export const Graphs = {
         id: 3,
         name: "Racing"
     },
+    timeRacing: {
+        id: 4,
+        name: "Time Racing"
+    }
 };
 
 class App extends Component {
@@ -39,10 +43,10 @@ class App extends Component {
             height: 0,
 
             // Current state
-            driver: defaultDriver, // An object containing all information on the driver, this comes from drivers.json
+            driver: defaultDriver,
             compare: [],
             year: defaultYear,
-            graph: Graphs.positionsGainedLost, //0: raceConsistency, 1: timeConsistency, 2: positionsGainedLost, 3: racing, 4 todo!
+            graph: Graphs.positionsGainedLost,
 
             // Preloaded data
             preprocessed: props.preprocessed,
@@ -58,7 +62,9 @@ class App extends Component {
                 props.preprocessed.characteristics[defaultDriver.id][defaultYear].timeConsistency,
                 props.preprocessed.characteristics[defaultDriver.id][defaultYear].positionsGainedLost,
                 props.preprocessed.characteristics[defaultDriver.id][defaultYear].racing,
-            ]
+                props.preprocessed.characteristics[defaultDriver.id][defaultYear].timeRacing
+            ],
+            compareData: []
         };
     }
 
@@ -91,6 +97,7 @@ class App extends Component {
         if (!this.state.compare.includes(compare)) {
             this.setState({
                 compare: [...this.state.compare, compare],
+                compareData: [...this.state.compareData, this.getData(compare.id, this.state.year)],
             });
 
             console.log("Added new driver: ", compare.name);
@@ -102,21 +109,29 @@ class App extends Component {
 
         if (index > -1) {
             this.state.compare.splice(index, 1);
+            this.state.compareData.splice(index, 1);
             this.setState({
                 compare: [...this.state.compare],
+                compareData: [...this.state.compareData]
             });
 
             console.log("Removed driver: ", compare.name);
         }
     };
 
+    getData = (driverId, year) => {
+        return [
+            this.state.preprocessed.characteristics[driverId][year].raceConsistency,
+            this.state.preprocessed.characteristics[driverId][year].timeConsistency,
+            this.state.preprocessed.characteristics[driverId][year].positionsGainedLost,
+            this.state.preprocessed.characteristics[driverId][year].racing,
+            this.state.preprocessed.characteristics[driverId][year].timeRacing,
+        ];
+    }
+
     updateRacerData = (driverId, year) => {
         this.setState({
-            raceConsistency: this.state.preprocessed.characteristics[driverId][year].raceConsistency,
-            timeConsistency: this.state.preprocessed.characteristics[driverId][year].timeConsistency,
-            positionsGainedLost: this.state.preprocessed.characteristics[driverId][year].positionsGainedLost,
-            racing: this.state.preprocessed.characteristics[driverId][year].racing,
-            timeRacing: this.state.preprocessed.characteristics[driverId][year].timeRacing
+            data: this.getData(driverId, year)
         });
     }
 
@@ -150,6 +165,7 @@ class App extends Component {
                             teams={this.state.preprocessed.teams}
                             images={this.state.preprocessed.images}
                             drivers={this.state.preprocessed.drivers}
+                            flags={this.state.preprocessed.flags}
                             driver={this.state.driver}
                             year={this.state.year}
                             compare={this.state.compare}
@@ -165,8 +181,8 @@ class App extends Component {
                             height={300}
                             driver={this.state.driver}
                             compare={this.state.compare}
-                            year={this.state.year}
                             data={this.state.data}
+                            compareData={this.state.compareData}
                             selectGraph={this.selectGraph}
                         />
                     </Grid>

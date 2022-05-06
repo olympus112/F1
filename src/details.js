@@ -134,8 +134,6 @@ const renderTimeC = function renderTimeConsistency(inputData) {
           return y(d.value);
         })
     );
-
-  console.log("graph finished");
 };
 
 const renderRaceC = function renderRaceConsistency(inputData) {
@@ -443,8 +441,6 @@ function renderGraph(data, lsmPoints, svg, x, y) {
           return y(d.value);
         })
     );
-
-  console.log("graph finished");
 }
 
 export default function Details(props) {
@@ -452,7 +448,6 @@ export default function Details(props) {
   let renderFunction = graphChoices[props.graph];
 
   React.useEffect(() => {
-    console.log(props);
 
     renderFunction(props.data[props.graph]);
   }, [props]);

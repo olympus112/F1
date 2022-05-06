@@ -16,6 +16,7 @@ const preprocessedTeams = require('./data/teams.json');
 const preprocessedImages = require('./data/images.json');
 const preprocessedDrivers = require('./data/drivers.json');
 const preprocessedCharacteristics = require('./data/characteristics.json');
+const preprocessedFlags = require('./data/flags.json');
 
 const rootElement = document.getElementById('root');
 const root = createRoot(rootElement);
@@ -32,7 +33,8 @@ d3.csv(drivers).then(drivers => {
                                         drivers: preprocessedDrivers, 
                                         teams: preprocessedTeams, 
                                         images: preprocessedImages,
-                                        characteristics: preprocessedCharacteristics
+                                        characteristics: preprocessedCharacteristics,
+                                        flags: preprocessedFlags
                                     }}
                                         drivers={drivers}
                                         races={races}

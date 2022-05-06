@@ -48,36 +48,43 @@ export default function DriverCard(props) {
                 </Grid>
                 <Grid item>
                     <List sx={{width: '100%'}} disablePadding>
-                        <ListItem>
+                        <ListItem key={"Nationality" + props.driver.id}>
                             <ListItemText primary={
                                 <Typography>
                                     Nationality
                                 </Typography>
                             }/>
                             <Typography>
-                                {props.driver.nationality}
+                                {props.driver.nationality + " " + props.flags[props.driver.nationality] || ""}
                             </Typography>
                         </ListItem>
-                        <ListItemButton onClick={() => setOpen(!open)}>
+                        <ListItemButton key={"TeamHeader" + props.driver.id} onClick={() => setOpen(!open)}>
                             <ListItemText primary={
-                                <Typography>
+                                <Typography component={"span"}>
                                     Teams <Chip label={props.driver.teams.length} size={'small'} />
                                 </Typography>
                             }/>
                             {open ? <ExpandLess/> : <ExpandMore/>}
                         </ListItemButton>
-                        <Collapse in={open}>
+                        <Collapse key={"Teams" + props.driver.id} in={open}>
                             <List disablePadding>
                                 {props.driver.teams.map(teamId => {
                                     return (
-                                        <Typography pl={4}>
-                                            - {props.teams[teamId].name}
-                                        </Typography>
+                                        <ListItem key={"Team" + props.driver.id + "_" + teamId} style={{paddingTop: 0, paddingBottom: 0}}>
+                                            <ListItemText primary={
+                                                <Typography  pl={4}>
+                                                    - {props.teams[teamId].name}
+                                                </Typography>
+                                            }/>
+                                            <Typography>
+                                                {props.flags[props.teams[teamId].nationality] || ""}
+                                            </Typography>
+                                        </ListItem>
                                     );
                                 })}
                             </List>
                         </Collapse>
-                        <ListItemButton onClick={() => window.open(props.driver.wiki, "_blank")}>
+                        <ListItemButton  key={"Link" + props.driver.id} onClick={() => window.open(props.driver.wiki, "_blank")}>
                             <ListItemText primary={
                                 <Typography>
                                     Wikipedia
