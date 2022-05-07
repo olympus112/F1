@@ -293,7 +293,7 @@ const renderPosG = function renderPositionsGained(inputData) {
       return d[2] < 0 ? "start" : "end";
     })
     .text(function (d) {
-      return d[0];
+      return d[0].slice(0, -10)+ "GP";
     });
 };
 
