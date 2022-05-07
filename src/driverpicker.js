@@ -10,7 +10,7 @@ import Avatar from "@mui/material/Avatar";
 
 export default function DriverPicker(props) {
     return (
-        <Grid container spacing={5}>
+        <Grid container spacing={3}>
             <Grid item xs={4}>
                 <DriverCard
                     driver={props.driver}
@@ -20,7 +20,7 @@ export default function DriverPicker(props) {
                 />
             </Grid>
             <Grid item xs={8}>
-                <Grid container spacing={2}>
+                <Grid container spacing={3}>
                     <Grid item xs={12}>
                         <Autocomplete
                             value={props.driver}
@@ -56,8 +56,6 @@ export default function DriverPicker(props) {
                             )}
                         />
                     </Grid>
-                    <Grid sx={{marginTop: 10}}>
-                    </Grid>
                     <Grid item xs={12}>
                         <YearPicker
                             driver={props.driver}
@@ -65,9 +63,6 @@ export default function DriverPicker(props) {
                             selectYear={props.selectYear}
                             resetCompare={props.resetCompare}
                         />
-                    </Grid>
-                    <Grid sx={{width: '100%'}}>
-                        <hr style={{width: '20%', color: "lightgray"}}/>
                     </Grid>
                     <Grid item xs={12}>
                         <ComparePicker

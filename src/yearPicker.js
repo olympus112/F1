@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Slider from '@mui/material/Slider';
-import {Grid} from "@mui/material";
+import {Grid,Paper} from "@mui/material";
 import Typography from "@mui/material/Typography";
 
 export default function YearPicker(props){
@@ -16,13 +16,16 @@ export default function YearPicker(props){
     });
 
     return (
+        <Paper elevation={0} variant="outlined" sx={{borderColor: "#bdbdbd"}}> 
         <Grid container>
             <Grid item xs={12}>
-                <Typography>
-                    Choose year
-                </Typography>
+                <div style={{position: "relative", left:10,top:10}}>
+                    <Typography sx={{color: "#616161"}}>
+                        Choose year
+                    </Typography>
+                </div>
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={12} sx={{px:4,py:2 }}>
                 <Slider
                     aria-label="Restricted values"
                     // defaultValue={props.year}
@@ -40,5 +43,6 @@ export default function YearPicker(props){
                 />
             </Grid>
         </Grid>
+        </Paper>
       );
 }

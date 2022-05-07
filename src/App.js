@@ -5,6 +5,7 @@ import DriverPicker from "./driverpicker";
 import YearPicker from "./yearPicker";
 import SpiderGraph from "./spidergraph";
 import Details from "./details";
+import {Paper, Box} from "@mui/material";
 import {downloadCharacteristics, downloadCountries, testCharacteristics} from "./preprocess";
 
 export const Graphs = {
@@ -165,10 +166,18 @@ class App extends Component {
     render() {
         return (
             <Container maxWidth="xl">
-                <Typography variant="h4" sx={{mb: 5}}>
-                    {this.state.driver.name}
+            <Box
+                sx={{
+                bgcolor: 'gray',
+                borderRadius: 1,
+                mb:2
+                }}
+            >
+                <Typography variant="h6" gutterBottom component="div" sx={{color:"white", p:1,pl:2}}>
+                    F1 Dashboard
                 </Typography>
-                <Grid container spacing={2}>
+            </Box>
+                <Grid container spacing={3}>
                     <Grid item xs={12}>
                         <DriverPicker
                             teams={this.state.preprocessed.teams}
@@ -185,22 +194,26 @@ class App extends Component {
                             resetCompare = {this.resetCompare}
                         />
                     </Grid>
-                    <Grid item xs={12} md={6}>
-                        <SpiderGraph
-                            width={300}
-                            height={300}
-                            driver={this.state.driver}
-                            compare={this.state.compare}
-                            data={this.state.data}
-                            compareData={this.state.compareData}
-                            selectGraph={this.selectGraph}
-                        />
+                    <Grid item xs={12} md={4}>
+                        <Paper elevation={0} variant="outlined" sx={{borderColor: "#bdbdbd"}}>
+                            <SpiderGraph
+                                width={300}
+                                height={300}
+                                driver={this.state.driver}
+                                compare={this.state.compare}
+                                data={this.state.data}
+                                compareData={this.state.compareData}
+                                selectGraph={this.selectGraph}
+                            />
+                        </Paper>
                     </Grid>
-                    <Grid item xs={12} md={6}>
-                        <Details
-                            data={this.state.data}
-                            graph={this.state.graph.id}
-                        />
+                    <Grid item xs={12} md={8}>
+                        <Paper elevation={0} variant="outlined" sx={{borderColor: "#bdbdbd"}}>
+                            <Details
+                                data={this.state.data}
+                                graph={this.state.graph.id}
+                            />
+                        </Paper>
                     </Grid>
                 </Grid>
             </Container>

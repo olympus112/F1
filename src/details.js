@@ -1,4 +1,4 @@
-import { Card, CardHeader, Box } from "@mui/material";
+import { Card, CardHeader, Box, Paper} from "@mui/material";
 import React from "react";
 import * as d3 from "d3";
 
@@ -457,8 +457,8 @@ export default function Details(props) {
   // }, [props]);
 
   return (
-    <div className="graph">
-      <svg ref={svgRef} />
-    </div>
+      <div className="graph">
+        <svg ref={svgRef} />
+      </div>
   );
 }

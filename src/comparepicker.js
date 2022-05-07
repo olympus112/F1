@@ -1,4 +1,4 @@
-import {Box, Grid, ListItem} from "@mui/material";
+import {Paper, Grid, ListItem} from "@mui/material";
 import FormLabel from '@mui/material/FormLabel';
 import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -11,7 +11,7 @@ import Typography from "@mui/material/Typography";
 
 
 export default function ComparePicker(props) {
-    let compareLimit = 4;
+    let compareLimit = 3;
 
     let getLabel = (driver) => {
         return (
@@ -38,15 +38,16 @@ export default function ComparePicker(props) {
     );
 
     return (
+        <Paper elevation={0} variant="outlined" sx={{borderColor: "#bdbdbd"}}>
         <Grid container spacing={2}>
-            <Grid item xs={6}>
+            <Grid item xs={6} sx={{position: "relative", left:10,top:10}}>
                 <FormControl style={{width: '100%'}} component="fieldset" variant="standard">
                     <FormLabel component="legend">
                         <Typography component={"span"}>
                             Chosen drivers <Chip label={props.compare.length} size={'small'}/>
                         </Typography>
                     </FormLabel>
-                    <List style={{maxHeight: 250, overflow: 'auto'}}>
+                    <List style={{maxHeight: 180, overflow: 'auto'}}>
                         <ListItem key={props.driver.id} disablePadding>
                             <FormControlLabel
                                 control={<Checkbox checked disabled/>}
@@ -69,8 +70,8 @@ export default function ComparePicker(props) {
 
             <Grid item xs={6}>
                 <FormControl style={{width: '100%'}} component="fieldset" variant="standard">
-                    <FormLabel component="legend">Choose drivers</FormLabel>
-                    <List style={{maxHeight: 200, overflow: 'auto'}}>
+                    <FormLabel component="legend" sx={{position: "relative",top:10}}>Choose drivers</FormLabel>
+                    <List style={{maxHeight: 160, overflow: 'auto'}}>
                         {compareDrivers.map(driver => {
                             return (
                                 <ListItem key={driver.id} disablePadding>
@@ -91,5 +92,6 @@ export default function ComparePicker(props) {
                 </FormControl>
             </Grid>
         </Grid>
+        </Paper>
     )
 }
