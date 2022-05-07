@@ -15,7 +15,7 @@ export const Graphs = {
     },
     timeConsistency: {
         id: 1,
-        name: "Time Consistency"
+        name: "⠀Time⠀ ⠀Consistency⠀"
     },
     positionsGainedLost: {
         id: 2,
@@ -23,11 +23,11 @@ export const Graphs = {
     },
     racing: {
         id: 3,
-        name: "Racing"
+        name: "⠀Racing⠀⠀"
     },
     timeRacing: {
         id: 4,
-        name: "Time Racing"
+        name: "Time⠀ ⠀Racing⠀⠀"
     }
 };
 
@@ -73,8 +73,10 @@ class App extends Component {
         this.setState({
             driver: driver,
         });
+        this.setState({
+            year: driver.years[driver.years.length-1]
+        });
         console.log("Selected new driver: ", driver);
-
         this.updateRacerData(driver.id, this.state.year);
     };
 
@@ -177,7 +179,7 @@ class App extends Component {
                     F1 Dashboard
                 </Typography>
             </Box>
-                <Grid container spacing={3}>
+                <Grid container spacing={2}>
                     <Grid item xs={12}>
                         <DriverPicker
                             teams={this.state.preprocessed.teams}
@@ -194,8 +196,8 @@ class App extends Component {
                             resetCompare = {this.resetCompare}
                         />
                     </Grid>
-                    <Grid item xs={12} md={4}>
-                        <Paper elevation={0} variant="outlined" sx={{borderColor: "#bdbdbd"}}>
+                    <Grid item xs={12} md={4} >
+                        <Paper elevation={0} variant="outlined" sx={{borderColor: "#bdbdbd", display: 'flex', alignItems: 'center', justifyContent: 'center',}}>
                             <SpiderGraph
                                 width={300}
                                 height={300}
@@ -208,7 +210,7 @@ class App extends Component {
                         </Paper>
                     </Grid>
                     <Grid item xs={12} md={8}>
-                        <Paper elevation={0} variant="outlined" sx={{borderColor: "#bdbdbd"}}>
+                        <Paper elevation={0} variant="outlined" sx={{borderColor: "#bdbdbd", display: 'flex', alignItems: 'center', justifyContent: 'center',}}>
                             <Details
                                 data={this.state.data}
                                 graph={this.state.graph.id}

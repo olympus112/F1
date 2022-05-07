@@ -52,23 +52,23 @@ function renderSpiderGraph(className, data, options, selectGraph) {
     const g = svg.append("g")
         .attr("transform", "translate(" + (cfg.width / 2 + cfg.margin.left) + "," + (cfg.height / 2 + cfg.margin.top) + ")");
 
-    // Debug
-    g.append("rect")
-        .attr("x", -cfg.width / 2)
-        .attr("y", -cfg.height / 2)
-        .attr("width", cfg.width)
-        .attr("height", cfg.height)
-        .attr("stroke", "red")
-        .attr("fill", "transparent");
+    // // Debug
+    // g.append("rect")
+    //     .attr("x", -cfg.width / 2)
+    //     .attr("y", -cfg.height / 2)
+    //     .attr("width", cfg.width)
+    //     .attr("height", cfg.height)
+    //     .attr("stroke", "red")
+    //     .attr("fill", "transparent");
 
-    // Debug
-    g.append("rect")
-        .attr("x", -cfg.width / 2 - cfg.margin.left)
-        .attr("y", -cfg.height / 2 - cfg.margin.top)
-        .attr("width", cfg.width + cfg.margin.left + cfg.margin.right)
-        .attr("height", cfg.height + cfg.margin.top + cfg.margin.bottom)
-        .attr("stroke", "red")
-        .attr("fill", "transparent");
+    // // Debug
+    // g.append("rect")
+    //     .attr("x", -cfg.width / 2 - cfg.margin.left)
+    //     .attr("y", -cfg.height / 2 - cfg.margin.top)
+    //     .attr("width", cfg.width + cfg.margin.left + cfg.margin.right)
+    //     .attr("height", cfg.height + cfg.margin.top + cfg.margin.bottom)
+    //     .attr("stroke", "red")
+    //     .attr("fill", "transparent");
 
     //Filter for the outside glow
     const filter = g.append('defs').append('filter').attr('id', 'glow');

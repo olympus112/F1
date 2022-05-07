@@ -14,7 +14,7 @@ import Chip from "@mui/material/Chip";
 import ListItem from "@mui/material/ListItem";
 
 export default function DriverCard(props) {
-    const [open, setOpen] = React.useState(true);
+    const [open, setOpen] = React.useState(false);
 
     let teams = [];
     for (let teamId of props.driver.teams) {
@@ -33,7 +33,7 @@ export default function DriverCard(props) {
                         <Avatar
                             alt={props.driver.name}
                             src={props.images[props.driver.id].image}
-                            sx={{width: 120, height: 120}}
+                            sx={{width: 108, height: 108}}
                             variant={'circle'}>
                         </Avatar>
                     </Grid>

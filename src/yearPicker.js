@@ -19,14 +19,14 @@ export default function YearPicker(props){
         <Paper elevation={0} variant="outlined" sx={{borderColor: "#bdbdbd"}}> 
         <Grid container>
             <Grid item xs={12}>
-                <div style={{position: "relative", left:10,top:10}}>
+                <div style={{position: "relative", left:10,top:6}}>
                     <Typography sx={{color: "#616161"}}>
                         Choose year
                     </Typography>
                 </div>
             </Grid>
-            <Grid item xs={12} sx={{px:4,py:2 }}>
-                <Slider
+            <Grid item xs={12} sx={{px:4}}>
+                <Slider 
                     aria-label="Restricted values"
                     // defaultValue={props.year}
                     defaultValue={maxYear}

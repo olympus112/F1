@@ -10,7 +10,7 @@ import Avatar from "@mui/material/Avatar";
 
 export default function DriverPicker(props) {
     return (
-        <Grid container spacing={3}>
+        <Grid container spacing={2}>
             <Grid item xs={4}>
                 <DriverCard
                     driver={props.driver}
@@ -20,7 +20,7 @@ export default function DriverPicker(props) {
                 />
             </Grid>
             <Grid item xs={8}>
-                <Grid container spacing={3}>
+                <Grid container spacing={2}>
                     <Grid item xs={12}>
                         <Autocomplete
                             value={props.driver}

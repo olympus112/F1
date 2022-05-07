@@ -1,4 +1,4 @@
-import {Paper, Grid, ListItem} from "@mui/material";
+import {Paper, Grid, ListItem, Box} from "@mui/material";
 import FormLabel from '@mui/material/FormLabel';
 import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -44,13 +44,13 @@ export default function ComparePicker(props) {
                 <FormControl style={{width: '100%'}} component="fieldset" variant="standard">
                     <FormLabel component="legend">
                         <Typography component={"span"}>
-                            Chosen drivers <Chip label={props.compare.length} size={'small'}/>
+                            Chosen drivers <Chip label={props.compare.length+1} size={'small'}/>
                         </Typography>
                     </FormLabel>
-                    <List style={{maxHeight: 180, overflow: 'auto'}}>
+                    <List style={{maxHeight: 120, overflow: 'auto'}} >
                         <ListItem key={props.driver.id} disablePadding>
                             <FormControlLabel
-                                control={<Checkbox checked disabled/>}
+                                control={<Checkbox sx={{ transform: "scale(0.8)",width:38,height:30}} checked disabled/>}
                                 label={getLabel(props.driver)}
                             />
                         </ListItem>
@@ -58,7 +58,7 @@ export default function ComparePicker(props) {
                             return (
                                 <ListItem key={driver.id} disablePadding>
                                     <FormControlLabel
-                                        control={<Checkbox checked onChange={event => props.removeCompare(driver)}/>}
+                                        control={<Checkbox checked onChange={event => props.removeCompare(driver)} sx={{ transform: "scale(0.8)",width:38,height:30}}/>}
                                         label={getLabel(driver)}
                                     />
                                 </ListItem>
@@ -69,15 +69,17 @@ export default function ComparePicker(props) {
             </Grid>
 
             <Grid item xs={6}>
+                <Box sx={{height: 10,width:10}}/>
                 <FormControl style={{width: '100%'}} component="fieldset" variant="standard">
-                    <FormLabel component="legend" sx={{position: "relative",top:10}}>Choose drivers</FormLabel>
-                    <List style={{maxHeight: 160, overflow: 'auto'}}>
+                    <FormLabel component="legend" >Choose drivers</FormLabel>
+                    <List style={{maxHeight: 120, overflow: 'auto'}}>
                         {compareDrivers.map(driver => {
                             return (
                                 <ListItem key={driver.id} disablePadding>
                                     <FormControlLabel
                                         style={{width: "100%"}}
-                                        control={<Checkbox checked={false}
+                                        control={<Checkbox sx={{ transform: "scale(0.8)",width:38,height:30}}
+                                                           checked={false}
                                                            disabled={props.compare.length >= compareLimit}
                                                            onChange={event => props.addCompare(driver)}/>}
                                         label={getLabel(driver)}

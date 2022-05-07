@@ -4,11 +4,14 @@ import * as d3 from "d3";
 
 const parseDate = d3.timeParse('%d/%m/%Y');
 
+const set_height = 420
+const set_width = 900
+
 
 // set the dimensions and margins of the graph
 var margin = { top: 10, right: 100, bottom: 60, left: 200 },
-  width = 900 - margin.left - margin.right,
-  height = 500 - margin.top - margin.bottom;
+  width = set_width - margin.left - margin.right,
+  height = set_height - margin.top - margin.bottom;
 
 const renderTimeC = function renderTimeConsistency(inputData) {
   let data = inputData.data;
@@ -190,9 +193,10 @@ const renderRaceC = function renderRaceConsistency(inputData) {
 const renderPosG = function renderPositionsGained(inputData) {
   let data = inputData.data;
 
-  let width = 500 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom;
+  let width = set_width - margin.left - margin.right - 300,
+    height = set_height - margin.top - margin.bottom;
 
+    //300 margin added to make names appear
   data.sort(function (a, b) {
     return a[1] - b[1];
   });
