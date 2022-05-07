@@ -63,6 +63,7 @@ export default function DriverPicker(props) {
                             driver={props.driver}
                             year={props.year}
                             selectYear={props.selectYear}
+                            resetCompare={props.resetCompare}
                         />
                     </Grid>
                     <Grid sx={{width: '100%'}}>

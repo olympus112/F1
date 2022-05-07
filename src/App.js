@@ -35,7 +35,7 @@ class App extends Component {
         super(props);
 
         let defaultDriver = props.preprocessed.drivers[11]; // Lewis Hamilton
-        let defaultYear = defaultDriver.years[0];
+        let defaultYear = 2022;
 
         this.state = {
             // Dimensions
@@ -92,7 +92,7 @@ class App extends Component {
             graph: graph
         });
     }
-
+    
     addCompare = (compare) => {
         if (!this.state.compare.includes(compare)) {
             this.setState({
@@ -118,6 +118,15 @@ class App extends Component {
             console.log("Removed driver: ", compare.name);
         }
     };
+
+    resetCompare = () => {
+        this.setState({
+            compare: [],
+            compareData: [],
+        });
+        console.log("Cleared drivers from compare");
+    };
+
 
     getData = (driverId, year) => {
         return [
@@ -173,6 +182,7 @@ class App extends Component {
                             selectYear={this.selectYear}
                             addCompare={this.addCompare}
                             removeCompare={this.removeCompare}
+                            resetCompare = {this.resetCompare}
                         />
                     </Grid>
                     <Grid item xs={12} md={6}>
