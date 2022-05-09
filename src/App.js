@@ -132,6 +132,13 @@ class App extends Component {
         }
     };
 
+    inCompare = (compare) => {
+        if (this.state.compare.includes(compare)) {
+            return true;
+        }
+        return false;
+    };
+
     resetCompare = () => {
         this.setState({
             compare: [],
@@ -203,6 +210,7 @@ class App extends Component {
                             addCompare={this.addCompare}
                             removeCompare={this.removeCompare}
                             resetCompare={this.resetCompare}
+                            inCompare={this.inCompare}
                         />
                     </Grid>
                     <Grid item xs={12} md={4}>

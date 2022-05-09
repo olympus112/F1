@@ -139,8 +139,16 @@ export default function ComparePicker(props) {
                 <InputLabel>Choose drivers to compare</InputLabel>
                 <Select
                     multiple
+                    // renderInput={(params) => (
+                    //             <TextField
+                    //                 {...params}
+                    //                 variant="standard"
+                    //                 label="Multiple values"
+                    //                 placeholder="Favorites"
+                    //             />
+                    //             )}
                     value={props.compare}
-                    input={<OutlinedInput label="Tag"/>}
+                    input={<OutlinedInput label="Choose drivers to compare"/>}
                     renderValue={(compare) => (
                         <Box sx={{display: 'flex', flexWrap: 'wrap', gap: 0.5}}>
                             {compare.map(driver => {
@@ -181,11 +189,20 @@ export default function ComparePicker(props) {
                         }
 
                         return (
-                            <MenuItem key={"menu_" + driver.name} value={driver}>
+                            <MenuItem 
+                                key={"menu_" + driver.name} 
+                                value={driver} 
+                                onClick={event => {
+                                            if(props.inCompare(driver)){props.removeCompare(driver)}
+                                            else{
+                                                if(props.compare.length < compareLimit){props.addCompare(driver);};
+                                                }
+                                            }
+                                        }
+                            >
                                 <Checkbox checked={props.compare.includes(driver)}
-                                          disabled={props.compare.length >= compareLimit}
-                                          onChange={event => props.addCompare(driver)}
-                                          sx={sx}
+                                    disabled={props.compare.length >= compareLimit}
+                                    sx={sx}
                                 />
                                 <ListItemText primary={props.flags[driver.nationality] + " " + driver.name}/>
                             </MenuItem>

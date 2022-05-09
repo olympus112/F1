@@ -20,7 +20,7 @@ export default function YearPicker(props){
         <Grid container>
             <Grid item xs={12}>
                 <div style={{position: "relative", left:10,top:6}}>
-                    <Typography sx={{color: "#616161"}}>
+                    <Typography sx={{color: "rgba(0, 0, 0, 0.6)"}}>
                         Choose year
                     </Typography>
                 </div>

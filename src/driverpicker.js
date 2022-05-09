@@ -38,6 +38,7 @@ export default function DriverPicker(props) {
                             color={props.color}
                             addCompare={props.addCompare}
                             removeCompare={props.removeCompare}
+                            inCompare={props.inCompare}
                             driver={props.driver}
                             year={props.year}
                             compare={props.compare}
