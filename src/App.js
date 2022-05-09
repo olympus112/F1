@@ -6,6 +6,7 @@ import YearPicker from "./yearPicker";
 import SpiderGraph from "./spidergraph";
 import Details from "./details";
 import {Paper, Box} from "@mui/material";
+import {amber, cyan, green, purple, red, yellow} from '@mui/material/colors';
 import {downloadCharacteristics, downloadCountries, testCharacteristics} from "./preprocess";
 
 export const Graphs = {
@@ -70,7 +71,10 @@ class App extends Component {
             // Styling
             color: {
                 border: "#bdbdbd",
-                graph: ["#CC333F", "#EDC951", "#00A0B0", "#3ba95f"]
+                driver: red,
+                compare: [purple, amber, cyan, green] // Access using red[500], see https://mui.com/material-ui/customization/color/
+                // driver: "#CC333F",
+                // compare: ["#9467BC", "#EDC951", "#00A0B0", "#3ba95f"]
             }
         };
     }

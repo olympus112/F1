@@ -398,7 +398,7 @@ function renderGraph(data, lsmPoints, svg, x, y, colors) {
 export default function Details(props) {
     let svgRef = React.useRef(null);
     let graphs = [renderRaceConsistency, renderTimeConsistency, renderPositionsGained, renderRacing];
-    const colors = d3.scaleOrdinal().range(props.color.graph);
+    const colors = d3.scaleOrdinal().range([props.color.driver[500], ...(props.color.compare.map(color => color[500]))]);
 
     React.useEffect(() => {
         graphs[props.graph](props.data[props.graph], colors);
