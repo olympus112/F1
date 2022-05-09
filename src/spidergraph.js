@@ -29,6 +29,7 @@ function renderSpiderGraph(className, data, options, selectGraph) {
         }
     }
 
+    // const minValues = data.map()
     const maxValue = Math.max(cfg.maxValue, d3.max(data, racer => d3.max(racer.attributes.map(attribute => attribute.value)))); // Max value of all attributes
     const allAxis = data[0].attributes.map(attribute => attribute.name);	                             // Names of each axis
     const total = allAxis.length;					                                         // The number of different axes
@@ -324,7 +325,7 @@ export default function SpiderGraph(props) {
     //     },
     // ]
 
-    const colors = d3.scaleOrdinal().range(props.color.graph);
+    const colors = d3.scaleOrdinal().range([props.color.driver[500], ...(props.color.compare.map(color => color[500]))]);
 
     const radarChartOptions = {
         width: props.width,

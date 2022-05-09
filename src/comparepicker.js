@@ -19,7 +19,7 @@ export default function ComparePicker(props) {
         );
     };
 
-    // function compare_Drivers() {
+    // function compareDrivers() {
     //     let compareList = [];
     //     let driver = props.driver;
     //     let year = props.year;
@@ -39,61 +39,87 @@ export default function ComparePicker(props) {
 
     return (
         <Paper elevation={0} variant="outlined" sx={{borderColor: props.color.border}}>
-        <Grid container spacing={2}>
-            <Grid item xs={6} sx={{position: "relative", left:10,top:10}}>
-                <FormControl style={{width: '100%'}} component="fieldset" variant="standard">
-                    <FormLabel component="legend">
-                        <Typography component={"span"}>
-                            Chosen drivers <Chip label={props.compare.length+1} size={'small'}/>
-                        </Typography>
-                    </FormLabel>
-                    <List style={{maxHeight: 120, overflow: 'auto'}} >
-                        <ListItem key={props.driver.id} disablePadding>
-                            <FormControlLabel
-                                control={<Checkbox sx={{ transform: "scale(0.8)",width:38,height:30}} checked disabled/>}
-                                label={getLabel(props.driver)}
-                            />
-                        </ListItem>
-                        {props.compare.map(driver => {
-                            return (
-                                <ListItem key={driver.id} disablePadding>
-                                    <FormControlLabel
-                                        control={<Checkbox checked onChange={event => props.removeCompare(driver)} sx={{ transform: "scale(0.8)",width:38,height:30}}/>}
-                                        label={getLabel(driver)}
-                                    />
-                                </ListItem>
-                            );
-                        })}
-                    </List>
-                </FormControl>
-            </Grid>
+            <Grid container spacing={2}>
+                <Grid item xs={6} sx={{position: "relative", left: 10, top: 10}}>
+                    <FormControl style={{width: '100%'}} component="fieldset" variant="standard">
+                        <FormLabel component="legend">
+                            <Typography component={"span"}>
+                                Chosen drivers <Chip label={props.compare.length + 1} size={'small'}/>
+                            </Typography>
+                        </FormLabel>
 
-            <Grid item xs={6}>
-                <Box sx={{height: 10,width:10}}/>
-                <FormControl style={{width: '100%'}} component="fieldset" variant="standard">
-                    <FormLabel component="legend" >Choose drivers</FormLabel>
-                    <List style={{maxHeight: 120, overflow: 'auto'}}>
-                        {compareDrivers.map(driver => {
-                            return (
-                                <ListItem key={driver.id} disablePadding>
-                                    <FormControlLabel
-                                        style={{width: "100%"}}
-                                        control={<Checkbox sx={{ transform: "scale(0.8)",width:38,height:30}}
-                                                           checked={false}
-                                                           disabled={props.compare.length >= compareLimit}
-                                                           onChange={event => props.addCompare(driver)}/>}
-                                        label={getLabel(driver)}
-                                    />
-                                </ListItem>
-                            );
-                        })}
-                    </List>
-                    <FormHelperText>You can
-                        compare {compareLimit === props.compare.length ? "no" : compareLimit - props.compare.length} more
-                        drivers</FormHelperText>
-                </FormControl>
+                        <List style={{maxHeight: 120, overflow: 'auto'}}>
+                            <ListItem key={props.driver.id} disablePadding>
+                                <FormControlLabel
+                                    control={<Checkbox checked sx={{
+                                        paddingLeft: 2,
+                                        transform: "scale(0.8)",
+                                        width: 40,
+                                        height: 30,
+                                        color: props.color.driver[800],
+                                        '&.Mui-checked': {
+                                            color: props.color.driver[600],
+                                        }
+                                    }}/>}
+                                    label={getLabel(props.driver)}
+                                />
+                            </ListItem>
+                            {props.compare.map((driver, index) => {
+                                return (
+                                    <ListItem key={driver.id} disablePadding>
+                                        <FormControlLabel
+                                            control={<Checkbox checked onChange={event => props.removeCompare(driver)}
+                                                               sx={{
+                                                                   paddingLeft: 2,
+                                                                   transform: "scale(0.8)",
+                                                                   width: 40,
+                                                                   height: 30,
+                                                                   color: props.color.compare[index][800],
+                                                                   '&.Mui-checked': {
+                                                                       color: props.color.compare[index][600],
+                                                                   }
+                                                               }}/>}
+                                            label={getLabel(driver)}
+                                        />
+                                    </ListItem>
+                                );
+                            })}
+                        </List>
+                    </FormControl>
+                </Grid>
+
+                <Grid item xs={6}>
+                    <Box sx={{height: 10, width: 10}}/>
+                    <FormControl style={{width: '100%'}} component="fieldset" variant="standard">
+                        <FormLabel component="legend">Choose drivers</FormLabel>
+                        <List style={{maxHeight: 120, overflow: 'auto'}}>
+                            {compareDrivers.map(driver => {
+                                return (
+                                    <ListItem key={driver.id} disablePadding>
+                                        <FormControlLabel
+                                            style={{width: "100%"}}
+                                            control={
+                                                <Checkbox sx={{
+                                                    transform: "scale(0.8)",
+                                                    paddingLeft: 2,
+                                                    width: 40,
+                                                    height: 30
+                                                }}
+                                                          checked={false}
+                                                          disabled={props.compare.length >= compareLimit}
+                                                          onChange={event => props.addCompare(driver)}/>}
+                                            label={getLabel(driver)}
+                                        />
+                                    </ListItem>
+                                );
+                            })}
+                        </List>
+                        <FormHelperText>You can
+                            compare {compareLimit === props.compare.length ? "no" : compareLimit - props.compare.length} more
+                            drivers</FormHelperText>
+                    </FormControl>
+                </Grid>
             </Grid>
-        </Grid>
         </Paper>
     )
 }
