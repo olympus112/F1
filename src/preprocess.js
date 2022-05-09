@@ -125,13 +125,16 @@ function preprocessTimeConsistency(raceLapTimes) {
     let unfilteredMean = [];
     let unfilteredN = 0;
     let filterVariance = 1.3;
+    let maxTime = 15;
 
-    //calculate Mean of unfiltered lap times (including safety car, pitstop,...)
+    //calculate median of unfiltered lap times (including safety car, pitstop,...)
     raceLapTimes.forEach(lapTime => {
         unfilteredMean.push(parseInt(lapTime.milliseconds));
         unfilteredN++;
     });
 
+    unfilteredMean.sort();
+    // console.log(unfilteredMean);
     unfilteredMean = unfilteredMean[Math.round(unfilteredN / 2)];
 
     //list containing only the racetimes in milliseconds, nothing else

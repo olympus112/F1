@@ -221,6 +221,7 @@ class App extends Component {
                         }}>
                             <Details
                                 data={this.state.data}
+                                compareData = {this.state.compareData}
                                 graph={this.state.graph.id}
                             />
                         </Paper>

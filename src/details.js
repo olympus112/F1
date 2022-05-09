@@ -139,7 +139,7 @@ const renderTimeC = function renderTimeConsistency(inputData) {
     );
 };
 
-const renderRaceC = function renderRaceConsistency(inputData) {
+const renderRaceC = function renderRaceConsistency(inputData, compareData) {
   let data = inputData.data;
   let lsmPoints = inputData.lsm.lsmPoints;
 
@@ -187,7 +187,7 @@ const renderRaceC = function renderRaceConsistency(inputData) {
   // Add Y axis
   var y = d3.scaleLinear().domain([0, 20]).range([height, 0]);
   svg.append("g").call(d3.axisLeft(y));
-  renderGraph(data, lsmPoints, svg, x, y);
+  renderGraph(data, lsmPoints, svg, x, y, compareData);
 };
 
 const renderPosG = function renderPositionsGained(inputData) {
@@ -387,8 +387,9 @@ const renderRacing = function renderRacing(inputData) {
 
 const graphChoices = [renderRaceC, renderTimeC, renderPosG, renderRacing];
 
-function renderGraph(data, lsmPoints, svg, x, y) {
+function renderGraph(data, lsmPoints, svg, x, y, compareData) {
   var indexies = d3.range(data.length);
+  var colors = ["#EDC951", "#CC333F", "#00A0B0", "#3ba95f"];
   var area = d3
     .area()
     .x(function (d) {
@@ -406,15 +407,16 @@ function renderGraph(data, lsmPoints, svg, x, y) {
     .append("path")
     .datum(indexies)
     .attr("class", "area")
-    .attr("fill", "red")
-    .attr("d", area);
+    .attr("fill", colors[0])
+    .attr("d", area)
+    .style("fill-opacity", 0.35);
 
   // Add the line
   svg
     .append("path")
     .datum(data)
     .attr("fill", "none")
-    .attr("stroke", "black")
+    .attr("stroke", colors[0])
     .attr("stroke-width", 1.5)
     .attr(
       "d",
@@ -428,12 +430,36 @@ function renderGraph(data, lsmPoints, svg, x, y) {
         })
     );
 
+  console.log("cmp data in details: ", compareData);
+  var color = 0;
+  compareData.forEach(dataCmp => {
+    var graphData = dataCmp.data;
+    color++;
+    svg
+    .append("path")
+    .datum(graphData)
+    .attr("fill", "none")
+    .attr("stroke", colors[color])
+    .attr("stroke-width", 1.5)
+    .attr(
+      "d",
+      d3
+        .line()
+        .x(function (d) {
+          return x(new Date(d.date));
+        })
+        .y(function (d) {
+          return y(d.value);
+        })
+    );
+  });
+
   svg
     .append("path")
     .datum(lsmPoints)
     .attr("fill", "none")
     .attr("stroke", "black")
-    .attr("stroke-width", 3)
+    .attr("stroke-width", 2)
     .attr(
       "d",
       d3
@@ -450,10 +476,12 @@ function renderGraph(data, lsmPoints, svg, x, y) {
 export default function Details(props) {
   const svgRef = React.useRef(null);
   let renderFunction = graphChoices[props.graph];
+  //collect relevant data to compare
+  let compareData = props.compareData.map(data => data[props.graph]);
 
   React.useEffect(() => {
 
-    renderFunction(props.data[props.graph]);
+    renderFunction(props.data[props.graph], compareData);
   }, [props]);
 
   // React.useEffect(() => {
