@@ -70,16 +70,17 @@ export default function DriverCard(props) {
                             <List disablePadding>
                                 {props.driver.teams.map(teamId => {
                                     return (
-                                        <ListItem key={"Team" + props.driver.id + "_" + teamId} style={{paddingTop: 0, paddingBottom: 0}}>
+                                        <ListItemButton key={"Team" + props.driver.id + "_" + teamId} style={{paddingTop: 0, paddingBottom: 0}}
+                                                        onClick={() => window.open(props.teams[teamId].wiki, "_blank")}>
                                             <ListItemText primary={
-                                                <Typography  pl={4}>
+                                                <Typography pl={4}>
                                                     - {props.teams[teamId].name}
                                                 </Typography>
                                             }/>
                                             <Typography>
                                                 {props.flags[props.teams[teamId].nationality] || ""}
                                             </Typography>
-                                        </ListItem>
+                                        </ListItemButton>
                                     );
                                 })}
                             </List>

@@ -45,14 +45,6 @@ export default function DriverPicker(props) {
                                     <Typography>
                                         {props.flags[option.nationality] + " " + option.name}
                                     </Typography>
-
-                                    {/*<Avatar*/}
-                                    {/*    alt={option.name}*/}
-                                    {/*    src={props.images[`${option.id}`]}*/}
-                                    {/*    sx={{width: 30, height: 30}}*/}
-                                    {/*    variant={'circle'}*/}
-                                    {/*    props={{loading:'lazy'}}>*/}
-                                    {/*</Avatar>*/}
                                 </li>
                             )}
                         />

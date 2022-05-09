@@ -29,19 +29,23 @@ function renderSpiderGraph(className, data, options, selectGraph) {
         }
     }
 
-    // const minValues = data.map()
-    const maxValue = Math.max(cfg.maxValue, d3.max(data, racer => d3.max(racer.attributes.map(attribute => attribute.value)))); // Max value of all attributes
-    const allAxis = data[0].attributes.map(attribute => attribute.name);	                             // Names of each axis
-    const total = allAxis.length;					                                         // The number of different axes
-    const radius = Math.min(cfg.width / 2, cfg.height / 2); 	                             // Radius of the outermost circle
-    const Format = d3.format('.1%');			 	                                             // Percentage formatting
-    const angleSlice = Math.PI * 2 / total;		                                             // The width in radians of each "slice"
+    const allAxis = data[0].attributes.map(attribute => attribute.name); // Names of each axis
+    const total = allAxis.length; // The number of different axes
+    const minValues = allAxis.map((axis, index) => d3.min(data.map(racer => racer.attributes[index].value)));
+    const maxValues = allAxis.map((axis, index) => d3.max(data.map(racer => racer.attributes[index].value)));
+    const minValue = d3.min(minValues); // Min value of all attributes
+    const maxValue = d3.max(maxValues); // Max value of all attributes
+    const radius = Math.min(cfg.width / 2, cfg.height / 2); // Radius of the outermost circle
+    const Format = d3.format('.1%'); // Percentage formatting
+    const angleSlice = Math.PI * 2 / total; // The width in radians of each "slice"
+
 
     // Scale for the radius
-    const rScale = d3.scaleLinear()
+    const rScales = allAxis.map(
+        (axis, index) => d3.scaleLinear()
+        .domain([minValues[index] - 0.3 * (maxValues[index] - minValues[index]), maxValues[index] + 0.3 * (maxValues[index] - minValues[index])])
         .range([0, radius])
-        .domain([0, maxValue]);
-
+    );
     // Remove whatever chart with the same id/class was present before
     d3.select(className).select("svg").remove();
 
@@ -116,8 +120,8 @@ function renderSpiderGraph(className, data, options, selectGraph) {
     axis.append("line")
         .attr("x1", 0)
         .attr("y1", 0)
-        .attr("x2", (axis, index) => rScale(maxValue * 1.1) * Math.cos(angleSlice * index - Math.PI / 2))
-        .attr("y2", (axis, index) => rScale(maxValue * 1.1) * Math.sin(angleSlice * index - Math.PI / 2))
+        .attr("x2", (axis, index) => radius * Math.cos(angleSlice * index - Math.PI / 2))
+        .attr("y2", (axis, index) => radius * Math.sin(angleSlice * index - Math.PI / 2))
         .attr("class", "line")
         .style("stroke", "white")
         .style("stroke-width", "2px");
@@ -128,8 +132,8 @@ function renderSpiderGraph(className, data, options, selectGraph) {
         .style("font-size", "11px")
         .attr("text-anchor", "middle")
         .attr("dy", "0.35em")
-        .attr("x", (d, i) => rScale(maxValue * cfg.labelFactor) * Math.cos(angleSlice * i - Math.PI / 2))
-        .attr("y", (d, i) => rScale(maxValue * cfg.labelFactor) * Math.sin(angleSlice * i - Math.PI / 2))
+        .attr("x", (axis, index) => radius * cfg.labelFactor * Math.cos(angleSlice * index - Math.PI / 2))
+        .attr("y", (axis, index) => radius * cfg.labelFactor * Math.sin(angleSlice * index - Math.PI / 2))
         .text(axis => axis)
         .call(wrap, cfg.wrapWidth)
         .on("mouseover", function (event, axis) {
@@ -155,7 +159,7 @@ function renderSpiderGraph(className, data, options, selectGraph) {
     // The radial line function
     const radarLine = d3.lineRadial()
         .curve(d3.curveLinearClosed)
-        .radius(d => rScale(d.value))
+        .radius((attribute, index) => rScales[index](attribute.value))
         .angle((racer, index) => index * angleSlice);
 
     if (cfg.roundStrokes) {
@@ -173,7 +177,7 @@ function renderSpiderGraph(className, data, options, selectGraph) {
         .append("path")
         .attr("class", "radarArea")
         .attr("d", racer => radarLine(racer.attributes))
-        .style("fill", (d, index) => cfg.color(index))
+        .style("fill", (_, index) => cfg.color(index))
         .style("fill-opacity", cfg.opacityArea)
         .on('mouseover', function (event, racer) {
             // Dim all blobs
@@ -207,9 +211,12 @@ function renderSpiderGraph(className, data, options, selectGraph) {
         .enter().append("circle")
         .attr("class", "radarCircle")
         .attr("r", cfg.dotRadius)
-        .attr("cx", (attribute, index) => rScale(attribute.value) * Math.cos(angleSlice * index - Math.PI / 2))
-        .attr("cy", (attribute, index) => rScale(attribute.value) * Math.sin(angleSlice * index - Math.PI / 2))
-        .style("fill", (d, i, j) => cfg.color(j))
+        .attr("cx", (attribute, index) => rScales[index](attribute.value) * Math.cos(angleSlice * index - Math.PI / 2))
+        .attr("cy", (attribute, index) => rScales[index](attribute.value) * Math.sin(angleSlice * index - Math.PI / 2))
+        .style("fill", (d, i, j) => {
+            console.log(d);
+            return cfg.color(j);
+        })
         .style("fill-opacity", 0.8);
 
     // Wrapper for the invisible circles on top
@@ -224,8 +231,8 @@ function renderSpiderGraph(className, data, options, selectGraph) {
         .enter().append("circle")
         .attr("class", "radarInvisibleCircle")
         .attr("r", cfg.dotRadius * 1.5)
-        .attr("cx", (attribute, index) => rScale(attribute.value) * Math.cos(angleSlice * index - Math.PI / 2))
-        .attr("cy", (attribute, index) => rScale(attribute.value) * Math.sin(angleSlice * index - Math.PI / 2))
+        .attr("cx", (attribute, index) => rScales[index](attribute.value) * Math.cos(angleSlice * index - Math.PI / 2))
+        .attr("cy", (attribute, index) => rScales[index](attribute.value) * Math.sin(angleSlice * index - Math.PI / 2))
         .style("fill", "none")
         .style("pointer-events", "all")
         .on("mouseover", function (event, attribute) {
@@ -332,7 +339,7 @@ export default function SpiderGraph(props) {
         height: props.height,
         margin: {top: 60, right: 60, bottom: 60, left: 60},
         levels: 5,
-        roundStrokes: false,
+        roundStrokes: true,
         color: colors
     };
 
