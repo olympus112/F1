@@ -154,7 +154,7 @@ export default function DriverCard(props) {
                         </Grid>
                         <Grid item xs={8}>
                             <List sx={{width: '100%'}} disablePadding dense={true}>
-                                <ListItem key={"Nationality" + props.driver.id} dense={true}>
+                                <ListItem key={"Nationality" + props.driver.id} >
                                     <ListItemText primary={
                                         <Typography>
                                             Nationality
