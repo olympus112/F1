@@ -65,7 +65,13 @@ class App extends Component {
                 props.preprocessed.characteristics[defaultDriver.id][defaultYear].racing,
                 props.preprocessed.characteristics[defaultDriver.id][defaultYear].timeRacing
             ],
-            compareData: []
+            compareData: [],
+
+            // Styling
+            color: {
+                border: "#bdbdbd",
+                graph: ["#CC333F", "#EDC951", "#00A0B0", "#3ba95f"]
+            }
         };
     }
 
@@ -180,6 +186,7 @@ class App extends Component {
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
                         <DriverPicker
+                            color={this.state.color}
                             teams={this.state.preprocessed.teams}
                             images={this.state.preprocessed.images}
                             drivers={this.state.preprocessed.drivers}
@@ -196,7 +203,7 @@ class App extends Component {
                     </Grid>
                     <Grid item xs={12} md={4}>
                         <Paper elevation={0} variant="outlined" sx={{
-                            borderColor: "#bdbdbd",
+                            borderColor: this.state.color.border,
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
@@ -204,6 +211,7 @@ class App extends Component {
                             <SpiderGraph
                                 width={300}
                                 height={300}
+                                color={this.state.color}
                                 driver={this.state.driver}
                                 compare={this.state.compare}
                                 data={this.state.data}
@@ -214,12 +222,13 @@ class App extends Component {
                     </Grid>
                     <Grid item xs={12} md={8}>
                         <Paper elevation={0} variant="outlined" sx={{
-                            borderColor: "#bdbdbd",
+                            borderColor: this.state.color.border,
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
                         }}>
                             <Details
+                                color={this.state.color}
                                 data={this.state.data}
                                 compareData = {this.state.compareData}
                                 graph={this.state.graph.id}

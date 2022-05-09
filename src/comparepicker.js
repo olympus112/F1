@@ -38,7 +38,7 @@ export default function ComparePicker(props) {
     );
 
     return (
-        <Paper elevation={0} variant="outlined" sx={{borderColor: "#bdbdbd"}}>
+        <Paper elevation={0} variant="outlined" sx={{borderColor: props.color.border}}>
         <Grid container spacing={2}>
             <Grid item xs={6} sx={{position: "relative", left:10,top:10}}>
                 <FormControl style={{width: '100%'}} component="fieldset" variant="standard">

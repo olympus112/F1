@@ -26,7 +26,7 @@ export default function DriverCard(props) {
     }
 
     return (
-        <Paper elevation={0} variant="outlined" sx={{borderColor: "#bdbdbd"}}>
+        <Paper elevation={0} variant="outlined" sx={{borderColor: props.color.border}}>
             <Grid container direction={'column'} alignItems={'space-between'}>
                 <Grid container padding={1} direction={'column'} alignItems={'center'}>
                     <Grid item p={2}>

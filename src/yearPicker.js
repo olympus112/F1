@@ -16,7 +16,7 @@ export default function YearPicker(props){
     });
 
     return (
-        <Paper elevation={0} variant="outlined" sx={{borderColor: "#bdbdbd"}}> 
+        <Paper elevation={0} variant="outlined" sx={{borderColor: props.color.border}}>
         <Grid container>
             <Grid item xs={12}>
                 <div style={{position: "relative", left:10,top:6}}>
