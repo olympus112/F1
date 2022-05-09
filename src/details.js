@@ -149,12 +149,13 @@ let renderTimeConsistency = (inputData, colors, compareData) => {
     compareData.forEach(dataCmp => {
       var graphData = dataCmp.data;
       colorIndex++;
-      svg
+      g
       .append("path")
       .datum(graphData)
       .attr("fill", "none")
       .attr("stroke", colors(colorIndex))
-      .attr("stroke-width", 1.5)
+      .attr("stroke-width", 2)
+      .style("filter", "url(#glow)")
       .attr(
         "d",
         d3
@@ -166,7 +167,36 @@ let renderTimeConsistency = (inputData, colors, compareData) => {
             return y(d.value);
           })
       );
+      // Graph area
+    let area = d3.area()
+    .x(d => x(Date.parse(graphData[d].date)))
+    .y1(d => y(graphData[d].value))
+    .y0(d => y(0));
+    g.append("path")
+        .datum(indices)
+        .attr("class", "area")
+        .attr("fill", (value, index) => colors(colorIndex))
+        .attr("fill-opacity", DEFAULT_OPACITY)
+        .attr("d", area)
+        .on('mouseover', function (event) {
+            // Dim all areas
+            // svg.selectAll(".area")
+            //     .transition().duration(200)
+            //     .style("fill-opacity", IGNORE_OPACITY);
+            // Bring back the hovered over blob
+            d3.select(this)
+                .transition().duration(200)
+                .style("fill-opacity", FOCUS_OPACITY);
+        })
+        .on('mouseout', function () {
+            // Bring back all blobs
+            d3.selectAll(".area")
+                .transition().duration(200)
+                .style("fill-opacity", DEFAULT_OPACITY);
+        });
     });
+
+    
 };
 
 
@@ -409,42 +439,85 @@ function renderGraph(data, lsmPoints, svg, x, y, colors, compareData) {
             .y(d => y(d.value))
         );
 
+    //add lsm line if present
+    if (lsmPoints != null){
+        svg.append("path")
+        .datum(lsmPoints)
+        .attr("fill", "none")
+        .attr("stroke", colors(0))
+        .attr("stroke-width", 3)
+        .attr("d", d3.line()
+            .x(d => x(new Date(d.date)))
+            .y(d => y(d.value))
+        );
+    }
+
     //add compare graphs
     var colorIndex = 0;
     compareData.forEach(dataCmp => {
-      var graphData = dataCmp.data;
-      colorIndex++;
-      svg
-      .append("path")
-      .datum(graphData)
-      .attr("fill", "none")
-      .attr("stroke", colors(colorIndex))
-      .attr("stroke-width", 1.5)
-      .attr(
+        var graphData = dataCmp.data;
+        var lsmPoints = dataCmp.lsm.lsmPoints;
+        colorIndex++;
+        svg
+        .append("path")
+        .datum(graphData)
+        .attr("fill", "none")
+        .attr("stroke", colors(colorIndex))
+        .attr("stroke-width", 1.5)
+        .attr(
         "d",
         d3
-          .line()
-          .x(function (d) {
+            .line()
+            .x(function (d) {
             return x(new Date(d.date));
-          })
-          .y(function (d) {
+            })
+            .y(function (d) {
             return y(d.value);
-          })
-      );
-    });
+            })
+        );
 
-    //add lsm line if present
-    if (lsmPoints != null){
-      svg.append("path")
-      .datum(lsmPoints)
-      .attr("fill", "none")
-      .attr("stroke", "red")
-      .attr("stroke-width", 3)
-      .attr("d", d3.line()
-          .x(d => x(new Date(d.date)))
-          .y(d => y(d.value))
-      );
-    }
+        let area = d3.area()
+        .x(d => x(new Date(graphData[d].date)))
+        // .x1(function(d) {return d})
+        .y1(d => y(graphData[d].value))
+        .y0(d => y(lsmPoints[d].value));
+
+        // Add graph area of compared data
+        svg.append("path")
+            .datum(indices)
+            .attr("class", "area")
+            .attr("fill", colors(colorIndex))
+            .style("fill-opacity", DEFAULT_OPACITY)
+            .attr("d", area)
+            .on('mouseover', function (event) {
+                // Dim all areas
+                // svg.selectAll(".area")
+                //     .transition().duration(200)
+                //     .style("fill-opacity", IGNORE_OPACITY);
+                // Bring back the hovered over blob
+                d3.select(this)
+                    .transition().duration(200)
+                    .style("fill-opacity", FOCUS_OPACITY);
+            })
+            .on('mouseout', function () {
+                // Bring back all blobs
+                d3.selectAll(".area")
+                    .transition().duration(200)
+                    .style("fill-opacity", DEFAULT_OPACITY);
+            });
+        //add lsm line if present
+        if (lsmPoints != null){
+            svg.append("path")
+            .datum(lsmPoints)
+            .attr("fill", "none")
+            .attr("stroke", colors(colorIndex))
+            .attr("stroke-width", 3)
+            .attr("d", d3.line()
+                .x(d => x(new Date(d.date)))
+                .y(d => y(d.value))
+            );
+        }
+    });
 }
 
 export default function Details(props) {
