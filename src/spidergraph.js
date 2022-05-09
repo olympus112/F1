@@ -235,11 +235,11 @@ function renderSpiderGraph(className, data, options, selectGraph) {
                 .attr('x', newX)
                 .attr('y', newY)
                 .text(Format(attribute.value))
-                .transition().duration(200)
+                .transition().duration(50)
                 .style('opacity', 1);
         })
         .on("mouseout", function () {
-            tooltip.transition().duration(200)
+            tooltip.transition().duration(50)
                 .style("opacity", 0);
         });
 
@@ -324,8 +324,7 @@ export default function SpiderGraph(props) {
     //     },
     // ]
 
-    const color = d3.scaleOrdinal()
-        .range(["#EDC951", "#CC333F", "#00A0B0", "#3ba95f"]);
+    const colors = d3.scaleOrdinal().range(props.color.graph);
 
     const radarChartOptions = {
         width: props.width,
@@ -333,7 +332,7 @@ export default function SpiderGraph(props) {
         margin: {top: 60, right: 60, bottom: 60, left: 60},
         levels: 5,
         roundStrokes: false,
-        color: color
+        color: colors
     };
 
     React.useEffect(() => {

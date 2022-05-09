@@ -100,51 +100,49 @@ export function computeTimeConsistency(driverId, year, races, lapTimes) {
     return {data: data, lsm: lsm};
 }
 
-export function computeTimeRacing(driverId, year, races, qualification){
+export function computeTimeRacing(driverId, year, races, qualification) {
     let filteredRaces = races.filter(row => parseInt(row.year) === year);
-    var timeDifferences = [];
+    let timeDifferences = [];
     filteredRaces.forEach(race => {
-        var raceId = race.raceId;
-        var filteredQual = qualification.filter(row => row.raceId === raceId);
-        var minTime = 100 * 60 //100 minutes => just to initialize. 
-        var racerTime = -1; //default value, if not changed, value does not count. 
+        const raceId = race.raceId;
+        const filteredQual = qualification.filter(row => row.raceId === raceId);
+        let minTime = 100 * 60; //100 minutes => just to initialize.
+        let racerTime = -1; //default value, if not changed, value does not count.
         filteredQual.forEach(qual => {
-            var qualTime = qual.q3;
-            if (qualTime === "\\N"){
+            let qualTime = qual.q3;
+            if (qualTime === "\\N") {
                 qualTime = qual.q2;
             }
-            if (qualTime === "\\N"){
+            if (qualTime === "\\N") {
                 qualTime = qual.q1;
             }
 
             qualTime = qualTime.split(":");
-            var minutes = parseInt(qualTime[0]);
-            var seconds = parseFloat(qualTime[1]);
-            var finalTime = minutes * 60 + seconds;
-            if (finalTime < minTime){
+            const minutes = parseInt(qualTime[0]);
+            const seconds = parseFloat(qualTime[1]);
+            const finalTime = minutes * 60 + seconds;
+            if (finalTime < minTime) {
                 minTime = finalTime;
             }
             if (parseInt(qual.driverId) === driverId) {
                 racerTime = finalTime;
             }
         })
-        if (racerTime !== -1){  
-        var timeDiff = racerTime - minTime;
-        timeDifferences.push({date: parseDate(race.date), timeDiff: timeDiff});
+        if (racerTime !== -1) {
+            const timeDiff = racerTime - minTime;
+            timeDifferences.push({date: parseDate(race.date), timeDiff: timeDiff});
         }
     });
 
-    var avgTimeDiff = 0;
+    let avgTimeDiff = 0;
     timeDifferences.forEach(race => {
-        avgTimeDiff +=race.timeDiff;
+        avgTimeDiff += race.timeDiff;
     });
     avgTimeDiff /= timeDifferences.length;
     console.log(avgTimeDiff);
 
     return {score: avgTimeDiff, data: timeDifferences};
 }
-
-
 
 
 function leastSquareMethod(data) {

@@ -13,6 +13,7 @@ export default function DriverPicker(props) {
         <Grid container spacing={2}>
             <Grid item xs={4}>
                 <DriverCard
+                    color={props.color}
                     driver={props.driver}
                     images={props.images}
                     teams={props.teams}
@@ -58,6 +59,7 @@ export default function DriverPicker(props) {
                     </Grid>
                     <Grid item xs={12}>
                         <YearPicker
+                            color={props.color}
                             driver={props.driver}
                             year={props.year}
                             selectYear={props.selectYear}
@@ -66,6 +68,7 @@ export default function DriverPicker(props) {
                     </Grid>
                     <Grid item xs={12}>
                         <ComparePicker
+                            color={props.color}
                             addCompare={props.addCompare}
                             removeCompare={props.removeCompare}
                             driver={props.driver}
