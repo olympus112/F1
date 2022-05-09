@@ -28,7 +28,8 @@ export default function DriverPicker(props) {
                             options={props.drivers}
                             getOptionLabel={driver => driver.name}
                             onChange={(event, newDriver) => {
-                                props.selectDriver(newDriver)
+                                if (newDriver !== null)
+                                    props.selectDriver(newDriver)
                             }}
                             id="tags-standard"
                             groupBy={(driver) => Math.max(...driver.years)}
@@ -38,7 +39,6 @@ export default function DriverPicker(props) {
                                     label="Pick driver"
                                 />
                             )}
-                            filterOptions={(options) => options}
                             renderOption={(properties, option) => (
                                 <li {...properties}>
                                     <Typography>

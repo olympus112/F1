@@ -74,7 +74,7 @@ class App extends Component {
             driver: driver,
         });
         this.setState({
-            year: driver.years[driver.years.length-1]
+            year: driver.years[driver.years.length - 1]
         });
         console.log("Selected new driver: ", driver);
         this.updateRacerData(driver.id, this.state.year);
@@ -95,7 +95,7 @@ class App extends Component {
             graph: graph
         });
     }
-    
+
     addCompare = (compare) => {
         if (!this.state.compare.includes(compare)) {
             this.setState({
@@ -168,17 +168,15 @@ class App extends Component {
     render() {
         return (
             <Container maxWidth="xl">
-            <Box
-                sx={{
-                bgcolor: 'gray',
-                borderRadius: 1,
-                mb:2
-                }}
-            >
-                <Typography variant="h6" gutterBottom component="div" sx={{color:"white", p:1,pl:2}}>
-                    F1 Dashboard
-                </Typography>
-            </Box>
+                <Box sx={{
+                    bgcolor: 'gray',
+                    borderRadius: 1,
+                    mb: 2
+                }}>
+                    <Typography variant="h6" gutterBottom component="div" sx={{color: "white", p: 1, pl: 2}}>
+                        F1 Dashboard
+                    </Typography>
+                </Box>
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
                         <DriverPicker
@@ -193,11 +191,16 @@ class App extends Component {
                             selectYear={this.selectYear}
                             addCompare={this.addCompare}
                             removeCompare={this.removeCompare}
-                            resetCompare = {this.resetCompare}
+                            resetCompare={this.resetCompare}
                         />
                     </Grid>
-                    <Grid item xs={12} md={4} >
-                        <Paper elevation={0} variant="outlined" sx={{borderColor: "#bdbdbd", display: 'flex', alignItems: 'center', justifyContent: 'center',}}>
+                    <Grid item xs={12} md={4}>
+                        <Paper elevation={0} variant="outlined" sx={{
+                            borderColor: "#bdbdbd",
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                        }}>
                             <SpiderGraph
                                 width={300}
                                 height={300}
@@ -210,7 +213,12 @@ class App extends Component {
                         </Paper>
                     </Grid>
                     <Grid item xs={12} md={8}>
-                        <Paper elevation={0} variant="outlined" sx={{borderColor: "#bdbdbd", display: 'flex', alignItems: 'center', justifyContent: 'center',}}>
+                        <Paper elevation={0} variant="outlined" sx={{
+                            borderColor: "#bdbdbd",
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                        }}>
                             <Details
                                 data={this.state.data}
                                 graph={this.state.graph.id}
