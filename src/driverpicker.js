@@ -10,7 +10,7 @@ import Avatar from "@mui/material/Avatar";
 
 export default function DriverPicker(props) {
     return (
-        <Grid container spacing={2}>
+        <Grid container spacing={2} alignItems="center" justifyContent="center">
             <Grid item xs={4}>
                 <DriverCard
                     color={props.color}

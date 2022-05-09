@@ -147,6 +147,7 @@ export default function ComparePicker(props) {
                     //                 placeholder="Favorites"
                     //             />
                     //             )}
+                    sx={{height:56}}
                     value={props.compare}
                     input={<OutlinedInput label="Choose drivers to compare"/>}
                     renderValue={(compare) => (

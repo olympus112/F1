@@ -121,13 +121,14 @@ export default function DriverCard(props) {
                                 {...params}
                                 variant={"standard"}
                                 size={"normal"}
-                                margin={"normal"}
+                                margin={"small"}
                                 fullWidth
                                 inputProps={{
                                     ...params.inputProps,
                                     style: {
-                                        fontSize: '30px',
-                                        textAlign: 'center'
+                                        fontSize: '24px',
+                                        textAlign: 'center',
+                                        fontWeight: 400
                                     }
                                 }}
                             />
@@ -143,17 +144,17 @@ export default function DriverCard(props) {
                 </Grid>
                 <Grid item xs={6}>
                     <Grid container direction={'row'} alignItems={'space-between'} justifyContent={'center'}>
-                        <Grid item xs={4} p={2}>
+                        <Grid item xs={4} p={2} alignItems="center">
                             <Avatar
                                 alt={props.driver.name}
                                 src={props.images[props.driver.id].image}
-                                sx={{width: "auto", height: 'auto'}}
+                                sx={{width: 100, height:100}}
                                 variant={'rounded'}
                             />
                         </Grid>
                         <Grid item xs={8}>
-                            <List sx={{width: '100%'}} disablePadding>
-                                <ListItem key={"Nationality" + props.driver.id}>
+                            <List sx={{width: '100%'}} disablePadding dense={true}>
+                                <ListItem key={"Nationality" + props.driver.id} dense={true}>
                                     <ListItemText primary={
                                         <Typography>
                                             Nationality
