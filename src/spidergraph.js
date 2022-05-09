@@ -214,7 +214,7 @@ function renderSpiderGraph(className, data, options, selectGraph) {
         .attr("cx", (attribute, index) => rScales[index](attribute.value) * Math.cos(angleSlice * index - Math.PI / 2))
         .attr("cy", (attribute, index) => rScales[index](attribute.value) * Math.sin(angleSlice * index - Math.PI / 2))
         .style("fill", (d, i, j) => {
-            console.log(d);
+            // console.log(d);
             return cfg.color(j);
         })
         .style("fill-opacity", 0.8);
