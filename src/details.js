@@ -13,7 +13,7 @@ let IGNORE_OPACITY = 0.1;
 let STROKE_WIDTH = 2;
 
 // set the dimensions and margins of the graph
-let margin = {top: 10, right: 100, bottom: 60, left: 200},
+let margin = {top: 20, right: 200, bottom: 60, left: 20},
     width = set_width - margin.left - margin.right,
     height = set_height - margin.top - margin.bottom;
 
