@@ -1,6 +1,6 @@
 import React from "react";
 import * as d3 from "d3";
-import {colors,Grid,Paper} from "@mui/material";
+import {colors,Grid,Paper,Box} from "@mui/material";
 import Typography from "@mui/material/Typography";
 
 let parseDate = d3.timeParse('%d/%m/%Y');
@@ -533,32 +533,35 @@ export default function Details(props) {
     }, [props]);
 
     return (
-        <div className="graph">
-            <Grid container>
+            <Grid container direction="column">
                 <Grid item xs={12} >
-                    <div style={{position: "relative", left:10,top:6}}>
-                        <Typography sx={{color: "rgba(0, 0, 0, 0.6)"}}>
+                    <div style={{position: "relative", left:11.8,top:6}}>
+                        <Typography sx={{fontSize:"20px",fontWeight:"600"}}>
                             {props.graph.name}
                         </Typography>
                     </div>
                 </Grid>
-                <Grid item xs={12}>
-                    {/* <Paper elevation={0} variant="outlined" sx={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                }}> */}
+                <Grid item xs={12} sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                        }}>
+                    <div className="graph">
                         <svg ref={svgRef}/>
-                    {/* </Paper> */}
-                </Grid>
-                <Grid item xs={12}>
-                    <div style={{position: "relative", left:10,top:6}}>
-                        <Typography sx={{color: "rgba(0, 0, 0, 0.6)"}}>
-                            {props.graph.explanation}
-                        </Typography>
                     </div>
                 </Grid>
+                <Grid item xs={12}>
+                    <Box sx={{ px: 1, pb:1,border: '1px dashed grey' ,m:2}}>
+                        <div>
+                            <Typography variant="caption" sx={{color: "rgba(0, 0, 0, 0.6)"}} >
+                                {"Detailed explanation of graph " + props.graph.name + ":"}
+                            </Typography>
+                        </div>
+                        <Typography variant="caption" sx={{pl: 2, color: "rgba(0, 0, 0, 0.6)"}}>
+                            {props.graph.explanation}
+                        </Typography>
+                    </Box>
+                </Grid>
             </Grid>
-        </div>
     );
 }
