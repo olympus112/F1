@@ -71,7 +71,7 @@ let renderTimeConsistency = (inputData, colors, compareData) => {
   let x = d3
     .scaleTime()
     .domain(d3.extent(data, (d) => d.date))
-    .range([0, width]);
+    .range([0, width])
   g.append("g")
     .attr("transform", "translate(0," + height + ")")
     .call(d3.axisBottom(x))
@@ -80,6 +80,24 @@ let renderTimeConsistency = (inputData, colors, compareData) => {
     .attr("dx", "-.8em")
     .attr("dy", ".15em")
     .attr("transform", (d) => "rotate(-65)");
+
+    //label x-axis
+    g.append("text")
+    .attr("class", "x label")
+    .attr("text-anchor", "end")
+    .attr("x", width)
+    .attr("dx", "1em")
+    .attr("dy", "2em")
+    .attr("y", height - 6)
+    .text("Races");
+    //label y-axis
+    g.append("text")
+    .attr("class", "y label")
+    .attr("text-anchor", "end")
+    .attr("y", 6)
+    .attr("dy", "-2.1em")
+    .attr("transform", "rotate(-90)")
+    .text("Variance with avarage laptime (s)");
 
   // Add Y axis
   let y = d3
@@ -248,6 +266,24 @@ let renderRaceConsistency = (inputData, colors, compareData) => {
 
   // Add glow filter
   addFilter(g);
+
+    //label x-axis
+    g.append("text")
+        .attr("class", "x label")
+        .attr("text-anchor", "end")
+        .attr("x", width)
+        .attr("dx", "1em")
+        .attr("dy", "2em")
+        .attr("y", height - 6)
+        .text("Races");
+    //label y-axis
+    g.append("text")
+        .attr("class", "y label")
+        .attr("text-anchor", "end")
+        .attr("y", 6)
+        .attr("dy", "-2.1em")
+        .attr("transform", "rotate(-90)")
+        .text("Finishing position");
 
   // Add X axis --> it is a date format
   let x = d3
@@ -879,6 +915,24 @@ let renderTimeRacing = (inputData, colors, compareData) => {
     // Add glow filter
     addFilter(g);
 
+    //label x-axis
+    g.append("text")
+        .attr("class", "x label")
+        .attr("text-anchor", "end")
+        .attr("x", width)
+        .attr("dx", "1em")
+        .attr("dy", "2em")
+        .attr("y", height - 6)
+        .text("Races");
+    //label y-axis
+    g.append("text")
+        .attr("class", "y label")
+        .attr("text-anchor", "end")
+        .attr("y", 6)
+        .attr("dy", "-2.1em")
+        .attr("transform", "rotate(-90)")
+        .text("Difference with best qualifying time (s)");
+    
     // Add X axis --> it is a date format
     let x = d3
         .scaleTime()
