@@ -1,6 +1,6 @@
 import React from "react";
 import * as d3 from "d3";
-import { colors, Grid, Paper } from "@mui/material";
+import {colors,Grid,Paper,Box} from "@mui/material";
 import Typography from "@mui/material/Typography";
 
 let parseDate = d3.timeParse("%d/%m/%Y");
@@ -692,53 +692,46 @@ function renderGraph(data, lsmPoints, svg, x, y, colors, compareData) {
 }
 
 export default function Details(props) {
-  let svgRef = React.useRef(null);
-  let graphs = [
-    renderRaceConsistency,
-    renderTimeConsistency,
-    renderPositionsGained,
-    renderRacing,
-  ];
-  //collect relevant data to compare
-  let compareData = props.compareData.map((data) => data[props.graph.id]);
-  const colors = d3
-    .scaleOrdinal()
-    .range([
-      props.color.driver[500],
-      ...props.color.compare.map((color) => color[500]),
-    ]);
+    let svgRef = React.useRef(null);
+    let graphs = [renderRaceConsistency, renderTimeConsistency, renderPositionsGained, renderRacing];
+    //collect relevant data to compare
+    let compareData = props.compareData.map(data => data[props.graph.id]);
+    const colors = d3.scaleOrdinal().range([props.color.driver[500], ...(props.color.compare.map(color => color[500]))]);
 
-  React.useEffect(() => {
-    graphs[props.graph.id](props.data[props.graph.id], colors, compareData);
-  }, [props]);
+    React.useEffect(() => {
+        graphs[props.graph.id](props.data[props.graph.id], colors, compareData);
+    }, [props]);
 
-  return (
-    <div className="graph">
-      <Grid container>
-        <Grid item xs={12}>
-          <div style={{ position: "relative", left: 10, top: 6 }}>
-            <Typography sx={{ color: "rgba(0, 0, 0, 0.6)" }}>
-              {props.graph.name}
-            </Typography>
-          </div>
-        </Grid>
-        <Grid item xs={12}>
-          {/* <Paper elevation={0} variant="outlined" sx={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                }}> */}
-          <svg ref={svgRef} />
-          {/* </Paper> */}
-        </Grid>
-        <Grid item xs={12}>
-          <div style={{ position: "relative", left: 10, top: 6 }}>
-            <Typography sx={{ color: "rgba(0, 0, 0, 0.6)" }}>
-              {props.graph.explanation}
-            </Typography>
-          </div>
-        </Grid>
-      </Grid>
-    </div>
-  );
+    return (
+            <Grid container direction="column">
+                <Grid item xs={12} >
+                    <div style={{position: "relative", left:11.8,top:6}}>
+                        <Typography sx={{fontSize:"20px",fontWeight:"600"}}>
+                            {props.graph.name}
+                        </Typography>
+                    </div>
+                </Grid>
+                <Grid item xs={12} sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                        }}>
+                    <div className="graph">
+                        <svg ref={svgRef}/>
+                    </div>
+                </Grid>
+                <Grid item xs={12}>
+                    <Box sx={{ px: 1, pb:1,border: '1px dashed grey' ,m:2}}>
+                        <div>
+                            <Typography variant="caption" sx={{color: "rgba(0, 0, 0, 0.6)"}} >
+                                {"Detailed explanation of graph " + props.graph.name + ":"}
+                            </Typography>
+                        </div>
+                        <Typography variant="caption" sx={{pl: 2, color: "rgba(0, 0, 0, 0.6)"}}>
+                            {props.graph.explanation}
+                        </Typography>
+                    </Box>
+                </Grid>
+            </Grid>
+    );
 }

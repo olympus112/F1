@@ -1,7 +1,9 @@
-import {Card, CardHeader, Box} from '@mui/material';
+import {Card, CardHeader, Box,Grid} from '@mui/material';
 import React from 'react';
 import * as d3 from "d3";
 import {Graphs} from "./App";
+import Typography from "@mui/material/Typography";
+
 
 function renderSpiderGraph(className, data, options, selectGraph) {
     const cfg = {
@@ -347,7 +349,28 @@ export default function SpiderGraph(props) {
         renderSpiderGraph(".radarChart", spiderData, radarChartOptions, props.selectGraph);
     }, [spiderData]);
 
-    return <div className="radarChart">
-        <svg ref={svgRef}/>
-    </div>;
+    return (
+    <Grid container direction="column">
+        <Grid item xs={12} sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                        }}>
+            <div className="radarChart">
+                <svg ref={svgRef}/>
+            </div>
+        </Grid>
+        <Grid item xs={12}>
+            <Box sx={{ px: 1, pb:1,border: '1px dashed grey' ,m:2}}>
+                <div>
+                    <Typography variant="caption" sx={{color: "rgba(0, 0, 0, 0.6)"}} >
+                        Click on a skill to focus
+                    </Typography>
+                </div>
+                <Typography variant="caption" sx={{pl: 2, color: "rgba(0, 0, 0, 0.6)"}}>
+                    Uitleg TODO
+                </Typography>
+            </Box>
+        </Grid>
+    </Grid>)
 };
