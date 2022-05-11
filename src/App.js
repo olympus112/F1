@@ -13,12 +13,12 @@ export const Graphs = {
     raceConsistency: {
         id: 0,
         name: "Race Consistency",
-        explanation: "TODO"
+        explanation: "The Race consistency represents a measurement of how consistent the results are of a driver throughout all the races in a season. If the driver places with low consistency, the coloured area will be bigger."
     },
     timeConsistency: {
         id: 1,
         name: "Time Consistency",
-        explanation: "TODO"
+        explanation: "The Time Consistency represents a measurement of how consistent the lap times are of a driver thoughout each race. The y-axis represents the variance in laptimes compared to the avarage laptime of this driver. Higher values on the y-axis will result in a worse time consistency score."
     },
     positionsGainedLost: {
         id: 2,
@@ -28,12 +28,12 @@ export const Graphs = {
     racing: {
         id: 3,
         name: "Racing",
-        explanation: "The final position in the race"
+        explanation: "The Racing attribute gives an indication of how good this driver is in the race itself. On the y-axis, the position is showed of which the racer finished in each race. This means lower values on the y-axis mean a better Racing score."
     },
     timeRacing: {
         id: 4,
         name: "Time Racing",
-        explanation: "The final position during qualifying"
+        explanation: "The Time Racing attribute compares the final qualifying time of the racer to the best qualifying time of all racers for each qualification. If the driver has the best qualifying time, the y-axis will have a zero value, otherwise the difference with the best time is shown."
     }
 };
 
