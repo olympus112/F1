@@ -169,8 +169,20 @@ let renderTimeConsistency = (inputData, colors, compareData) => {
       );
       // Graph area
     let area = d3.area()
-    .x(d => x(Date.parse(graphData[d].date)))
-    .y1(d => y(graphData[d].value))
+    .x(d => {
+        if (d < graphData.length){
+            return x(Date.parse(graphData[d].date));
+        }
+        else return x(Date.parse(graphData[graphData.length-1].date));
+    })
+    .y1(d => {
+        if (d < graphData.length){ 
+            return y(graphData[d].value);
+        }
+        else {
+            return y(graphData[graphData.length-1].value);
+        }
+    })
     .y0(d => y(0));
     g.append("path")
         .datum(indices)
@@ -520,9 +532,199 @@ function renderGraph(data, lsmPoints, svg, x, y, colors, compareData) {
     });
 }
 
+let renderTimeRacing = (inputData, colors, compareData) => {
+    let data = inputData.data;
+
+    //convert data.date to date object
+    data = data.map(entry => {
+        return {
+            value: entry.timeDiff,
+            date: new Date(entry.date)
+        };
+    });
+
+    data.sort((a, b) => {
+        if (a.date > b.date) {
+            return 1;
+        }
+        else return -1;
+    })
+    // data.sort()
+
+    //remove previous svg
+    d3.select(".graph").select("svg").remove();
+
+    // append the svg object to the body of the page
+    let svg = d3
+        .select(".graph")
+        .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom);
+
+    // Create master group
+    let g = svg.append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    // Add glow filter
+    addFilter(g);
+
+    // Add X axis --> it is a date format
+    let x = d3
+        .scaleTime()
+        .domain(d3.extent(data, d => d.date))
+        .range([0, width]);
+    g.append("g")
+        .attr("transform", "translate(0," + height + ")")
+        .call(d3.axisBottom(x))
+        .selectAll("text")
+        .style("text-anchor", "end")
+        .attr("dx", "-.8em")
+        .attr("dy", ".15em")
+        .attr("transform", d => "rotate(-65)");
+
+    // Add Y axis
+    let y = d3
+        .scaleLinear()
+        .domain([
+            0,
+            15
+            // d3.max(data, d => {  //Auto adjust => less clear which is better between drivers.
+            //   return d.value;            //set domain => less red means better => very obvious and can directly be seen
+            // }),
+        ])
+        .range([height, 0]);
+    g.append("g")
+        .call(d3.axisLeft(y));
+
+    let indices = d3.range(data.length);
+
+    // Graph area
+    let area = d3.area()
+        .x(d => x(Date.parse(data[d].date)))
+        // .x1(function(d) {return d})
+        .y1(d => y(data[d].value))
+        .y0(d => y(0));
+    g.append("path")
+        .datum(indices)
+        .attr("class", "area")
+        .attr("fill", (value, index) => colors(index))
+        .attr("fill-opacity", DEFAULT_OPACITY)
+        .attr("d", area)
+        .on('mouseover', function (event) {
+            // Dim all areas
+            // svg.selectAll(".area")
+            //     .transition().duration(200)
+            //     .style("fill-opacity", IGNORE_OPACITY);
+            // Bring back the hovered over blob
+            d3.select(this)
+                .transition().duration(200)
+                .style("fill-opacity", FOCUS_OPACITY);
+        })
+        .on('mouseout', function () {
+            // Bring back all blobs
+            d3.selectAll(".area")
+                .transition().duration(200)
+                .style("fill-opacity", DEFAULT_OPACITY);
+        });
+
+    // Graph line
+    g.append("path")
+        .datum(data)
+        .attr("fill", "none")
+        .attr("stroke", (value, index) => colors(index))
+        .attr("stroke-width", STROKE_WIDTH)
+        .style("filter", "url(#glow)")
+        .attr("d", d3.line()
+            .x(d => x(d.date))
+            .y(d => y(d.value))
+        );
+
+    //add compare graphs
+    var colorIndex = 0;
+    compareData.forEach(dataCmp => {
+        var graphData = dataCmp.data;
+        //convert data.date to date object
+        graphData = graphData.map(entry => {
+            return {
+                value: entry.timeDiff,
+                date: new Date(entry.date)
+            };
+        });
+        //sort data on race chronologically
+        graphData.sort((a, b) => {
+            if (a.date > b.date) {
+                return 1;
+            }
+            else return -1;
+        })
+        colorIndex++;
+        g
+        .append("path")
+        .datum(graphData)
+        .attr("fill", "none")
+        .attr("stroke", colors(colorIndex))
+        .attr("stroke-width", 2)
+        .style("filter", "url(#glow)")
+        .attr(
+            "d",
+            d3
+            .line()
+            .x(function (d) {
+                return x(d.date);
+            })
+            .y(function (d) {
+                return y(d.value);
+            })
+            .defined(function(d) { return d.value != null; })
+        );
+        // Graph area
+        let area = d3.area()
+        .x(d => {
+            if (d < graphData.length){
+                return x(Date.parse(graphData[d].date));
+            }
+            else return x(Date.parse(graphData[graphData.length-1].date));
+        })
+        .y1(d => {
+            if (d < graphData.length){ 
+                return y(graphData[d].value);
+            }
+            else {
+                return y(graphData[graphData.length-1].value);
+            }
+        })
+        .defined(function(d) { return graphData[d].value != null; })
+        .y0(d => y(0));
+        g.append("path")
+            .datum(indices)
+            .attr("class", "area")
+            .attr("fill", (value, index) => colors(colorIndex))
+            .attr("fill-opacity", DEFAULT_OPACITY)
+            .attr("d", area)
+            .on('mouseover', function (event) {
+                // Dim all areas
+                // svg.selectAll(".area")
+                //     .transition().duration(200)
+                //     .style("fill-opacity", IGNORE_OPACITY);
+                // Bring back the hovered over blob
+                d3.select(this)
+                    .transition().duration(200)
+                    .style("fill-opacity", FOCUS_OPACITY);
+            })
+            .on('mouseout', function () {
+                // Bring back all blobs
+                d3.selectAll(".area")
+                    .transition().duration(200)
+                    .style("fill-opacity", DEFAULT_OPACITY);
+            });
+        });
+
+    
+};
+
 export default function Details(props) {
     let svgRef = React.useRef(null);
-    let graphs = [renderRaceConsistency, renderTimeConsistency, renderPositionsGained, renderRacing];
+    let graphs = [renderRaceConsistency, renderTimeConsistency, renderPositionsGained, renderRacing, renderTimeRacing];
     //collect relevant data to compare
     let compareData = props.compareData.map(data => data[props.graph]);
     const colors = d3.scaleOrdinal().range([props.color.driver[500], ...(props.color.compare.map(color => color[500]))]);
