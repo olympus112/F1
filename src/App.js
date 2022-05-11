@@ -12,23 +12,28 @@ import {downloadCharacteristics, downloadCountries, testCharacteristics} from ".
 export const Graphs = {
     raceConsistency: {
         id: 0,
-        name: "Race Consistency"
+        name: "Race Consistency",
+        explanation: "TODO"
     },
     timeConsistency: {
         id: 1,
-        name: "⠀Time⠀ ⠀Consistency⠀"
+        name: "Time Consistency",
+        explanation: "TODO"
     },
     positionsGainedLost: {
         id: 2,
-        name: "Positions gained/lost"
+        name: "Positions gained/lost",
+        explanation: "TODO"
     },
     racing: {
         id: 3,
-        name: "⠀Racing⠀⠀"
+        name: "Racing",
+        explanation: "The final position in the race"
     },
     timeRacing: {
         id: 4,
-        name: "Time⠀ ⠀Racing⠀⠀"
+        name: "Time Racing",
+        explanation: "The final position during qualifying"
     }
 };
 
@@ -132,6 +137,13 @@ class App extends Component {
         }
     };
 
+    inCompare = (compare) => {
+        if (this.state.compare.includes(compare)) {
+            return true;
+        }
+        return false;
+    };
+
     resetCompare = () => {
         this.setState({
             compare: [],
@@ -203,6 +215,7 @@ class App extends Component {
                             addCompare={this.addCompare}
                             removeCompare={this.removeCompare}
                             resetCompare={this.resetCompare}
+                            inCompare={this.inCompare}
                         />
                     </Grid>
                     <Grid item xs={12} md={4}>
@@ -225,17 +238,12 @@ class App extends Component {
                         </Paper>
                     </Grid>
                     <Grid item xs={12} md={8}>
-                        <Paper elevation={0} variant="outlined" sx={{
-                            borderColor: this.state.color.border,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                        }}>
+                        <Paper elevation={0} variant="outlined" sx={{borderColor: this.state.color.border}}>
                             <Details
                                 color={this.state.color}
                                 data={this.state.data}
                                 compareData = {this.state.compareData}
-                                graph={this.state.graph.id}
+                                graph={this.state.graph}
                             />
                         </Paper>
                     </Grid>

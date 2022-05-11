@@ -314,19 +314,40 @@ function preprocessCharacteristics(allRaces, allResults, allLapTimes, allQualifi
                 found = true;
 
                 // Positions gained lost
-                pglData.push([
-                    race.name,
-                    race.round,
-                    parseInt(result.grid) - (result.position === "\\N" ? 20 : parseInt(result.position))
-                ])
-                pglScore = pglScore + (parseInt(result.grid) - (result.position === "\\N" ? 20 : parseInt(result.position)));
+
+                let gLRaceScore;
+                let positionsGainedLost = parseInt(result.grid) - (result.position === "\\N" ? 20 : parseInt(result.position)); 
+
+                if (parseInt(result.grid) === 1 && parseInt(result.position) === 1){
+                    gLRaceScore = 1;
+                } else if (positionsGainedLost > 0){
+                    let possibleGainedPositions = parseInt(result.grid - 1);
+                    gLRaceScore =  0.5 + 0.5 * (positionsGainedLost/possibleGainedPositions);
+
+                } else if (positionsGainedLost < 0){
+                    let possibleLostPositions = 20 - parseInt(result.grid);
+                    gLRaceScore =  0.5 + 0.5 * (positionsGainedLost/possibleLostPositions);
+
+                } else {
+                    gLRaceScore = 0.5;
+                }
+                
+                pglData.push({
+                    raceName: race.name,
+                    round: race.round,
+                    grid: parseInt(result.grid),
+                    position: result.position === "\\N" ? 20 : parseInt(result.position),
+                    gainedLost: positionsGainedLost,
+                    gainedLostScore: gLRaceScore
+                })
+                pglScore = pglScore + gLRaceScore;
 
                 // Racing
-                rData.push([
-                    race.name,
-                    race.round,
-                    result.position === "\\N" ? 20 : parseInt(result.position),
-                ]);
+                rData.push({
+                    raceName: race.name,
+                    round: race.round,
+                    position: result.position === "\\N" ? 20 : parseInt(result.position),
+                });
                 rScore = rScore + (result.position === "\\N" ? 20 : parseInt(result.position));
 
                 // Race consistency
@@ -348,10 +369,12 @@ function preprocessCharacteristics(allRaces, allResults, allLapTimes, allQualifi
 
     // Positions gained lost
     pglScore = pglScore / pglData.length;
+    pglData.sort((a,b) => parseInt(a["round"]) - parseInt(b["round"]));
     let positionsGainedLost = {data: pglData, score: pglScore};
 
     // Racing
     rScore = rScore / rData.length;
+    rData.sort((a,b) => parseInt(a["round"]) - parseInt(b["round"]));
     let racing = {data: rData, score: rScore};
 
     // Race consistency

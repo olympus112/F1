@@ -10,45 +10,20 @@ import Avatar from "@mui/material/Avatar";
 
 export default function DriverPicker(props) {
     return (
-        <Grid container spacing={2}>
+        <Grid container spacing={2} alignItems="center" justifyContent="center">
             <Grid item xs={4}>
                 <DriverCard
                     color={props.color}
                     driver={props.driver}
+                    drivers={props.drivers}
                     images={props.images}
                     teams={props.teams}
                     flags={props.flags}
+                    selectDriver={props.selectDriver}
                 />
             </Grid>
             <Grid item xs={8}>
                 <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                        <Autocomplete
-                            value={props.driver}
-                            defaultValue={props.driver}
-                            options={props.drivers}
-                            getOptionLabel={driver => driver.name}
-                            onChange={(event, newDriver) => {
-                                if (newDriver !== null)
-                                    props.selectDriver(newDriver)
-                            }}
-                            id="tags-standard"
-                            groupBy={(driver) => Math.max(...driver.years)}
-                            renderInput={(params) => (
-                                <TextField
-                                    {...params}
-                                    label="Pick driver"
-                                />
-                            )}
-                            renderOption={(properties, option) => (
-                                <li {...properties}>
-                                    <Typography>
-                                        {props.flags[option.nationality] + " " + option.name}
-                                    </Typography>
-                                </li>
-                            )}
-                        />
-                    </Grid>
                     <Grid item xs={12}>
                         <YearPicker
                             color={props.color}
@@ -63,11 +38,13 @@ export default function DriverPicker(props) {
                             color={props.color}
                             addCompare={props.addCompare}
                             removeCompare={props.removeCompare}
+                            inCompare={props.inCompare}
                             driver={props.driver}
                             year={props.year}
                             compare={props.compare}
                             drivers={props.drivers}
                             flags={props.flags}
+                            images={props.images}
                         />
                     </Grid>
                 </Grid>
