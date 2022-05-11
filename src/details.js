@@ -1,12 +1,12 @@
 import React from "react";
 import * as d3 from "d3";
-import {colors,Grid,Paper,Box} from "@mui/material";
+import { colors, Grid, Paper, Box } from "@mui/material";
 import Typography from "@mui/material/Typography";
 
 let parseDate = d3.timeParse("%d/%m/%Y");
 
 let set_height = 420;
-let set_width = 900;
+let set_width = 1150;
 
 let DEFAULT_OPACITY = 0.35;
 let FOCUS_OPACITY = 0.7;
@@ -260,7 +260,147 @@ let renderRaceConsistency = (inputData, colors, compareData) => {
 };
 
 let renderPositionsGained = (inputData, colors, compareData) => {
-  let data = inputData.data;
+  let data = [];
+
+  if (compareData.length === 0) {
+    for (let i = 0; i < inputData.data.length; i++) {
+      data.push({
+        raceName: inputData.data[i]["raceName"],
+        round: inputData.data[i]["round"],
+        primaryDriver: inputData.data[i]["gainedLostScore"],
+      });
+    }
+  }
+
+  if (compareData.length === 1) {
+    for (let i = 0; i < inputData.data.length; i++) {
+      data.push({
+        raceName: inputData.data[i]["raceName"],
+        round: inputData.data[i]["round"],
+        primaryDriver: inputData.data[i]["gainedLostScore"],
+        secondDriver: compareData[0].data[i]["gainedLostScore"],
+      });
+    }
+  }
+
+  if (compareData.length === 2) {
+    for (let i = 0; i < inputData.data.length; i++) {
+      data.push({
+        raceName: inputData.data[i]["raceName"],
+        round: inputData.data[i]["round"],
+        primaryDriver: inputData.data[i]["gainedLostScore"],
+        secondDriver: compareData[0].data[i]["gainedLostScore"],
+        thirdDriver: compareData[1].data[i]["gainedLostScore"],
+      });
+    }
+  }
+
+  if (compareData.length === 3) {
+    for (let i = 0; i < inputData.data.length; i++) {
+      data.push({
+        raceName: inputData.data[i]["raceName"],
+        round: inputData.data[i]["round"],
+        primaryDriver: inputData.data[i]["gainedLostScore"],
+        secondDriver: compareData[0].data[i]["gainedLostScore"],
+        thirdDriver: compareData[1].data[i]["gainedLostScore"],
+        forthDriver: compareData[2].data[i]["gainedLostScore"],
+      });
+    }
+  }
+
+  let jsonString = JSON.stringify(data);
+
+  // remove previous svg
+  d3.select(".graph").select("svg").remove();
+
+  let svg = d3
+    .select(".graph")
+    .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + 2.3 * margin.bottom);
+
+  let g = svg
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  let x0 = d3.scaleBand().rangeRound([0, width]).paddingInner(0.1);
+  let x1 = d3.scaleBand().padding(0.05);
+  let y = d3.scaleLinear().rangeRound([height, 0]);
+
+  data = JSON.parse(jsonString);
+  let keys = Object.keys(data[0]).slice(2);
+
+  x0.domain(
+    data.map(function (d) {
+      return d.raceName;
+    })
+  );
+  x1.domain(keys).rangeRound([0, x0.bandwidth()]);
+  y.domain([
+    0,
+    d3.max(data, function (d) {
+      return d3.max(keys, function (key) {
+        return d[key];
+      });
+    }),
+  ]).nice();
+
+  g.selectAll("g")
+    .data(data)
+    .enter()
+    .append("g")
+    .attr("transform", function (d) {
+      return "translate(" + x0(d.raceName) + ",0)";
+    })
+    .selectAll("rect")
+    .data(function (d) {
+      return keys.map(function (key) {
+        return { key: key, value: d[key] };
+      });
+    })
+    .enter()
+    .append("rect")
+    .attr("x", function (d) {
+      return x1(d.key);
+    })
+    .attr("y", function (d) {
+      return y(d.value);
+    })
+    .attr("width", x1.bandwidth())
+    .attr("height", function (d) {
+      return height - y(d.value);
+    })
+    .attr("fill", function (d) {
+      return colors(d.key);
+    });
+
+  g.append("g")
+    .attr("class", "axis")
+    .attr("transform", "translate(0," + height + ")")
+    .call(d3.axisBottom(x0))
+    .selectAll("text")
+    .style("text-anchor", "end")
+    .attr("dx", "-.8em")
+    .attr("dy", ".15em")
+    .attr("transform", "rotate(-65)")
+    .append("text")
+    .attr("y", height)
+    .attr("x", width)
+    .attr("text-anchor", "end")
+    .attr("stroke", "black")
+    .text("Race");
+
+  g.append("g")
+    .attr("class", "axis")
+    .call(d3.axisLeft(y).ticks(null, "s"))
+    .append("text")
+    .attr("transform", "rotate(-90)")
+    .attr("y", 6)
+    .attr("dy", "-5.1em")
+    .attr("text-anchor", "end")
+    .attr("fill", "#000")
+    .attr("font-weight", "bold")
+    .text("Gained-Lost Score");
 
   // let width = set_width - margin.left - margin.right - 300,
   //   height = set_height - margin.top - margin.bottom;
@@ -403,6 +543,7 @@ let renderRacing = (inputData, colors, compareData) => {
       });
     }
   }
+
   let jsonString = JSON.stringify(data);
 
   // remove previous svg
@@ -692,46 +833,63 @@ function renderGraph(data, lsmPoints, svg, x, y, colors, compareData) {
 }
 
 export default function Details(props) {
-    let svgRef = React.useRef(null);
-    let graphs = [renderRaceConsistency, renderTimeConsistency, renderPositionsGained, renderRacing];
-    //collect relevant data to compare
-    let compareData = props.compareData.map(data => data[props.graph.id]);
-    const colors = d3.scaleOrdinal().range([props.color.driver[500], ...(props.color.compare.map(color => color[500]))]);
+  let svgRef = React.useRef(null);
+  let graphs = [
+    renderRaceConsistency,
+    renderTimeConsistency,
+    renderPositionsGained,
+    renderRacing,
+  ];
+  //collect relevant data to compare
+  let compareData = props.compareData.map((data) => data[props.graph.id]);
+  const colors = d3
+    .scaleOrdinal()
+    .range([
+      props.color.driver[500],
+      ...props.color.compare.map((color) => color[500]),
+    ]);
 
-    React.useEffect(() => {
-        graphs[props.graph.id](props.data[props.graph.id], colors, compareData);
-    }, [props]);
+  React.useEffect(() => {
+    graphs[props.graph.id](props.data[props.graph.id], colors, compareData);
+  }, [props]);
 
-    return (
-            <Grid container direction="column">
-                <Grid item xs={12} >
-                    <div style={{position: "relative", left:11.8,top:6}}>
-                        <Typography sx={{fontSize:"20px",fontWeight:"600"}}>
-                            {props.graph.name}
-                        </Typography>
-                    </div>
-                </Grid>
-                <Grid item xs={12} sx={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                        }}>
-                    <div className="graph">
-                        <svg ref={svgRef}/>
-                    </div>
-                </Grid>
-                <Grid item xs={12}>
-                    <Box sx={{ px: 1, pb:1,border: '1px dashed grey' ,m:2}}>
-                        <div>
-                            <Typography variant="caption" sx={{color: "rgba(0, 0, 0, 0.6)"}} >
-                                {"Detailed explanation of graph " + props.graph.name + ":"}
-                            </Typography>
-                        </div>
-                        <Typography variant="caption" sx={{pl: 2, color: "rgba(0, 0, 0, 0.6)"}}>
-                            {props.graph.explanation}
-                        </Typography>
-                    </Box>
-                </Grid>
-            </Grid>
-    );
+  return (
+    <Grid container direction="column">
+      <Grid item xs={12}>
+        <div style={{ position: "relative", left: 11.8, top: 6 }}>
+          <Typography sx={{ fontSize: "20px", fontWeight: "600" }}>
+            {props.graph.name}
+          </Typography>
+        </div>
+      </Grid>
+      <Grid
+        item
+        xs={12}
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <div className="graph">
+          <svg ref={svgRef} />
+        </div>
+      </Grid>
+      <Grid item xs={12}>
+        <Box sx={{ px: 1, pb: 1, border: "1px dashed grey", m: 2 }}>
+          <div>
+            <Typography variant="caption" sx={{ color: "rgba(0, 0, 0, 0.6)" }}>
+              {"Detailed explanation of graph " + props.graph.name + ":"}
+            </Typography>
+          </div>
+          <Typography
+            variant="caption"
+            sx={{ pl: 2, color: "rgba(0, 0, 0, 0.6)" }}
+          >
+            {props.graph.explanation}
+          </Typography>
+        </Box>
+      </Grid>
+    </Grid>
+  );
 }

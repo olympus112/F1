@@ -314,12 +314,33 @@ function preprocessCharacteristics(allRaces, allResults, allLapTimes, allQualifi
                 found = true;
 
                 // Positions gained lost
+
+                let gLRaceScore;
+                let positionsGainedLost = parseInt(result.grid) - (result.position === "\\N" ? 20 : parseInt(result.position)); 
+
+                if (parseInt(result.grid) === 1 && parseInt(result.position) === 1){
+                    gLRaceScore = 1;
+                } else if (positionsGainedLost > 0){
+                    let possibleGainedPositions = parseInt(result.grid - 1);
+                    gLRaceScore =  0.5 + 0.5 * (positionsGainedLost/possibleGainedPositions);
+
+                } else if (positionsGainedLost < 0){
+                    let possibleLostPositions = 20 - parseInt(result.grid);
+                    gLRaceScore =  0.5 + 0.5 * (positionsGainedLost/possibleLostPositions);
+
+                } else {
+                    gLRaceScore = 0.5;
+                }
+                
                 pglData.push({
                     raceName: race.name,
                     round: race.round,
-                    gaindLost: parseInt(result.grid) - (result.position === "\\N" ? 20 : parseInt(result.position))
+                    grid: parseInt(result.grid),
+                    position: result.position === "\\N" ? 20 : parseInt(result.position),
+                    gainedLost: positionsGainedLost,
+                    gainedLostScore: gLRaceScore
                 })
-                pglScore = pglScore + (parseInt(result.grid) - (result.position === "\\N" ? 20 : parseInt(result.position)));
+                pglScore = pglScore + gLRaceScore;
 
                 // Racing
                 rData.push({
