@@ -373,7 +373,7 @@ function preprocessCharacteristics(allRaces, allResults, allLapTimes, allQualifi
     let positionsGainedLost = {data: pglData, score: pglScore};
 
     // Racing
-    rScore = rScore / rData.length;
+    rScore = 20 - (rScore / rData.length);
     rData.sort((a,b) => parseInt(a["round"]) - parseInt(b["round"]));
     let racing = {data: rData, score: rScore};
 
