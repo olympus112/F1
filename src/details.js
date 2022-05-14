@@ -455,8 +455,8 @@ let renderPositionsGained = (inputData, colors, compareData) => {
   g.append("text")
     .attr("class", "y label")
     .attr("text-anchor", "end")
-    .attr("y", 0)
-    .attr("dy", "-2.1em")
+    .attr("y",0)
+    .attr("dy", "-2.5em")
     .attr("transform", "rotate(-90)")
     .text("Positions gained/lost score");
 

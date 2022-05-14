@@ -22,13 +22,13 @@ export const Graphs = {
     },
     positionsGainedLost: {
         id: 2,
-        name: "Positions gained/lost",
-        explanation: "TODO"
+        name: "Positions Gained/Lost",
+        explanation: "The Positions Gained/Lost attribute gives an indication on how good a driver finished the race compared to the starting position. Winning the race gives a score of 1, finishing in the same position as at the start of the race gives a score of 0.5. The score is calculated by comparing the possible gained/lost positions with the actual positions gained/lost."
     },
     racing: {
         id: 3,
         name: "Racing",
-        explanation: "The Racing attribute gives an indication of how good this driver is in the race itself. On the y-axis, the position is showed of which the racer finished in each race. This means lower values on the y-axis mean a better Racing score."
+        explanation: "The Racing attribute gives an indication of how good this driver is in the race itself. On the y-axis, the position is shown of which the racer finished in each race. This means lower values on the y-axis mean a better Racing score."
     },
     timeRacing: {
         id: 4,
