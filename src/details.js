@@ -306,52 +306,63 @@ let renderRaceConsistency = (inputData, colors, compareData) => {
 };
 
 let renderPositionsGained = (inputData, colors, compareData) => {
+  function lookUpScore(round, data) {
+    let pos = 0;
+
+    data.forEach((race) => {
+      if (race["round"] === round) {
+        pos = race["gainedLostScore"];
+      }
+    });
+    return pos;
+  }
+
   let data = [];
 
   if (compareData.length === 0) {
-    for (let i = 0; i < inputData.data.length; i++) {
+    inputData.data.forEach((race) => {
       data.push({
-        raceName: inputData.data[i]["raceName"],
-        round: inputData.data[i]["round"],
-        primaryDriver: inputData.data[i]["gainedLostScore"],
+        raceName: race["raceName"],
+        round: race["round"],
+        primaryDriver: race["gainedLostScore"],
       });
-    }
+    });
   }
 
   if (compareData.length === 1) {
-    for (let i = 0; i < inputData.data.length; i++) {
+    inputData.data.forEach((race) => {
       data.push({
-        raceName: inputData.data[i]["raceName"],
-        round: inputData.data[i]["round"],
-        primaryDriver: inputData.data[i]["gainedLostScore"],
-        secondDriver: compareData[0].data[i]["gainedLostScore"],
+        raceName: race["raceName"],
+        round: race["round"],
+        primaryDriver: race["gainedLostScore"],
+        secondDriver: lookUpScore(race["round"], compareData[0].data),
       });
-    }
+    });
   }
 
   if (compareData.length === 2) {
-    for (let i = 0; i < inputData.data.length; i++) {
+    inputData.data.forEach((race) => {
       data.push({
-        raceName: inputData.data[i]["raceName"],
-        round: inputData.data[i]["round"],
-        primaryDriver: inputData.data[i]["gainedLostScore"],
-        secondDriver: compareData[0].data[i]["gainedLostScore"],
-        thirdDriver: compareData[1].data[i]["gainedLostScore"],
+        raceName: race["raceName"],
+        round: race["round"],
+        primaryDriver: race["gainedLostScore"],
+        secondDriver: lookUpScore(race["round"], compareData[0].data),
+        thirdDriver: lookUpScore(race["round"], compareData[1].data),
       });
-    }
+    });
   }
 
   if (compareData.length === 3) {
-    for (let i = 0; i < inputData.data.length; i++) {
+    inputData.data.forEach((race) => {
       data.push({
-        raceName: inputData.data[i]["raceName"],
-        round: inputData.data[i]["round"],
-        primaryDriver: inputData.data[i]["gainedLostScore"],
-        secondDriver: compareData[0].data[i]["gainedLostScore"],
-        thirdDriver: compareData[1].data[i]["gainedLostScore"],
-        forthDriver: compareData[2].data[i]["gainedLostScore"],
+        raceName: race["raceName"],
+        round: race["round"],
+        primaryDriver: race["gainedLostScore"],
+        secondDriver: lookUpScore(race["round"], compareData[0].data),
+        thirdDriver: lookUpScore(race["round"], compareData[1].data),
+        forthDriver: lookUpScore(race["round"], compareData[2].data),
       });
-    }
+    });
   }
 
   let jsonString = JSON.stringify(data);
@@ -532,8 +543,17 @@ let renderPositionsGained = (inputData, colors, compareData) => {
 };
 
 let renderRacing = (inputData, colors, compareData) => {
-  console.log(compareData);
-  console.log(inputData);
+  function lookUpResult(round, data) {
+    let pos = 0;
+
+    data.forEach((race) => {
+      if (race["round"] === round) {
+        pos = race["position"];
+      }
+    });
+    return pos;
+  }
+
   let data = [];
   // data = [
   //  {
@@ -548,50 +568,51 @@ let renderRacing = (inputData, colors, compareData) => {
   //]
 
   if (compareData.length === 0) {
-    for (let i = 0; i < inputData.data.length; i++) {
+    inputData.data.forEach((race) => {
       data.push({
-        raceName: inputData.data[i]["raceName"],
-        round: inputData.data[i]["round"],
-        primaryDriver: inputData.data[i]["position"],
+        raceName: race["raceName"],
+        round: race["round"],
+        primaryDriver: race["position"],
       });
-    }
+    });
   }
 
   if (compareData.length === 1) {
-    for (let i = 0; i < inputData.data.length; i++) {
+    inputData.data.forEach((race) => {
       data.push({
-        raceName: inputData.data[i]["raceName"],
-        round: inputData.data[i]["round"],
-        primaryDriver: inputData.data[i]["position"],
-        secondDriver: compareData[0].data[i]["position"],
+        raceName: race["raceName"],
+        round: race["round"],
+        primaryDriver: race["position"],
+        secondDriver: lookUpResult(race["round"], compareData[0].data),
       });
-    }
+    });
   }
 
   if (compareData.length === 2) {
-    for (let i = 0; i < inputData.data.length; i++) {
+    inputData.data.forEach((race) => {
       data.push({
-        raceName: inputData.data[i]["raceName"],
-        round: inputData.data[i]["round"],
-        primaryDriver: inputData.data[i]["position"],
-        secondDriver: compareData[0].data[i]["position"],
-        thirdDriver: compareData[1].data[i]["position"],
+        raceName: race["raceName"],
+        round: race["round"],
+        primaryDriver: race["position"],
+        secondDriver: lookUpResult(race["round"], compareData[0].data),
+        thirdDriver: lookUpResult(race["round"], compareData[1].data),
       });
-    }
+    });
   }
 
   if (compareData.length === 3) {
-    for (let i = 0; i < inputData.data.length; i++) {
+    inputData.data.forEach((race) => {
       data.push({
-        raceName: inputData.data[i]["raceName"],
-        round: inputData.data[i]["round"],
-        primaryDriver: inputData.data[i]["position"],
-        secondDriver: compareData[0].data[i]["position"],
-        thirdDriver: compareData[1].data[i]["position"],
-        forthDriver: compareData[2].data[i]["position"],
+        raceName: race["raceName"],
+        round: race["round"],
+        primaryDriver: race["position"],
+        secondDriver: lookUpResult(race["round"], compareData[0].data),
+        thirdDriver: lookUpResult(race["round"], compareData[1].data),
+        forthDriver: lookUpResult(race["round"], compareData[2].data),
       });
-    }
+    });
   }
+  console.log(data);
 
   let jsonString = JSON.stringify(data);
 
