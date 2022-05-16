@@ -11,7 +11,7 @@ import Avatar from "@mui/material/Avatar";
 export default function DriverPicker(props) {
     return (
         <Grid container spacing={2} alignItems="center" justifyContent="center">
-            <Grid item xs={4}>
+            <Grid item xs={5}>
                 <DriverCard
                     color={props.color}
                     driver={props.driver}
@@ -22,7 +22,7 @@ export default function DriverPicker(props) {
                     selectDriver={props.selectDriver}
                 />
             </Grid>
-            <Grid item xs={8}>
+            <Grid item xs={7}>
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
                         <YearPicker

@@ -5,7 +5,7 @@ import {Graphs} from "./App";
 import Typography from "@mui/material/Typography";
 
 
-function renderSpiderGraph(className, data, options, selectGraph) {
+function renderSpiderGraph(className, data, options, selectGraph, averages) {
     const cfg = {
         width: options.width,			            // Width of the circle
         height: options.height,			            // Height of the circle
@@ -33,19 +33,24 @@ function renderSpiderGraph(className, data, options, selectGraph) {
 
     const allAxis = data[0].attributes.map(attribute => attribute.name); // Names of each axis
     const total = allAxis.length; // The number of different axes
-    const minValues = allAxis.map((axis, index) => d3.min(data.map(racer => racer.attributes[index].value)));
-    const maxValues = allAxis.map((axis, index) => d3.max(data.map(racer => racer.attributes[index].value)));
+    const inverted = ["timeRacing", "timeRacing"];
+    const minValues = Object.keys(averages).map(attribute => inverted.includes(attribute) ? averages[attribute].max : averages[attribute].min);
+    const maxValues = Object.keys(averages).map(attribute => inverted.includes(attribute) ? averages[attribute].min : averages[attribute].max);
+
+    // Time consistency
+    minValues[1] = 10;
+    maxValues[1] = 0;
+
     const minValue = d3.min(minValues); // Min value of all attributes
     const maxValue = d3.max(maxValues); // Max value of all attributes
     const radius = Math.min(cfg.width / 2, cfg.height / 2); // Radius of the outermost circle
     const Format = d3.format('.1%'); // Percentage formatting
     const angleSlice = Math.PI * 2 / total; // The width in radians of each "slice"
 
-
     // Scale for the radius
     const rScales = allAxis.map(
         (axis, index) => d3.scaleLinear()
-        .domain([minValues[index] - 0.3 * (maxValues[index] - minValues[index]), maxValues[index] + 0.3 * (maxValues[index] - minValues[index])])
+        .domain([minValues[index], maxValues[index]])
         .range([0, radius])
     );
     // Remove whatever chart with the same id/class was present before
@@ -53,6 +58,7 @@ function renderSpiderGraph(className, data, options, selectGraph) {
 
     // Initiate the radar chart SVG
     const svg = d3.select(className).append("svg")
+        // .attr("viewBox", `0 0 ${cfg.width + cfg.margin.left + cfg.margin.right} ${cfg.height + cfg.margin.top + cfg.margin.bottom}`)
         .attr("width", cfg.width + cfg.margin.left + cfg.margin.right)
         .attr("height", cfg.height + cfg.margin.top + cfg.margin.bottom)
         .attr("class", "radar" + className);
@@ -109,7 +115,7 @@ function renderSpiderGraph(className, data, options, selectGraph) {
         .attr("dy", "0.4em")
         .style("font-size", "10px")
         .attr("fill", "#737373")
-        .text(level => Format(maxValue * level / cfg.levels));
+        .text(level => Format(level / cfg.levels));
 
     // Create the straight lines radiating outward from the center
     const axis = axisGrid.selectAll(".axis")
@@ -140,13 +146,13 @@ function renderSpiderGraph(className, data, options, selectGraph) {
         .call(wrap, cfg.wrapWidth)
         .on("mouseover", function (event, axis) {
             d3.select(event.target.parentElement)
-                .transition()
+                .transition().duration(100)
                 .style('fill', 'darkOrange')
                 .style('font-size', '14px');
         })
         .on("mouseout", function (event, axis) {
             d3.select(event.target.parentElement)
-                .transition()
+                .transition().duration(100)
                 .style('fill', 'black')
                 .style('font-size', '11px');
         })
@@ -190,12 +196,29 @@ function renderSpiderGraph(className, data, options, selectGraph) {
             d3.select(this)
                 .transition().duration(200)
                 .style("fill-opacity", 0.7);
+
+
+            tooltip
+                .text(racer.name)
+                .transition().duration(200)
+                .style("opacity", 1);
+        })
+        .on('mousemove', function (event) {
+            let newX = d3.pointer(event)[0];
+            let newY = d3.pointer(event)[1] - 10;
+            tooltip
+                .attr('x', newX)
+                .attr('y', newY);
         })
         .on('mouseout', function () {
             // Bring back all blobs
             d3.selectAll(".radarArea")
                 .transition().duration(200)
                 .style("fill-opacity", cfg.opacityArea);
+            // Render name tooltip
+            tooltip
+                .transition().duration(200)
+                .style("opacity", 0);
         });
 
     // Create the outlines
@@ -208,18 +231,18 @@ function renderSpiderGraph(className, data, options, selectGraph) {
         .style("filter", "url(#glow)");
 
     // Append the circles
-    blobWrapper.selectAll(".radarCircle")
-        .data(racer => racer.attributes)
-        .enter().append("circle")
-        .attr("class", "radarCircle")
-        .attr("r", cfg.dotRadius)
-        .attr("cx", (attribute, index) => rScales[index](attribute.value) * Math.cos(angleSlice * index - Math.PI / 2))
-        .attr("cy", (attribute, index) => rScales[index](attribute.value) * Math.sin(angleSlice * index - Math.PI / 2))
-        .style("fill", (d, i, j) => {
-            // console.log(d);
-            return cfg.color(j);
-        })
-        .style("fill-opacity", 0.8);
+    // blobWrapper.selectAll(".radarCircle")
+    //     .data(racer => racer.attributes)
+    //     .enter().append("circle")
+    //     .attr("class", "radarCircle")
+    //     .attr("r", cfg.dotRadius)
+    //     .attr("cx", (attribute, index) => rScales[index](attribute.value) * Math.cos(angleSlice * index - Math.PI / 2))
+    //     .attr("cy", (attribute, index) => rScales[index](attribute.value) * Math.sin(angleSlice * index - Math.PI / 2))
+    //     .style("fill", (d, i, j) => {
+    //         // console.log(d);
+    //         return cfg.color(j);
+    //     })
+    //     .style("fill-opacity", 0.8);
 
     // Wrapper for the invisible circles on top
     const blobCircleWrapper = g.selectAll(".radarCircleWrapper")
@@ -232,30 +255,41 @@ function renderSpiderGraph(className, data, options, selectGraph) {
         .data((racer, index) => racer.attributes)
         .enter().append("circle")
         .attr("class", "radarInvisibleCircle")
+        .attr("data-index", (attribute, index) => index)
         .attr("r", cfg.dotRadius * 1.5)
         .attr("cx", (attribute, index) => rScales[index](attribute.value) * Math.cos(angleSlice * index - Math.PI / 2))
         .attr("cy", (attribute, index) => rScales[index](attribute.value) * Math.sin(angleSlice * index - Math.PI / 2))
         .style("fill", "none")
         .style("pointer-events", "all")
         .on("mouseover", function (event, attribute) {
-            let newX = parseFloat(d3.select(this).attr('cx')) - 10;
+            let index = parseInt(d3.select(this).attr('data-index'));
+            let newX = parseFloat(d3.select(this).attr('cx'));
             let newY = parseFloat(d3.select(this).attr('cy')) - 10;
 
             tooltip
                 .attr('x', newX)
                 .attr('y', newY)
-                .text(Format(attribute.value))
-                .transition().duration(50)
-                .style('opacity', 1);
+                .text(attribute.name + ": " + Format(rScales[index](attribute.value) / radius))
+                .transition().duration(200)
+                .style("opacity", 1);
         })
         .on("mouseout", function () {
-            tooltip.transition().duration(50)
+            tooltip
+                .transition().duration(200)
                 .style("opacity", 0);
         });
 
     //Set up the small tooltip for when you hover over a circle
     let tooltip = g.append("text")
         .attr("class", "tooltip")
+        .attr("text-anchor", "middle")
+        .attr("pointer-events", "none")
+        .attr("font-weight", "bold")
+        .attr("fill", "black")
+        .attr("stroke", "white")
+        .attr("stroke-linejoin", "round")
+        .attr("stroke-width", "1px")
+        .attr("paint-order", "stroke")
         .style("opacity", 0);
 
     //Wraps SVG text
@@ -346,7 +380,7 @@ export default function SpiderGraph(props) {
     };
 
     React.useEffect(() => {
-        renderSpiderGraph(".radarChart", spiderData, radarChartOptions, props.selectGraph);
+        renderSpiderGraph(".radarChart", spiderData, radarChartOptions, props.selectGraph, props.averages);
     }, [spiderData]);
 
     return (

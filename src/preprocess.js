@@ -6,7 +6,9 @@ import results from "./data/results.csv";
 import lapTimes from "./data/lap_times.csv";
 import qualifying from "./data/qualifying.csv";
 import constructors from "./data/constructors.csv";
+
 const countries = require('./data/countries.json');
+const characteristics = require('./data/characteristics.json');
 
 
 // [
@@ -260,6 +262,97 @@ export async function testCharacteristics() {
     console.log(a);
 }
 
+export function preprocessMinMaxCharacteristics() {
+    let template = {
+        "raceConsistency": {
+            min: Infinity,
+            max: -Infinity,
+            total: 0,
+            count: 0,
+            average: 0
+        },
+        "timeConsistency": {
+            min: Infinity,
+            max: -Infinity,
+            total: 0,
+            count: 0,
+            average: 0
+        },
+        "positionsGainedLost": {
+            min: Infinity,
+            max: -Infinity,
+            total: 0,
+            count: 0,
+            average: 0
+        },
+        "racing": {
+            min: Infinity,
+            max: -Infinity,
+            total: 0,
+            count: 0,
+            average: 0
+        },
+        "timeRacing": {
+            min: Infinity,
+            max: -Infinity,
+            total: 0,
+            count: 0,
+            average: 0
+        }
+    };
+    let result = {
+        total: {...template}
+    };
+    let totalResult = result.total;
+    for (let [driverId, years] of Object.entries(characteristics)) {
+        for (let [year, attributes] of Object.entries(years)) {
+            if (!result.hasOwnProperty(year)) {
+                result[year] = {...template};
+            }
+            let currentResult = result[year];
+            for (let [attribute, data] of Object.entries(attributes)) {
+                let score = 0;
+                if (data.hasOwnProperty("score")) {
+                    score = data.score;
+                } else if (data.hasOwnProperty("lsm")) {
+                    score = data.lsm.score;
+                }
+
+                if (score == null)
+                    continue;
+
+                // Total
+                currentResult[attribute].total += score;
+                totalResult[attribute].total += score;
+
+                // Count
+                currentResult[attribute].count++;
+                totalResult[attribute].count++;
+
+                // Min
+                if (score < currentResult[attribute].min)
+                    currentResult[attribute].min = score;
+                if (score < totalResult[attribute].min)
+                    totalResult[attribute].min = score;
+
+                // Max
+                if (score > currentResult[attribute].max)
+                    currentResult[attribute].max = score;
+                if (score > totalResult[attribute].max)
+                    totalResult[attribute].max = score;
+            }
+        }
+    }
+
+    for (let [year, attributes] of Object.entries(result)) {
+        for (let [attribute, data] of Object.entries(attributes)) {
+            data.average = data.total / data.count;
+        }
+    }
+
+    exportToJsonFile("averages.json", result, '\t');
+}
+
 function preprocessCharacteristics(allRaces, allResults, allLapTimes, allQualifications, driverId, year) {
     const parseDate = d3.timeParse('%d/%m/%Y');
 
@@ -316,22 +409,22 @@ function preprocessCharacteristics(allRaces, allResults, allLapTimes, allQualifi
                 // Positions gained lost
 
                 let gLRaceScore;
-                let positionsGainedLost = parseInt(result.grid) - (result.position === "\\N" ? 20 : parseInt(result.position)); 
+                let positionsGainedLost = parseInt(result.grid) - (result.position === "\\N" ? 20 : parseInt(result.position));
 
-                if (parseInt(result.grid) === 1 && parseInt(result.position) === 1){
+                if (parseInt(result.grid) === 1 && parseInt(result.position) === 1) {
                     gLRaceScore = 1;
-                } else if (positionsGainedLost > 0){
+                } else if (positionsGainedLost > 0) {
                     let possibleGainedPositions = parseInt(result.grid - 1);
-                    gLRaceScore =  0.5 + 0.5 * (positionsGainedLost/possibleGainedPositions);
+                    gLRaceScore = 0.5 + 0.5 * (positionsGainedLost / possibleGainedPositions);
 
-                } else if (positionsGainedLost < 0){
+                } else if (positionsGainedLost < 0) {
                     let possibleLostPositions = 20 - parseInt(result.grid);
-                    gLRaceScore =  0.5 + 0.5 * (positionsGainedLost/possibleLostPositions);
+                    gLRaceScore = 0.5 + 0.5 * (positionsGainedLost / possibleLostPositions);
 
                 } else {
                     gLRaceScore = 0.5;
                 }
-                
+
                 pglData.push({
                     raceName: race.name,
                     round: race.round,
@@ -369,12 +462,12 @@ function preprocessCharacteristics(allRaces, allResults, allLapTimes, allQualifi
 
     // Positions gained lost
     pglScore = pglScore / pglData.length;
-    pglData.sort((a,b) => parseInt(a["round"]) - parseInt(b["round"]));
+    pglData.sort((a, b) => parseInt(a["round"]) - parseInt(b["round"]));
     let positionsGainedLost = {data: pglData, score: pglScore};
 
     // Racing
     rScore = 20 - (rScore / rData.length);
-    rData.sort((a,b) => parseInt(a["round"]) - parseInt(b["round"]));
+    rData.sort((a, b) => parseInt(a["round"]) - parseInt(b["round"]));
     let racing = {data: rData, score: rScore};
 
     // Race consistency
@@ -455,8 +548,8 @@ async function preprocessDrivers() {
     return result;
 }
 
-export function exportToJsonFile(file, jsonData) {
-    let dataStr = JSON.stringify(jsonData);
+export function exportToJsonFile(file, jsonData, separator = undefined) {
+    let dataStr = separator === undefined ? JSON.stringify(jsonData) : JSON.stringify(jsonData, null, separator);
     let dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
 
     let linkElement = document.createElement('a');

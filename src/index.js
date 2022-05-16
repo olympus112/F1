@@ -17,6 +17,7 @@ const preprocessedImages = require('./data/images.json');
 const preprocessedDrivers = require('./data/drivers.json');
 const preprocessedCharacteristics = require('./data/characteristics.json');
 const preprocessedFlags = require('./data/flags.json');
+const preprocessedAverages = require('./data/averages.json');
 
 const rootElement = document.getElementById('root');
 const root = createRoot(rootElement);
@@ -30,18 +31,19 @@ d3.csv(drivers).then(drivers => {
                         root.render(
                             <StrictMode>
                                 <App preprocessed={{
-                                        drivers: preprocessedDrivers, 
-                                        teams: preprocessedTeams, 
-                                        images: preprocessedImages,
-                                        characteristics: preprocessedCharacteristics,
-                                        flags: preprocessedFlags
-                                    }}
-                                        drivers={drivers}
-                                        races={races}
-                                        results={results}
-                                        laptimes={laptimes}
-                                        constructors={constructors}
-                                        qualifying = {qualifying}
+                                    drivers: preprocessedDrivers,
+                                    teams: preprocessedTeams,
+                                    images: preprocessedImages,
+                                    characteristics: preprocessedCharacteristics,
+                                    flags: preprocessedFlags,
+                                    averages: preprocessedAverages
+                                }}
+                                     drivers={drivers}
+                                     races={races}
+                                     results={results}
+                                     laptimes={laptimes}
+                                     constructors={constructors}
+                                     qualifying={qualifying}
                                 />
                             </StrictMode>
                         );

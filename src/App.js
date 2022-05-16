@@ -7,7 +7,12 @@ import SpiderGraph from "./spidergraph";
 import Details from "./details";
 import {Paper, Box} from "@mui/material";
 import {amber, cyan, green, purple, red, yellow} from '@mui/material/colors';
-import {downloadCharacteristics, downloadCountries, testCharacteristics} from "./preprocess";
+import {
+    downloadCharacteristics,
+    downloadCountries,
+    preprocessMinMaxCharacteristics,
+    testCharacteristics
+} from "./preprocess";
 
 export const Graphs = {
     raceConsistency: {
@@ -78,8 +83,6 @@ class App extends Component {
                 border: "#bdbdbd",
                 driver: red,
                 compare: [purple, amber, cyan, green] // Access using red[500], see https://mui.com/material-ui/customization/color/
-                // driver: "#CC333F",
-                // compare: ["#9467BC", "#EDC951", "#00A0B0", "#3ba95f"]
             }
         };
     }
@@ -138,17 +141,21 @@ class App extends Component {
     };
 
     inCompare = (compare) => {
-        if (this.state.compare.includes(compare)) {
-            return true;
-        }
-        return false;
+        return !!this.state.compare.includes(compare);
     };
 
     resetCompare = () => {
+
+        let compareDrivers = this.state.preprocessed.drivers.filter(
+            driver => driver.years.includes(this.state.year) && driver !== this.state.driver
+        );
+        let filteredCompare = this.state.compare.filter(compare => compareDrivers.includes(compare));
+
         this.setState({
-            compare: [],
-            compareData: [],
+            compare: filteredCompare,
+            compareData: filteredCompare.map(compare => this.getData(compare.id, this.state.year)),
         });
+
         console.log("Cleared drivers from compare");
     };
 
@@ -191,13 +198,21 @@ class App extends Component {
         return (
             <Container maxWidth="xl">
                 <Box sx={{
-                    bgcolor: 'gray',
                     borderRadius: 1,
-                    mb: 2
+                    mb: 1,
+                    mt: 1,
+                    backgroundSize: "contain",
+                    backgroundRepeat: "repeat-x",
+                    backgroundImage: "url('https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Checkerboard_Pattern_8x6.svg/1200px-Checkerboard_Pattern_8x6.svg.png')",
                 }}>
-                    <Typography variant="h6" gutterBottom component="div" sx={{color: "white", p: 1, pl: 2}}>
-                        F1 Dashboard
-                    </Typography>
+                    <Box sx={{
+                        borderRadius: 1,
+                        backgroundImage: "linear-gradient(to right, rgb(0, 0, 0, 0.9), transparent)"
+                    }}>
+                        <Typography variant="h6" gutterBottom component="div" sx={{color: "white", p: 1, pl: 2}}>
+                            F1 Dashboard
+                        </Typography>
+                    </Box>
                 </Box>
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
@@ -233,6 +248,7 @@ class App extends Component {
                                 compare={this.state.compare}
                                 data={this.state.data}
                                 compareData={this.state.compareData}
+                                averages={this.state.preprocessed.averages[this.state.year]}
                                 selectGraph={this.selectGraph}
                             />
                         </Paper>
@@ -242,7 +258,7 @@ class App extends Component {
                             <Details
                                 color={this.state.color}
                                 data={this.state.data}
-                                compareData = {this.state.compareData}
+                                compareData={this.state.compareData}
                                 graph={this.state.graph}
                             />
                         </Paper>

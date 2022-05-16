@@ -31,23 +31,14 @@ export default function ComparePicker(props) {
         );
     };
 
-    // function compareDrivers() {
-    //     let compareList = [];
-    //     let driver = props.driver;
-    //     let year = props.year;
-    //     console.log(driver.id);
-    //     console.log(year);
-    //     for (let d of props.drivers){
-    //         if (d.years.includes(year) && driver.id !== d.id  && !props.compare.includes(d)){
-    //             compareList.push(d);
-    //         }
-    //     }
-    //     return compareList;
-    // };
-
     let compareDrivers = props.drivers.filter(
         driver => driver.years.includes(props.year) && driver !== props.driver /*&& !props.compare.includes(driver)*/
     );
+
+    let colors = [
+        props.color.driver,
+        ...props.color.compare
+    ]
 
     return (
         // <Paper elevation={0} variant="outlined" sx={{borderColor: props.color.border}}>
@@ -139,25 +130,16 @@ export default function ComparePicker(props) {
                 <InputLabel>Choose drivers to compare</InputLabel>
                 <Select
                     multiple
-                    // renderInput={(params) => (
-                    //             <TextField
-                    //                 {...params}
-                    //                 variant="standard"
-                    //                 label="Multiple values"
-                    //                 placeholder="Favorites"
-                    //             />
-                    //             )}
-                    sx={{height:56}}
-                    value={props.compare}
+                    sx={{height: 56}}
+                    value={[props.driver, ...props.compare]}
                     input={<OutlinedInput label="Choose drivers to compare"/>}
                     renderValue={(compare) => (
                         <Box sx={{display: 'flex', flexWrap: 'wrap', gap: 0.5}}>
-                            {compare.map(driver => {
-                                let index = props.compare.indexOf(driver);
+                            {compare.map((driver, index) => {
                                 let sx = {};
                                 if (index !== -1) {
                                     sx = {
-                                        bgcolor: props.color.compare[index][500],
+                                        bgcolor: colors[index][500],
                                         color: "white"
                                     }
                                 }
@@ -167,7 +149,7 @@ export default function ComparePicker(props) {
                                         avatar={<Avatar alt={driver.name} src={props.images[driver.id].image}/>}
                                         key={"chip_" + driver.name}
                                         label={props.flags[driver.nationality] + " " + driver.name}
-                                        onDelete={(event) => {props.removeCompare(driver)}}
+                                        onDelete={index === 0 ? null : (event) => props.removeCompare(driver)}
                                         onMouseDown={(event) => {
                                             event.stopPropagation();
                                         }}
@@ -190,20 +172,20 @@ export default function ComparePicker(props) {
                         }
 
                         return (
-                            <MenuItem 
-                                key={"menu_" + driver.name} 
-                                value={driver} 
+                            <MenuItem
+                                key={"menu_" + driver.name}
+                                value={driver}
                                 onClick={event => {
-                                            if(props.inCompare(driver)){props.removeCompare(driver)}
-                                            else{
-                                                if(props.compare.length < compareLimit){props.addCompare(driver);};
-                                                }
-                                            }
-                                        }
+                                    if (props.inCompare(driver)) {
+                                        props.removeCompare(driver);
+                                    } else if (props.compare.length < compareLimit) {
+                                        props.addCompare(driver);
+                                    }
+                                }}
                             >
                                 <Checkbox checked={props.compare.includes(driver)}
-                                    disabled={props.compare.length >= compareLimit}
-                                    sx={sx}
+                                          disabled={props.compare.length >= compareLimit}
+                                          sx={sx}
                                 />
                                 <ListItemText primary={props.flags[driver.nationality] + " " + driver.name}/>
                             </MenuItem>

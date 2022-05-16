@@ -121,7 +121,7 @@ export default function DriverCard(props) {
                                 {...params}
                                 variant={"standard"}
                                 size={"normal"}
-                                margin={"small"}
+                                margin={"none"}
                                 fullWidth
                                 inputProps={{
                                     ...params.inputProps,
@@ -144,7 +144,11 @@ export default function DriverCard(props) {
                 </Grid>
                 <Grid item xs={6}>
                     <Grid container direction={'row'} alignItems={'space-between'} justifyContent={'center'}>
-                        <Grid item xs={4} p={2} alignItems="center">
+                        <Grid item xs={4} p={1} alignItems="center" sx={{
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center"
+                        }}>
                             <Avatar
                                 alt={props.driver.name}
                                 src={props.images[props.driver.id].image}
@@ -152,9 +156,9 @@ export default function DriverCard(props) {
                                 variant={'rounded'}
                             />
                         </Grid>
-                        <Grid item xs={8}>
+                        <Grid item xs={8} p={1}>
                             <List sx={{width: '100%'}} disablePadding dense={true}>
-                                <ListItem key={"Nationality" + props.driver.id} >
+                                <ListItem disablePadding key={"Nationality" + props.driver.id} >
                                     <ListItemText primary={
                                         <Typography>
                                             Nationality
@@ -164,7 +168,7 @@ export default function DriverCard(props) {
                                         {props.driver.nationality + " " + props.flags[props.driver.nationality] || ""}
                                     </Typography>
                                 </ListItem>
-                                <ListItemButton key={"TeamHeader" + props.driver.id} onClick={() => setOpen(!open)}>
+                                <ListItemButton disableGutters key={"TeamHeader" + props.driver.id} onClick={() => setOpen(!open)}>
                                     <ListItemText primary={
                                         <Typography component={"span"}>
                                             Teams <Chip label={props.driver.teams.length} size={'small'} />
@@ -191,7 +195,7 @@ export default function DriverCard(props) {
                                         })}
                                     </List>
                                 </Collapse>
-                                <ListItemButton  key={"Link" + props.driver.id} onClick={() => window.open(props.driver.wiki, "_blank")}>
+                                <ListItemButton disableGutters  key={"Link" + props.driver.id} onClick={() => window.open(props.driver.wiki, "_blank")}>
                                     <ListItemText primary={
                                         <Typography>
                                             Wikipedia
