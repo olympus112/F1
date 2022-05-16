@@ -145,7 +145,6 @@ class App extends Component {
     };
 
     resetCompare = () => {
-
         let compareDrivers = this.state.preprocessed.drivers.filter(
             driver => driver.years.includes(this.state.year) && driver !== this.state.driver
         );

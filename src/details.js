@@ -1166,12 +1166,14 @@ export default function Details(props) {
                             {"Detailed explanation of graph " + props.graph.name + ":"}
                         </Typography>
                     </div>
-                    <Typography
-                        variant="caption"
-                        sx={{color: "rgba(0, 0, 0, 0.6)"}}
-                    >
-                        {props.graph.explanation}
-                    </Typography>
+                    <Box sx={{ pl: 2}}>
+                        <Typography
+                            variant="caption"
+                            sx={{ color: "rgba(0, 0, 0, 0.6)" }}
+                        >
+                            {props.graph.explanation}
+                        </Typography>
+                    </Box>
                 </Box>
             </Grid>
         </Grid>
