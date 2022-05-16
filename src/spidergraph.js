@@ -367,9 +367,14 @@ export default function SpiderGraph(props) {
                         Click on a skill to focus
                     </Typography>
                 </div>
-                <Typography variant="caption" sx={{pl: 2, color: "rgba(0, 0, 0, 0.6)"}}>
-                    Uitleg TODO
-                </Typography>
+                <Box sx={{ pl: 2}}>
+                    <Typography
+                        variant="caption"
+                        sx={{ color: "rgba(0, 0, 0, 0.6)" }}
+                    >
+                        TODO: uitleg spider graph
+                    </Typography>
+                </Box>
             </Box>
         </Grid>
     </Grid>)
