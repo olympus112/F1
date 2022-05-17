@@ -47,8 +47,8 @@ export default function YearPicker(props){
                     max={maxYear}
                     track={false}
                     onChange={(event, newYear) => {
+                        props.resetCompare(newYear);
                         props.selectYear(newYear);
-                        props.resetCompare();
                     }}
                 />
             </Grid>

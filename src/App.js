@@ -144,15 +144,15 @@ class App extends Component {
         return !!this.state.compare.includes(compare);
     };
 
-    resetCompare = () => {
+    resetCompare = (newYear) => {
         let compareDrivers = this.state.preprocessed.drivers.filter(
-            driver => driver.years.includes(this.state.year) && driver !== this.state.driver
+            driver => driver.years.includes(newYear) && driver !== this.state.driver
         );
         let filteredCompare = this.state.compare.filter(compare => compareDrivers.includes(compare));
 
         this.setState({
             compare: filteredCompare,
-            compareData: filteredCompare.map(compare => this.getData(compare.id, this.state.year)),
+            compareData: filteredCompare.map(compare => this.getData(compare.id, newYear)),
         });
 
         console.log("Cleared drivers from compare");
