@@ -264,50 +264,32 @@ export async function testCharacteristics() {
 
 export function preprocessMinMaxCharacteristics() {
     let template = {
-        "raceConsistency": {
-            min: Infinity,
-            max: -Infinity,
-            total: 0,
-            count: 0,
-            average: 0
-        },
-        "timeConsistency": {
-            min: Infinity,
-            max: -Infinity,
-            total: 0,
-            count: 0,
-            average: 0
-        },
-        "positionsGainedLost": {
-            min: Infinity,
-            max: -Infinity,
-            total: 0,
-            count: 0,
-            average: 0
-        },
-        "racing": {
-            min: Infinity,
-            max: -Infinity,
-            total: 0,
-            count: 0,
-            average: 0
-        },
-        "timeRacing": {
-            min: Infinity,
-            max: -Infinity,
-            total: 0,
-            count: 0,
-            average: 0
-        }
+        min: 100,
+        max: -100,
+        total: 0,
+        count: 0,
+        average: 0
     };
     let result = {
-        total: {...template}
+        total: {
+            "raceConsistency": {...template},
+            "timeConsistency": {...template},
+            "positionsGainedLost": {...template},
+            "racing": {...template},
+            "timeRacing": {...template},
+        }
     };
     let totalResult = result.total;
     for (let [driverId, years] of Object.entries(characteristics)) {
         for (let [year, attributes] of Object.entries(years)) {
             if (!result.hasOwnProperty(year)) {
-                result[year] = {...template};
+                result[year] = {
+                    "raceConsistency": {...template},
+                    "timeConsistency": {...template},
+                    "positionsGainedLost": {...template},
+                    "racing": {...template},
+                    "timeRacing": {...template},
+                };
             }
             let currentResult = result[year];
             for (let [attribute, data] of Object.entries(attributes)) {
@@ -318,8 +300,9 @@ export function preprocessMinMaxCharacteristics() {
                     score = data.lsm.score;
                 }
 
-                if (score == null)
+                if (score == null) {
                     continue;
+                }
 
                 // Total
                 currentResult[attribute].total += score;
