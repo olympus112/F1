@@ -501,7 +501,13 @@ let renderPositionsGained = (inputData, colors, compareData, driver, compare) =>
         .attr("y", height - 6)
         .text("Races");
 
-    g.append("g").attr("class", "axis").call(d3.axisLeft(y).ticks(null, "s"));
+    g.append("g")
+        .attr("class", "axis")
+        .call(
+            d3.axisLeft(y)
+                .ticks(null, "s")
+                .tickFormat(d3.format('.0%'))
+        );
 
     g.append("text")
         .attr("class", "y label")
