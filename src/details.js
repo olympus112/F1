@@ -5,7 +5,7 @@ import Typography from "@mui/material/Typography";
 
 let parseDate = d3.timeParse("%d/%m/%Y");
 
-let set_height = 420;
+let set_height = 400;
 let set_width = 800;
 
 let DEFAULT_OPACITY = 0.35;
@@ -14,7 +14,7 @@ let IGNORE_OPACITY = 0.1;
 let STROKE_WIDTH = 2;
 
 // set the dimensions and margins of the graph
-let margin = {top: 20, right: 60, bottom: 60, left: 60},
+let margin = {top: 20, right: 60, bottom: 100, left: 60},
     width = set_width - margin.left - margin.right,
     height = set_height - margin.top - margin.bottom;
 
@@ -412,7 +412,7 @@ let renderPositionsGained = (inputData, colors, compareData, driver, compare) =>
         .select(".graph")
         .append("svg")
         .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + 2.3 * margin.bottom);
+        .attr("height", height + margin.top + margin.bottom);
 
     let g = svg
         .append("g")
@@ -691,7 +691,7 @@ let renderRacing = (inputData, colors, compareData, driver, compare) => {
         .select(".graph")
         .append("svg")
         .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + 2.3 * margin.bottom);
+        .attr("height", height + margin.top + margin.bottom);
 
     let g = svg
         .append("g")
@@ -1333,18 +1333,20 @@ export default function Details(props) {
                 </div>
             </Grid>
             <Grid item xs={12}>
-                <Box sx={{px: 1, pb: 1, border: "1px dashed grey", m: 2}}>
+                <Box sx={{height:"100px", px: 1, pb: 1, border: "1px dashed grey", m: 2}}>
                     <div>
-                        <Typography variant="caption" sx={{color: "rgba(0, 0, 0, 0.6)"}}>
+                        <Typography variant="caption" sx={{fontWeight:"bold", color: "rgba(0, 0, 0, 0.6)"}}>
                             {"Detailed explanation of graph " + props.graph.name + ":"}
                         </Typography>
                     </div>
-                    <Typography
-                        variant="caption"
-                        sx={{pl: 2, color: "rgba(0, 0, 0, 0.6)"}}
-                    >
-                        {props.graph.explanation}
-                    </Typography>
+                    <Box sx={{pl:2}}>
+                        <Typography
+                            variant="caption"
+                            sx={{color: "rgba(0, 0, 0, 0.6)"}}
+                        >
+                            {props.graph.explanation}
+                        </Typography>
+                    </Box>
                 </Box>
             </Grid>
         </Grid>

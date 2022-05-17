@@ -213,7 +213,7 @@ class App extends Component {
                         </Typography>
                     </Box>
                 </Box>
-                <Grid container spacing={2}>
+                <Grid container spacing={2} alignItems={"stretch"} >
                     <Grid item xs={12}>
                         <DriverPicker
                             color={this.state.color}
@@ -241,7 +241,7 @@ class App extends Component {
                         }}>
                             <SpiderGraph
                                 width={300}
-                                height={300}
+                                height={400}
                                 color={this.state.color}
                                 driver={this.state.driver}
                                 compare={this.state.compare}

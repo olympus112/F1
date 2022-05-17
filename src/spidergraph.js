@@ -371,11 +371,12 @@ export default function SpiderGraph(props) {
     const radarChartOptions = {
         width: props.width,
         height: props.height,
-        margin: {top: 60, right: 60, bottom: 60, left: 60},
+        margin: {top: 20, right: 60, bottom: 10, left: 60},
         levels: 5,
         roundStrokes: true,
         color: colors
     };
+    radarChartOptions.height -= radarChartOptions.margin.top + radarChartOptions.margin.bottom;
 
     React.useEffect(() => {
         renderSpiderGraph(".radarChart", spiderData, radarChartOptions, props.selectGraph, props.averages);
@@ -383,6 +384,13 @@ export default function SpiderGraph(props) {
 
     return (
     <Grid container direction="column">
+        <Grid item xs={12}>
+            <div style={{position: "relative", left: 11.8, top: 6}}>
+                <Typography sx={{fontSize: "20px", fontWeight: "600"}}>
+                    Characteristics
+                </Typography>
+            </div>
+        </Grid>
         <Grid item xs={12} sx={{
                             display: 'flex',
                             alignItems: 'center',
@@ -393,18 +401,18 @@ export default function SpiderGraph(props) {
             </div>
         </Grid>
         <Grid item xs={12}>
-            <Box sx={{ px: 1, pb:1,border: '1px dashed grey' ,m:2}}>
+            <Box sx={{height:"100px", px: 1, pb:1,border: '1px dashed grey' ,m:2}}>
                 <div>
-                    <Typography variant="caption" sx={{color: "rgba(0, 0, 0, 0.6)"}} >
+                    <Typography variant="caption" sx={{fontWeight:"bold", color: "rgba(0, 0, 0, 0.6)"}} >
                         Click on a skill to focus
                     </Typography>
                 </div>
-                <Box sx={{ pl: 2}}>
+                <Box sx={{pl: 2}}>
                     <Typography
                         variant="caption"
                         sx={{ color: "rgba(0, 0, 0, 0.6)" }}
                     >
-                        TODO: uitleg spider graph
+                        TODO please fix Geert x
                     </Typography>
                 </Box>
             </Box>
