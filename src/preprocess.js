@@ -181,9 +181,9 @@ function preprocessTimeRacing(driverId, race, qualifications) {
     let racerTime = -1; // default value, if not changed, value does not count.
     filteredQualifications.forEach(qualification => {
         let qualTime = qualification.q3;
-        if (qualTime === "\\N")
+        if (invalid(qualTime))
             qualTime = qualification.q2;
-        if (qualTime === "\\N")
+        if (invalid(qualTime))
             qualTime = qualification.q1;
         qualTime = qualTime.split(":");
 
@@ -258,7 +258,7 @@ export async function testCharacteristics() {
     let allLapTimes = await d3.csv(lapTimes);
     let allQualifications = await d3.csv(qualifying);
 
-    let a = preprocessCharacteristics(allRaces, allResults, allLapTimes, allQualifications, 1, 2021);
+    let a = preprocessCharacteristics(allRaces, allResults, allLapTimes, allQualifications, 847, 2019);
     console.log(a);
 }
 
@@ -336,6 +336,8 @@ export function preprocessMinMaxCharacteristics() {
     exportToJsonFile("averages.json", result, '\t');
 }
 
+function invalid(data) { return data === "\\N" || data === ""; }
+
 function preprocessCharacteristics(allRaces, allResults, allLapTimes, allQualifications, driverId, year) {
     const parseDate = d3.timeParse('%d/%m/%Y');
 
@@ -390,9 +392,8 @@ function preprocessCharacteristics(allRaces, allResults, allLapTimes, allQualifi
                 found = true;
 
                 // Positions gained lost
-
                 let gLRaceScore;
-                let positionsGainedLost = parseInt(result.grid) - (result.position === "\\N" ? 20 : parseInt(result.position));
+                let positionsGainedLost = parseInt(result.grid) - (invalid(result.position) ? 20 : parseInt(result.position));
 
                 if (parseInt(result.grid) === 1 && parseInt(result.position) === 1) {
                     gLRaceScore = 1;
@@ -412,7 +413,7 @@ function preprocessCharacteristics(allRaces, allResults, allLapTimes, allQualifi
                     raceName: race.name,
                     round: race.round,
                     grid: parseInt(result.grid),
-                    position: result.position === "\\N" ? 20 : parseInt(result.position),
+                    position:  invalid(result.position) ? 20 : parseInt(result.position),
                     gainedLost: positionsGainedLost,
                     gainedLostScore: gLRaceScore
                 })
@@ -422,14 +423,14 @@ function preprocessCharacteristics(allRaces, allResults, allLapTimes, allQualifi
                 rData.push({
                     raceName: race.name,
                     round: race.round,
-                    position: result.position === "\\N" ? 20 : parseInt(result.position),
+                    position: invalid(result.position) ? 20 : parseInt(result.position),
                 });
-                rScore = rScore + (result.position === "\\N" ? 20 : parseInt(result.position));
+                rScore = rScore + (invalid(result.position) ? 20 : parseInt(result.position));
 
                 // Race consistency
                 rcData.push({
                     date: date,
-                    value: result.position === '\\N' ? 20 : parseInt(result.position)
+                    value: invalid(result.position) ? 20 : parseInt(result.position)
                 });
             }
         });
@@ -465,8 +466,8 @@ function preprocessCharacteristics(allRaces, allResults, allLapTimes, allQualifi
 
     // Time racing
     let timeRacingSum = trData.reduce((total, timeRacing) => total + timeRacing.timeDiff, 0);
-    let timeRacingAverage = (timeRacingSum / trData.length) || 0;
-    let timeRacing = {data: trData, score: timeRacingAverage};
+    trScore = (timeRacingSum / trData.length) || 0;
+    let timeRacing = {data: trData, score: trScore};
 
     return {
         raceConsistency: raceConsistency,

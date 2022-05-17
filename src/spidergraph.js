@@ -33,9 +33,9 @@ function renderSpiderGraph(className, data, options, selectGraph, averages) {
 
     const allAxis = data[0].attributes.map(attribute => attribute.name); // Names of each axis
     const total = allAxis.length; // The number of different axes
-    const inverted = ["timeRacing", "timeRacing", "raceConsistency"];
-    const minValues = Object.keys(averages).map(attribute => inverted.includes(attribute) ? averages[attribute].max : averages[attribute].min);
-    const maxValues = Object.keys(averages).map(attribute => inverted.includes(attribute) ? averages[attribute].min : averages[attribute].max);
+    const inverted = ["timeRacing", "raceConsistency", "timeConsistency"];
+    const minValues = Object.keys(averages).map((attribute, index) => inverted.includes(attribute) ? averages[attribute].max : averages[attribute].min);
+    const maxValues = Object.keys(averages).map((attribute, index) => inverted.includes(attribute) ? averages[attribute].min : averages[attribute].max);
 
     // Time consistency
     minValues[1] = 10;
