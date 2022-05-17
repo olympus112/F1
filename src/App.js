@@ -255,6 +255,8 @@ class App extends Component {
                     <Grid item xs={12} md={8}>
                         <Paper elevation={0} variant="outlined" sx={{borderColor: this.state.color.border}}>
                             <Details
+                                driver={this.state.driver}
+                                compare={this.state.compare}
                                 color={this.state.color}
                                 data={this.state.data}
                                 compareData={this.state.compareData}

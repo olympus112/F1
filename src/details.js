@@ -29,7 +29,7 @@ let addFilter = (element) => {
     let feMergeNode_2 = feMerge.append("feMergeNode").attr("in", "SourceGraphic");
 };
 
-let renderTimeConsistency = (inputData, colors, compareData) => {
+let renderTimeConsistency = (inputData, colors, compareData, driver, compare) => {
     let data = inputData.data;
     let lsmPoints = inputData.lsm.lsmPoints;
 
@@ -131,12 +131,26 @@ let renderTimeConsistency = (inputData, colors, compareData) => {
                 .transition()
                 .duration(200)
                 .style("fill-opacity", FOCUS_OPACITY);
+            tooltip
+                .text(driver.name)
+                .transition().duration(200)
+                .style("opacity", 1);
+        })
+        .on('mousemove', function (event) {
+            let newX = d3.pointer(event)[0];
+            let newY = d3.pointer(event)[1] - 10;
+            tooltip
+                .attr('x', newX)
+                .attr('y', newY);
         })
         .on("mouseout", function () {
             d3.selectAll(".area")
                 .transition()
                 .duration(200)
                 .style("fill-opacity", DEFAULT_OPACITY);
+            tooltip
+                .transition().duration(200)
+                .style("opacity", 0);
         });
 
     // Graph line
@@ -219,6 +233,17 @@ let renderTimeConsistency = (inputData, colors, compareData) => {
                     .transition()
                     .duration(200)
                     .style("fill-opacity", FOCUS_OPACITY);
+                tooltip
+                    .text(compare[colorIndex - 1].name)
+                    .transition().duration(200)
+                    .style("opacity", 1);
+            })
+            .on('mousemove', function (event) {
+                let newX = d3.pointer(event)[0];
+                let newY = d3.pointer(event)[1] - 10;
+                tooltip
+                    .attr('x', newX)
+                    .attr('y', newY);
             })
             .on("mouseout", function () {
                 // Bring back all blobs
@@ -226,21 +251,33 @@ let renderTimeConsistency = (inputData, colors, compareData) => {
                     .transition()
                     .duration(200)
                     .style("fill-opacity", DEFAULT_OPACITY);
+                tooltip
+                    .transition().duration(200)
+                    .style("opacity", 0);
             });
     });
+    let tooltip = g.append("text")
+        .attr("class", "tooltip")
+        .attr("text-anchor", "middle")
+        .attr("pointer-events", "none")
+        .attr("font-weight", "bold")
+        .attr("fill", "black")
+        .attr("stroke", "white")
+        .attr("stroke-linejoin", "round")
+        .attr("stroke-width", "1px")
+        .attr("paint-order", "stroke")
+        .style("opacity", 0);
 };
 
-let renderRaceConsistency = (inputData, colors, compareData) => {
+let renderRaceConsistency = (inputData, colors, compareData, driver, compare) => {
     let data = inputData.data;
     let lsmPoints = inputData.lsm.lsmPoints;
 
     //convert data to date object
-    data = data.map((entry) => {
-        return {
-            value: entry.value,
-            date: new Date(entry.date),
-        };
-    });
+    data = data.map((entry) => ({
+        value: entry.value,
+        date: new Date(entry.date),
+    }));
 
     // Remove previous svg
     d3.select(".graph").select("svg").remove();
@@ -296,10 +333,10 @@ let renderRaceConsistency = (inputData, colors, compareData) => {
     let y = d3.scaleLinear().domain([0, 20]).range([height, 0]);
     g.append("g").call(d3.axisLeft(y));
 
-    renderGraph(data, lsmPoints, g, x, y, colors, compareData);
+    renderGraph(data, lsmPoints, g, x, y, colors, compareData, driver, compare);
 };
 
-let renderPositionsGained = (inputData, colors, compareData) => {
+let renderPositionsGained = (inputData, colors, compareData, driver, compare) => {
     function lookUpScore(round, data) {
         let pos = 0;
 
@@ -312,6 +349,13 @@ let renderPositionsGained = (inputData, colors, compareData) => {
     }
 
     let data = [];
+
+    let names = {
+        primaryDriver: driver.name,
+        secondDriver: compare.length > 0 ? compare[0].name : "",
+        thirdDriver: compare.length > 1 ? compare[1].name : "",
+        forthDriver: compare.length > 2 ? compare[2].name : ""
+    }
 
     if (compareData.length === 0) {
         inputData.data.forEach((race) => {
@@ -394,14 +438,14 @@ let renderPositionsGained = (inputData, colors, compareData) => {
         .data(data)
         .enter()
         .append("g")
-        .attr("transform", d => "translate(" + x0(d.raceName) + ",0)")
+        // .attr("transform", d => "translate(" + x0(d.raceName) + ",0)")
         .selectAll("rect")
-        .data(d => keys.map(key => ({key: key, value: d[key]})))
+        .data(d => keys.map(key => ({raceName: d.raceName, key: key, value: d[key]})))
         .enter()
         .append("rect")
-        .attr("class", "area")
+        .attr("data-driver", d => d.key)
         .attr("class", d => "area " + d.key)
-        .attr("x", d => x1(d.key))
+        .attr("x", d => x0(d.raceName) + x1(d.key))
         .attr("y", d => y(d.value))
         .attr("filter", "url(#glow)")
         .attr("width", x1.bandwidth())
@@ -416,13 +460,27 @@ let renderPositionsGained = (inputData, colors, compareData) => {
                 .transition()
                 .duration(200)
                 .style("fill-opacity", 1.0);
-        }).on("mouseout", function () {
-            // Bring back all blobs
+            tooltip
+                .text(names[d3.select(this).attr("data-driver")])
+                .transition().duration(200)
+                .style("opacity", 1);
+        })
+        .on('mousemove', function (event) {
+            let newX = d3.pointer(event)[0];
+            let newY = d3.pointer(event)[1] - 10;
+            tooltip
+                .attr('x', newX)
+                .attr('y', newY);
+        })
+        .on("mouseout", function () {
             d3.selectAll(".area")
                 .transition()
                 .duration(200)
                 .style("fill-opacity", 1.0);
-        });
+            tooltip
+                .transition().duration(200)
+                .style("opacity", 0);
+    });
 
     g.append("g")
         .attr("class", "axis")
@@ -453,6 +511,17 @@ let renderPositionsGained = (inputData, colors, compareData) => {
         .attr("transform", "rotate(-90)")
         .text("Positions gained/lost score");
 
+    let tooltip = g.append("text")
+        .attr("class", "tooltip")
+        .attr("text-anchor", "middle")
+        .attr("pointer-events", "none")
+        .attr("font-weight", "bold")
+        .attr("fill", "black")
+        .attr("stroke", "white")
+        .attr("stroke-linejoin", "round")
+        .attr("stroke-width", "1px")
+        .attr("paint-order", "stroke")
+        .style("opacity", 0);
     // let width = set_width - margin.left - margin.right - 300,
     //   height = set_height - margin.top - margin.bottom;
 
@@ -535,7 +604,7 @@ let renderPositionsGained = (inputData, colors, compareData) => {
     //   .text((d) => d[0].slice(0, -10) + "GP");
 };
 
-let renderRacing = (inputData, colors, compareData) => {
+let renderRacing = (inputData, colors, compareData, driver, compare) => {
     function lookUpResult(round, data) {
         let pos = 0;
 
@@ -559,6 +628,13 @@ let renderRacing = (inputData, colors, compareData) => {
     //  },
     //  ...
     //]
+
+    let names = {
+        primaryDriver: driver.name,
+        secondDriver: compare.length > 0 ? compare[0].name : "",
+        thirdDriver: compare.length > 1 ? compare[1].name : "",
+        forthDriver: compare.length > 2 ? compare[2].name : ""
+    }
 
     if (compareData.length === 0) {
         inputData.data.forEach((race) => {
@@ -630,64 +706,59 @@ let renderRacing = (inputData, colors, compareData) => {
     data = JSON.parse(jsonString);
     let keys = Object.keys(data[0]).slice(2);
 
-    x0.domain(
-        data.map(function (d) {
-            return d.raceName;
-        })
-    );
+    x0.domain(data.map(d => d.raceName));
     x1.domain(keys).rangeRound([0, x0.bandwidth()]);
     y.domain([
         0,
-        d3.max(data, function (d) {
-            return d3.max(keys, function (key) {
-                return d[key];
-            });
-        }),
+        d3.max(data, d => d3.max(keys, key => d[key])),
     ]).nice();
 
     g.selectAll("g")
         .data(data)
         .enter()
         .append("g")
-        .attr("transform", function (d) {
-            return "translate(" + x0(d.raceName) + ",0)";
-        })
+        // .attr("transform", d => "translate(" + x0(d.raceName) + ",0)")
         .selectAll("rect")
-        .data(function (d) {
-            return keys.map(function (key) {
-                return {key: key, value: d[key]};
-            });
-        })
+        .data(d => keys.map(key => ({raceName: d.raceName, key: key, value: d[key]})))
         .enter()
         .append("rect")
+        .attr("data-driver", d => d.key)
         .attr("class", d => "area " + d.key)
-        .attr("x", function (d) {
-            return x1(d.key);
-        })
-        .attr("y", function (d) {
-            return y(d.value);
-        })
+        .attr("x", d => x0(d.raceName) + x1(d.key))
+        .attr("y", d => y(d.value))
         .attr("width", x1.bandwidth())
-        .attr("height", function (d) {
-            return height - y(d.value);
-        })
-        .attr("fill", function (d) {
-            return colors(d.key);
-        }).on("mouseover", function (event, d) {
-        // Dim all areas
-        svg.selectAll(".area")
-            .transition().duration(200)
-            .style("fill-opacity", IGNORE_OPACITY);
+        .attr("height", d => height - y(d.value))
+        .attr("fill", d => colors(d.key))
+        .on("mouseover", function (event, d) {
+            // Dim all areas
+            svg.selectAll(".area")
+                .transition().duration(200)
+                .style("fill-opacity", IGNORE_OPACITY);
             d3.selectAll(`.${d.key}`)
                 .transition()
                 .duration(200)
                 .style("fill-opacity", 1.0);
-        }).on("mouseout", function () {
+            tooltip
+                .text(names[d3.select(this).attr("data-driver")])
+                .transition().duration(200)
+                .style("opacity", 1);
+        })
+        .on('mousemove', function (event) {
+            let newX = d3.pointer(event)[0];
+            let newY = d3.pointer(event)[1] - 10;
+            tooltip
+                .attr('x', newX)
+                .attr('y', newY);
+        })
+        .on("mouseout", function () {
             // Bring back all blobs
             d3.selectAll(".area")
                 .transition()
                 .duration(200)
                 .style("fill-opacity", 1.0);
+            tooltip
+                .transition().duration(200)
+                .style("opacity", 0);
         });
 
     g.append("g")
@@ -718,6 +789,18 @@ let renderRacing = (inputData, colors, compareData) => {
         .attr("dy", "-2.1em")
         .attr("transform", "rotate(-90)")
         .text("Finishing position");
+
+    let tooltip = g.append("text")
+        .attr("class", "tooltip")
+        .attr("text-anchor", "middle")
+        .attr("pointer-events", "none")
+        .attr("font-weight", "bold")
+        .attr("fill", "black")
+        .attr("stroke", "white")
+        .attr("stroke-linejoin", "round")
+        .attr("stroke-width", "1px")
+        .attr("paint-order", "stroke")
+        .style("opacity", 0);
 
     /////////
 
@@ -768,7 +851,7 @@ let renderRacing = (inputData, colors, compareData) => {
     //   .attr("height", (d) => height - yScale(d[2]));
 };
 
-function renderGraph(data, lsmPoints, svg, x, y, colors, compareData) {
+function renderGraph(data, lsmPoints, svg, x, y, colors, compareData, driver, compare) {
     let indices = d3.range(data.length);
     let area = d3
         .area()
@@ -795,6 +878,16 @@ function renderGraph(data, lsmPoints, svg, x, y, colors, compareData) {
                 .transition()
                 .duration(200)
                 .style("fill-opacity", FOCUS_OPACITY);
+            tooltip
+                .text(driver.name)
+                .transition().duration(200)
+                .style("opacity", 1);
+        }).on('mousemove', function (event) {
+            let newX = d3.pointer(event)[0];
+            let newY = d3.pointer(event)[1] - 10;
+            tooltip
+                .attr('x', newX)
+                .attr('y', newY);
         })
         .on("mouseout", function () {
             // Bring back all blobs
@@ -802,6 +895,10 @@ function renderGraph(data, lsmPoints, svg, x, y, colors, compareData) {
                 .transition()
                 .duration(200)
                 .style("fill-opacity", DEFAULT_OPACITY);
+            // Render name tooltip
+            tooltip
+                .transition().duration(200)
+                .style("opacity", 0);
         });
 
     // Add the line
@@ -853,12 +950,8 @@ function renderGraph(data, lsmPoints, svg, x, y, colors, compareData) {
                 "d",
                 d3
                     .line()
-                    .x(function (d) {
-                        return x(new Date(d.date));
-                    })
-                    .y(function (d) {
-                        return y(d.value);
-                    })
+                    .x(d => x(new Date(d.date)))
+                    .y(d => y(d.value))
             );
 
         let area = d3
@@ -886,6 +979,16 @@ function renderGraph(data, lsmPoints, svg, x, y, colors, compareData) {
                     .transition()
                     .duration(200)
                     .style("fill-opacity", FOCUS_OPACITY);
+                tooltip
+                    .text(compare[colorIndex-1].name)
+                    .transition().duration(200)
+                    .style("opacity", 1);
+            }).on('mousemove', function (event) {
+                let newX = d3.pointer(event)[0];
+                let newY = d3.pointer(event)[1] - 10;
+                tooltip
+                    .attr('x', newX)
+                    .attr('y', newY);
             })
             .on("mouseout", function () {
                 // Bring back all blobs
@@ -893,6 +996,10 @@ function renderGraph(data, lsmPoints, svg, x, y, colors, compareData) {
                     .transition()
                     .duration(200)
                     .style("fill-opacity", DEFAULT_OPACITY);
+                // Render name tooltip
+                tooltip
+                    .transition().duration(200)
+                    .style("opacity", 0);
             });
         //add lsm line if present
         if (lsmPoints != null) {
@@ -911,9 +1018,22 @@ function renderGraph(data, lsmPoints, svg, x, y, colors, compareData) {
                 );
         }
     });
+
+    //Set up the small tooltip for when you hover over a circle
+    let tooltip = svg.append("text")
+        .attr("class", "tooltip")
+        .attr("text-anchor", "middle")
+        .attr("pointer-events", "none")
+        .attr("font-weight", "bold")
+        .attr("fill", "black")
+        .attr("stroke", "white")
+        .attr("stroke-linejoin", "round")
+        .attr("stroke-width", "1px")
+        .attr("paint-order", "stroke")
+        .style("opacity", 0);
 }
 
-let renderTimeRacing = (inputData, colors, compareData) => {
+let renderTimeRacing = (inputData, colors, compareData, driver, compare) => {
     let data = inputData.data;
 
     //convert data.date to date object
@@ -1018,6 +1138,17 @@ let renderTimeRacing = (inputData, colors, compareData) => {
                 .transition()
                 .duration(200)
                 .style("fill-opacity", FOCUS_OPACITY);
+            tooltip
+                .text(driver.name)
+                .transition().duration(200)
+                .style("opacity", 1);
+        })
+        .on('mousemove', function (event) {
+            let newX = d3.pointer(event)[0];
+            let newY = d3.pointer(event)[1] - 10;
+            tooltip
+                .attr('x', newX)
+                .attr('y', newY);
         })
         .on("mouseout", function () {
             // Bring back all blobs
@@ -1025,6 +1156,10 @@ let renderTimeRacing = (inputData, colors, compareData) => {
                 .transition()
                 .duration(200)
                 .style("fill-opacity", DEFAULT_OPACITY);
+            // Render name tooltip
+            tooltip
+                .transition().duration(200)
+                .style("opacity", 0);
         });
 
     // Graph line
@@ -1115,6 +1250,16 @@ let renderTimeRacing = (inputData, colors, compareData) => {
                     .transition()
                     .duration(200)
                     .style("fill-opacity", FOCUS_OPACITY);
+                tooltip
+                    .text(compare[colorIndex - 1].name)
+                    .transition().duration(200)
+                    .style("opacity", 1);
+            }).on('mousemove', function (event) {
+                let newX = d3.pointer(event)[0];
+                let newY = d3.pointer(event)[1] - 10;
+                tooltip
+                    .attr('x', newX)
+                    .attr('y', newY);
             })
             .on("mouseout", function () {
                 // Bring back all blobs
@@ -1122,8 +1267,25 @@ let renderTimeRacing = (inputData, colors, compareData) => {
                     .transition()
                     .duration(200)
                     .style("fill-opacity", DEFAULT_OPACITY);
+                // Render name tooltip
+                tooltip
+                    .transition().duration(200)
+                    .style("opacity", 0);
             });
     });
+
+    //Set up the small tooltip for when you hover over a circle
+    let tooltip = g.append("text")
+        .attr("class", "tooltip")
+        .attr("text-anchor", "middle")
+        .attr("pointer-events", "none")
+        .attr("font-weight", "bold")
+        .attr("fill", "black")
+        .attr("stroke", "white")
+        .attr("stroke-linejoin", "round")
+        .attr("stroke-width", "1px")
+        .attr("paint-order", "stroke")
+        .style("opacity", 0);
 };
 
 export default function Details(props) {
@@ -1145,7 +1307,7 @@ export default function Details(props) {
         ]);
 
     React.useEffect(() => {
-        graphs[props.graph.id](props.data[props.graph.id], colors, compareData);
+        graphs[props.graph.id](props.data[props.graph.id], colors, compareData, props.driver, props.compare);
     }, [props]);
 
     return (

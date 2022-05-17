@@ -196,8 +196,6 @@ function renderSpiderGraph(className, data, options, selectGraph, averages) {
             d3.select(this)
                 .transition().duration(200)
                 .style("fill-opacity", 0.7);
-
-
             tooltip
                 .text(racer.name)
                 .transition().duration(200)
