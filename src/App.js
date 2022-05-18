@@ -15,6 +15,7 @@ import {
 } from "./preprocess";
 
 // preprocessMinMaxCharacteristics()
+// downloadCharacteristics()
 export const Graphs = {
     raceConsistency: {
         id: 0,

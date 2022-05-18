@@ -185,6 +185,7 @@ function preprocessTimeRacing(driverId, race, qualifications) {
     let qualTime = qualification.q3;
     if (invalid(qualTime)) qualTime = qualification.q2;
     if (invalid(qualTime)) qualTime = qualification.q1;
+    if (invalid(qualTime)) return;
     qualTime = qualTime.split(":");
 
     const minutes = parseInt(qualTime[0]);
@@ -259,23 +260,16 @@ function countryCodes() {
 }
 
 export async function testCharacteristics() {
-  console.log("Started characteristics preprocessing");
+    console.log('Started characteristics preprocessing');
 
-  let allDrivers = await d3.csv(drivers);
-  let allRaces = await d3.csv(races);
-  let allResults = await d3.csv(results);
-  let allLapTimes = await d3.csv(lapTimes);
-  let allQualifications = await d3.csv(qualifying);
+    let allDrivers = await d3.csv(drivers);
+    let allRaces = await d3.csv(races);
+    let allResults = await d3.csv(results);
+    let allLapTimes = await d3.csv(lapTimes);
+    let allQualifications = await d3.csv(qualifying);
 
-  let a = preprocessCharacteristics(
-    allRaces,
-    allResults,
-    allLapTimes,
-    allQualifications,
-    847,
-    2019
-  );
-  console.log(a);
+    let a = preprocessCharacteristics(allRaces, allResults, allLapTimes, allQualifications, 825, 2019);
+    console.log(a);
 }
 
 export function preprocessMinMaxCharacteristics() {

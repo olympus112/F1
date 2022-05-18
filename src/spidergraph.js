@@ -412,7 +412,8 @@ export default function SpiderGraph(props) {
                         variant="caption"
                         sx={{ color: "rgba(0, 0, 0, 0.6)" }}
                     >
-                        TODO please fix Geert x
+                        The spider chart shows an overview of the characteristics of different racers.
+                        In general, a larger area corresponds to a more skilled racer.
                     </Typography>
                 </Box>
             </Box>
