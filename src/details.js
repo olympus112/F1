@@ -221,6 +221,7 @@ let renderTimeConsistency = (inputData, colors, compareData, driver, compare) =>
             .y0((d) => y(0));
         g.append("path")
             .datum(indices)
+            .attr("data-index", colorIndex)
             .attr("class", "area " + `driver_${compare[colorIndex - 1].id}`)
             .attr("fill", (value, index) => colors(colorIndex))
             .attr("fill-opacity", DEFAULT_OPACITY)
@@ -1265,6 +1266,7 @@ let renderTimeRacing = (inputData, colors, compareData, driver, compare) => {
             .y0((d) => y(0));
         g.append("path")
             .datum(indices)
+            .attr("data-index", colorIndex)
             .attr("class", "area " + `driver_${compare[colorIndex - 1].id}`)
             .attr("fill", (value, index) => colors(colorIndex))
             .attr("fill-opacity", DEFAULT_OPACITY)
