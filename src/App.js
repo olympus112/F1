@@ -16,11 +16,12 @@ import {
 import {dark} from "@mui/material/styles/createPalette";
 // preprocessMinMaxCharacteristics()
 // downloadCharacteristics()
+// testCharacteristics()
 export const Graphs = {
     raceConsistency: {
         id: 0,
         name: "Race Consistency",
-        explanation: "The Race consistency represents a measurement of how consistent the results are of a driver throughout all the races in a season. If the driver places with low consistency, the coloured area will be bigger."
+        explanation: "The Race consistency represents a measurement of how consistent the results are of a driver throughout all the races in a season. If the driver places with low consistency, the coloured area will be bigger. DNF's are not included for the general score."
     },
     timeConsistency: {
         id: 1,

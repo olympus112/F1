@@ -437,13 +437,13 @@ function preprocessCharacteristics(allRaces, allResults, allLapTimes, allQualifi
             }
         });
 
-        if (!found) {
-            // Race consistency
-            rcData.push({
-                date: date,
-                value: 100
-            })
-        }
+        // if (!found) {
+        //     // Race consistency
+        //     rcData.push({
+        //         date: date,
+        //         value: 100
+        //     })
+        // }
     });
 
     // Positions gained lost
@@ -461,15 +461,19 @@ function preprocessCharacteristics(allRaces, allResults, allLapTimes, allQualifi
 
     let rcDa = []
     rcData.forEach(element => {
-        if(element.value != 100){
+        if(parseInt(element.value) === 100){
             element.value = 20
         }
         else{
             rcDa.push(element)
         }
     });
-    rcScore = leastSquareMethod(rcDa);
-    let raceConsistency = {data: rcData, lsm: rcScore};
+    let res1 = leastSquareMethod(rcDa);
+    rcScore = res1.score;
+    let res2 = leastSquareMethod(rcData);
+    let lsm = res2.lsmPoints;
+
+    let raceConsistency = {data: rcData, lsm: {lsmPoints: lsm, score: rcScore}};
 
     // Time consistency
     tcData = tcData.sort((a, b) => (a.date > b.date) ? 1 : -1);
