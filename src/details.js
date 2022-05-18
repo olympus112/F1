@@ -226,6 +226,7 @@ let renderTimeConsistency = (inputData, colors, compareData, driver, compare) =>
             .attr("fill-opacity", DEFAULT_OPACITY)
             .attr("d", area)
             .on("mouseover", function (event) {
+                let colorIndex = parseInt(d3.select(this).attr("data-index"));
                 // Dim all areas
                 d3.selectAll(".area")
                     .transition().duration(200)
@@ -987,21 +988,25 @@ function renderGraph(data, lsmPoints, svg, x, y, colors, compareData, driver, co
         svg
             .append("path")
             .datum(indices)
+            .attr("data-index", colorIndex)
             .attr("class", "area " + `driver_${compare[colorIndex - 1].id}`)
             .attr("fill", colors(colorIndex))
             .style("fill-opacity", DEFAULT_OPACITY)
             .attr("d", area)
             .on("mouseover", function (event) {
+                let colorIndex = parseInt(d3.select(this).attr("data-index"));
                 // Dim all areas
                 d3.selectAll(".area")
                     .transition().duration(200)
                     .style("fill-opacity", IGNORE_OPACITY);
                 // Bring back the hovered over blob
+                console.log(compare);
+                console.log(colorIndex);
                 d3.selectAll(`.driver_${compare[colorIndex - 1].id}`)
                     .transition().duration(200)
                     .style("fill-opacity", FOCUS_OPACITY);
                 tooltip
-                    .text(compare[colorIndex-1].name)
+                    .text(compare[colorIndex - 1].name)
                     .transition().duration(200)
                     .style("opacity", 1);
             }).on('mousemove', function (event) {
@@ -1265,6 +1270,8 @@ let renderTimeRacing = (inputData, colors, compareData, driver, compare) => {
             .attr("fill-opacity", DEFAULT_OPACITY)
             .attr("d", area)
             .on("mouseover", function (event) {
+                let colorIndex = parseInt(d3.select(this).attr("data-index"));
+
                 // Dim all areas
                 d3.selectAll(".area")
                     .transition().duration(200)
