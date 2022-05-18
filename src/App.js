@@ -13,6 +13,7 @@ import {
     preprocessMinMaxCharacteristics,
     testCharacteristics
 } from "./preprocess";
+
 // preprocessMinMaxCharacteristics()
 export const Graphs = {
     raceConsistency: {
