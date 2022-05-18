@@ -4,6 +4,11 @@ import * as d3 from "d3";
 import {Graphs} from "./App";
 import Typography from "@mui/material/Typography";
 
+let FULL_OPACITY = 1.0;
+let DEFAULT_OPACITY = 0.35;
+let FOCUS_OPACITY = 0.7;
+let IGNORE_OPACITY = 0.1;
+let STROKE_WIDTH = 2;
 
 function renderSpiderGraph(className, data, options, selectGraph, averages) {
     const cfg = {
@@ -183,19 +188,19 @@ function renderSpiderGraph(className, data, options, selectGraph, averages) {
     // Append the backgrounds
     blobWrapper
         .append("path")
-        .attr("class", "radarArea")
+        .attr("class", racer => "area " + `driver_${racer.id}`)
         .attr("d", racer => radarLine(racer.attributes))
         .style("fill", (_, index) => cfg.color(index))
-        .style("fill-opacity", cfg.opacityArea)
+        .style("fill-opacity", DEFAULT_OPACITY)
         .on('mouseover', function (event, racer) {
             // Dim all blobs
-            d3.selectAll(".radarArea")
+            d3.selectAll(".area")
                 .transition().duration(200)
-                .style("fill-opacity", 0.1);
+                .style("fill-opacity", IGNORE_OPACITY);
             // Bring back the hovered over blob
-            d3.select(this)
+            d3.selectAll(`.driver_${racer.id}`)
                 .transition().duration(200)
-                .style("fill-opacity", 0.7);
+                .style("fill-opacity", FOCUS_OPACITY);
             tooltip
                 .text(racer.name)
                 .transition().duration(200)
@@ -210,9 +215,12 @@ function renderSpiderGraph(className, data, options, selectGraph, averages) {
         })
         .on('mouseout', function () {
             // Bring back all blobs
-            d3.selectAll(".radarArea")
+            d3.selectAll(".area")
                 .transition().duration(200)
-                .style("fill-opacity", cfg.opacityArea);
+                .style("fill-opacity", DEFAULT_OPACITY);
+            d3.selectAll(".area_opaque")
+                .transition().duration(200)
+                .style("fill-opacity", FULL_OPACITY);
             // Render name tooltip
             tooltip
                 .transition().duration(200)

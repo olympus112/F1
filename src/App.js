@@ -6,13 +6,14 @@ import YearPicker from "./yearPicker";
 import SpiderGraph from "./spidergraph";
 import Details from "./details";
 import {Paper, Box} from "@mui/material";
-import {amber, cyan, green, purple, red, yellow} from '@mui/material/colors';
+import {amber, blue, blueGrey, common, cyan, green, orange, purple, red, teal, yellow} from '@mui/material/colors';
 import {
     downloadCharacteristics,
     downloadCountries,
     preprocessMinMaxCharacteristics,
     testCharacteristics
 } from "./preprocess";
+import {dark} from "@mui/material/styles/createPalette";
 // preprocessMinMaxCharacteristics()
 // downloadCharacteristics()
 export const Graphs = {
@@ -82,8 +83,8 @@ class App extends Component {
             // Styling
             color: {
                 border: "#bdbdbd",
-                driver: red,
-                compare: [purple, amber, cyan, green] // Access using red[500], see https://mui.com/material-ui/customization/color/
+                driver: teal,
+                compare: [blue, orange, red] // Access using red[500], see https://mui.com/material-ui/customization/color/
             }
         };
     }

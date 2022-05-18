@@ -8,6 +8,7 @@ let parseDate = d3.timeParse("%d/%m/%Y");
 let set_height = 400;
 let set_width = 800;
 
+let FULL_OPACITY = 1.0;
 let DEFAULT_OPACITY = 0.35;
 let FOCUS_OPACITY = 0.7;
 let IGNORE_OPACITY = 0.1;
@@ -119,17 +120,16 @@ let renderTimeConsistency = (inputData, colors, compareData, driver, compare) =>
         .y0((d) => y(0));
     g.append("path")
         .datum(indices)
-        .attr("class", "area")
+        .attr("class", "area " + `driver_${driver.id}`)
         .attr("fill", (value, index) => colors(index))
         .attr("fill-opacity", DEFAULT_OPACITY)
         .attr("d", area)
         .on("mouseover", function (event) {
-            svg.selectAll(".area")
+            d3.selectAll(".area")
                 .transition().duration(200)
                 .style("fill-opacity", IGNORE_OPACITY);
-            d3.select(this)
-                .transition()
-                .duration(200)
+            d3.selectAll(`.driver_${driver.id}`)
+                .transition().duration(200)
                 .style("fill-opacity", FOCUS_OPACITY);
             tooltip
                 .text(driver.name)
@@ -145,9 +145,11 @@ let renderTimeConsistency = (inputData, colors, compareData, driver, compare) =>
         })
         .on("mouseout", function () {
             d3.selectAll(".area")
-                .transition()
-                .duration(200)
+                .transition().duration(200)
                 .style("fill-opacity", DEFAULT_OPACITY);
+            d3.selectAll(".area_opaque")
+                .transition().duration(200)
+                .style("fill-opacity", FULL_OPACITY);
             tooltip
                 .transition().duration(200)
                 .style("opacity", 0);
@@ -219,19 +221,18 @@ let renderTimeConsistency = (inputData, colors, compareData, driver, compare) =>
             .y0((d) => y(0));
         g.append("path")
             .datum(indices)
-            .attr("class", "area")
+            .attr("class", "area " + `driver_${compare[colorIndex - 1].id}`)
             .attr("fill", (value, index) => colors(colorIndex))
             .attr("fill-opacity", DEFAULT_OPACITY)
             .attr("d", area)
             .on("mouseover", function (event) {
                 // Dim all areas
-                svg.selectAll(".area")
+                d3.selectAll(".area")
                     .transition().duration(200)
                     .style("fill-opacity", IGNORE_OPACITY);
                 // Bring back the hovered over blob
-                d3.select(this)
-                    .transition()
-                    .duration(200)
+                d3.selectAll(`.driver_${compare[colorIndex - 1].id}`)
+                    .transition().duration(200)
                     .style("fill-opacity", FOCUS_OPACITY);
                 tooltip
                     .text(compare[colorIndex - 1].name)
@@ -248,9 +249,11 @@ let renderTimeConsistency = (inputData, colors, compareData, driver, compare) =>
             .on("mouseout", function () {
                 // Bring back all blobs
                 d3.selectAll(".area")
-                    .transition()
-                    .duration(200)
+                    .transition().duration(200)
                     .style("fill-opacity", DEFAULT_OPACITY);
+                d3.selectAll(".area_opaque")
+                    .transition().duration(200)
+                    .style("fill-opacity", FULL_OPACITY);
                 tooltip
                     .transition().duration(200)
                     .style("opacity", 0);
@@ -350,11 +353,11 @@ let renderPositionsGained = (inputData, colors, compareData, driver, compare) =>
 
     let data = [];
 
-    let names = {
-        primaryDriver: driver.name,
-        secondDriver: compare.length > 0 ? compare[0].name : "",
-        thirdDriver: compare.length > 1 ? compare[1].name : "",
-        forthDriver: compare.length > 2 ? compare[2].name : ""
+    let drivers = {
+        primaryDriver: driver,
+        secondDriver: compare.length > 0 ? compare[0] : "",
+        thirdDriver: compare.length > 1 ? compare[1] : "",
+        forthDriver: compare.length > 2 ? compare[2] : ""
     }
 
     if (compareData.length === 0) {
@@ -444,7 +447,7 @@ let renderPositionsGained = (inputData, colors, compareData, driver, compare) =>
         .enter()
         .append("rect")
         .attr("data-driver", d => d.key)
-        .attr("class", d => "area " + d.key)
+        .attr("class", d => "area area_opaque " + `driver_${drivers[d.key].id}`)
         .attr("x", d => x0(d.raceName) + x1(d.key))
         .attr("y", d => y(d.value))
         .attr("filter", "url(#glow)")
@@ -453,15 +456,17 @@ let renderPositionsGained = (inputData, colors, compareData, driver, compare) =>
         .attr("fill", d => colors(d.key))
         .on("mouseover", function (event, d) {
             // Dim all areas
-            svg.selectAll(".area")
+            d3.selectAll(".area")
                 .transition().duration(200)
                 .style("fill-opacity", IGNORE_OPACITY);
-            d3.selectAll(`.${d.key}`)
-                .transition()
-                .duration(200)
-                .style("fill-opacity", 1.0);
+            d3.selectAll(`.driver_${drivers[d.key].id}`)
+                .transition().duration(200)
+                .style("fill-opacity", FOCUS_OPACITY);
+            d3.selectAll(`.area_opaque.driver_${drivers[d.key].id}`)
+                .transition().duration(200)
+                .style("fill-opacity", FOCUS_OPACITY);
             tooltip
-                .text(names[d3.select(this).attr("data-driver")])
+                .text(drivers[d.key].name)
                 .transition().duration(200)
                 .style("opacity", 1);
         })
@@ -474,9 +479,11 @@ let renderPositionsGained = (inputData, colors, compareData, driver, compare) =>
         })
         .on("mouseout", function () {
             d3.selectAll(".area")
-                .transition()
-                .duration(200)
-                .style("fill-opacity", 1.0);
+                .transition().duration(200)
+                .style("fill-opacity", DEFAULT_OPACITY);
+            d3.selectAll(".area_opaque")
+                .transition().duration(200)
+                .style("fill-opacity", FULL_OPACITY);
             tooltip
                 .transition().duration(200)
                 .style("opacity", 0);
@@ -635,11 +642,11 @@ let renderRacing = (inputData, colors, compareData, driver, compare) => {
     //  ...
     //]
 
-    let names = {
-        primaryDriver: driver.name,
-        secondDriver: compare.length > 0 ? compare[0].name : "",
-        thirdDriver: compare.length > 1 ? compare[1].name : "",
-        forthDriver: compare.length > 2 ? compare[2].name : ""
+    let drivers = {
+        primaryDriver: driver,
+        secondDriver: compare.length > 0 ? compare[0] : "",
+        thirdDriver: compare.length > 1 ? compare[1] : "",
+        forthDriver: compare.length > 2 ? compare[2] : ""
     }
 
     if (compareData.length === 0) {
@@ -729,7 +736,8 @@ let renderRacing = (inputData, colors, compareData, driver, compare) => {
         .enter()
         .append("rect")
         .attr("data-driver", d => d.key)
-        .attr("class", d => "area " + d.key)
+        .attr("filter", "url(#glow)")
+        .attr("class", d => "area area_opaque " + `driver_${drivers[d.key].id}`)
         .attr("x", d => x0(d.raceName) + x1(d.key))
         .attr("y", d => y(d.value))
         .attr("width", x1.bandwidth())
@@ -737,15 +745,17 @@ let renderRacing = (inputData, colors, compareData, driver, compare) => {
         .attr("fill", d => colors(d.key))
         .on("mouseover", function (event, d) {
             // Dim all areas
-            svg.selectAll(".area")
+            d3.selectAll(".area")
                 .transition().duration(200)
                 .style("fill-opacity", IGNORE_OPACITY);
-            d3.selectAll(`.${d.key}`)
-                .transition()
-                .duration(200)
-                .style("fill-opacity", 1.0);
+            d3.selectAll(`.driver_${drivers[d.key].id}`)
+                .transition().duration(200)
+                .style("fill-opacity", FOCUS_OPACITY);
+            d3.selectAll(`.area_opaque.driver_${drivers[d.key].id}`)
+                .transition().duration(200)
+                .style("fill-opacity", FULL_OPACITY);
             tooltip
-                .text(names[d3.select(this).attr("data-driver")])
+                .text(drivers[d.key].name)
                 .transition().duration(200)
                 .style("opacity", 1);
         })
@@ -759,9 +769,11 @@ let renderRacing = (inputData, colors, compareData, driver, compare) => {
         .on("mouseout", function () {
             // Bring back all blobs
             d3.selectAll(".area")
-                .transition()
-                .duration(200)
-                .style("fill-opacity", 1.0);
+                .transition().duration(200)
+                .style("fill-opacity", DEFAULT_OPACITY);
+            d3.selectAll(".area_opaque")
+                .transition().duration(200)
+                .style("fill-opacity", FULL_OPACITY);
             tooltip
                 .transition().duration(200)
                 .style("opacity", 0);
@@ -870,20 +882,22 @@ function renderGraph(data, lsmPoints, svg, x, y, colors, compareData, driver, co
     svg
         .append("path")
         .datum(indices)
-        .attr("class", "area")
+        .attr("class", "area " + `driver_${driver.id}`)
         .attr("fill", (value, index) => colors(index))
         .style("fill-opacity", DEFAULT_OPACITY)
         .attr("d", area)
         .on("mouseover", function (event) {
             // Dim all areas
-            svg.selectAll(".area")
+            d3.selectAll(".area")
                 .transition().duration(200)
                 .style("fill-opacity", IGNORE_OPACITY);
             // Bring back the hovered over blob
-            d3.select(this)
-                .transition()
-                .duration(200)
+            d3.selectAll(`.driver_${driver.id}`)
+                .transition().duration(200)
                 .style("fill-opacity", FOCUS_OPACITY);
+            d3.selectAll(`.area_opaque.driver_${driver.id}`)
+                .transition().duration(200)
+                .style("fill-opacity", FULL_OPACITY);
             tooltip
                 .text(driver.name)
                 .transition().duration(200)
@@ -898,9 +912,11 @@ function renderGraph(data, lsmPoints, svg, x, y, colors, compareData, driver, co
         .on("mouseout", function () {
             // Bring back all blobs
             d3.selectAll(".area")
-                .transition()
-                .duration(200)
+                .transition().duration(200)
                 .style("fill-opacity", DEFAULT_OPACITY);
+            d3.selectAll(".area_opaque")
+                .transition().duration(200)
+                .style("fill-opacity", FULL_OPACITY);
             // Render name tooltip
             tooltip
                 .transition().duration(200)
@@ -971,19 +987,18 @@ function renderGraph(data, lsmPoints, svg, x, y, colors, compareData, driver, co
         svg
             .append("path")
             .datum(indices)
-            .attr("class", "area")
+            .attr("class", "area " + `driver_${compare[colorIndex - 1].id}`)
             .attr("fill", colors(colorIndex))
             .style("fill-opacity", DEFAULT_OPACITY)
             .attr("d", area)
             .on("mouseover", function (event) {
                 // Dim all areas
-                svg.selectAll(".area")
+                d3.selectAll(".area")
                     .transition().duration(200)
                     .style("fill-opacity", IGNORE_OPACITY);
                 // Bring back the hovered over blob
-                d3.select(this)
-                    .transition()
-                    .duration(200)
+                d3.selectAll(`.driver_${compare[colorIndex - 1].id}`)
+                    .transition().duration(200)
                     .style("fill-opacity", FOCUS_OPACITY);
                 tooltip
                     .text(compare[colorIndex-1].name)
@@ -999,9 +1014,11 @@ function renderGraph(data, lsmPoints, svg, x, y, colors, compareData, driver, co
             .on("mouseout", function () {
                 // Bring back all blobs
                 d3.selectAll(".area")
-                    .transition()
-                    .duration(200)
+                    .transition().duration(200)
                     .style("fill-opacity", DEFAULT_OPACITY);
+                d3.selectAll(".area_opaque")
+                    .transition().duration(200)
+                    .style("fill-opacity", FULL_OPACITY);
                 // Render name tooltip
                 tooltip
                     .transition().duration(200)
@@ -1130,19 +1147,18 @@ let renderTimeRacing = (inputData, colors, compareData, driver, compare) => {
         .y0((d) => y(0));
     g.append("path")
         .datum(indices)
-        .attr("class", "area")
+        .attr("class", "area " + `driver_${driver.id}`)
         .attr("fill", (value, index) => colors(index))
         .attr("fill-opacity", DEFAULT_OPACITY)
         .attr("d", area)
         .on("mouseover", function (event) {
             // Dim all areas
-            svg.selectAll(".area")
+            d3.selectAll(".area")
                 .transition().duration(200)
                 .style("fill-opacity", IGNORE_OPACITY);
             // Bring back the hovered over blob
-            d3.select(this)
-                .transition()
-                .duration(200)
+            d3.selectAll(`.driver_${driver.id}`)
+                .transition().duration(200)
                 .style("fill-opacity", FOCUS_OPACITY);
             tooltip
                 .text(driver.name)
@@ -1159,9 +1175,11 @@ let renderTimeRacing = (inputData, colors, compareData, driver, compare) => {
         .on("mouseout", function () {
             // Bring back all blobs
             d3.selectAll(".area")
-                .transition()
-                .duration(200)
+                .transition().duration(200)
                 .style("fill-opacity", DEFAULT_OPACITY);
+            d3.selectAll(`.area_opaque`)
+                .transition().duration(200)
+                .style("fill-opacity", FULL_OPACITY);
             // Render name tooltip
             tooltip
                 .transition().duration(200)
@@ -1242,19 +1260,18 @@ let renderTimeRacing = (inputData, colors, compareData, driver, compare) => {
             .y0((d) => y(0));
         g.append("path")
             .datum(indices)
-            .attr("class", "area")
+            .attr("class", "area " + `driver_${compare[colorIndex - 1].id}`)
             .attr("fill", (value, index) => colors(colorIndex))
             .attr("fill-opacity", DEFAULT_OPACITY)
             .attr("d", area)
             .on("mouseover", function (event) {
                 // Dim all areas
-                svg.selectAll(".area")
+                d3.selectAll(".area")
                     .transition().duration(200)
                     .style("fill-opacity", IGNORE_OPACITY);
                 // Bring back the hovered over blob
-                d3.select(this)
-                    .transition()
-                    .duration(200)
+                d3.selectAll(`.driver_${compare[colorIndex - 1].id}`)
+                    .transition().duration(200)
                     .style("fill-opacity", FOCUS_OPACITY);
                 tooltip
                     .text(compare[colorIndex - 1].name)
@@ -1270,9 +1287,11 @@ let renderTimeRacing = (inputData, colors, compareData, driver, compare) => {
             .on("mouseout", function () {
                 // Bring back all blobs
                 d3.selectAll(".area")
-                    .transition()
-                    .duration(200)
+                    .transition().duration(200)
                     .style("fill-opacity", DEFAULT_OPACITY);
+                d3.selectAll(`.area_opaque`)
+                    .transition().duration(200)
+                    .style("fill-opacity", FULL_OPACITY);
                 // Render name tooltip
                 tooltip
                     .transition().duration(200)
