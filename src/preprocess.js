@@ -185,6 +185,8 @@ function preprocessTimeRacing(driverId, race, qualifications) {
             qualTime = qualification.q2;
         if (invalid(qualTime))
             qualTime = qualification.q1;
+        if (invalid(qualTime))
+            return;
         qualTime = qualTime.split(":");
 
         const minutes = parseInt(qualTime[0]);
@@ -258,7 +260,7 @@ export async function testCharacteristics() {
     let allLapTimes = await d3.csv(lapTimes);
     let allQualifications = await d3.csv(qualifying);
 
-    let a = preprocessCharacteristics(allRaces, allResults, allLapTimes, allQualifications, 847, 2019);
+    let a = preprocessCharacteristics(allRaces, allResults, allLapTimes, allQualifications, 825, 2019);
     console.log(a);
 }
 
