@@ -126,7 +126,7 @@ export default function DriverCard(props) {
                                 inputProps={{
                                     ...params.inputProps,
                                     style: {
-                                        fontSize: '24px',
+                                        fontSize: '30px',
                                         textAlign: 'center',
                                         fontWeight: 400
                                     }
@@ -142,7 +142,7 @@ export default function DriverCard(props) {
                         )}
                     />
                 </Grid>
-                <Grid item xs={6}>
+                <Grid item xs={6} pt={0.5}>
                     <Grid container direction={'row'} alignItems={'space-between'} justifyContent={'center'}>
                         <Grid item xs={4} p={1} alignItems="center" sx={{
                             display: "flex",

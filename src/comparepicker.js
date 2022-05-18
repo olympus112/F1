@@ -52,7 +52,7 @@ export default function ComparePicker(props) {
                 <InputLabel>Choose drivers to compare</InputLabel>
                 <Select
                     multiple
-                    sx={{height: 56}}
+                    // sx={{height: 56}}
                     value={[props.driver, ...props.compare]}
                     input={<OutlinedInput label="Choose drivers to compare"/>}
                     renderValue={(compare) => (

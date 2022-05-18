@@ -234,7 +234,7 @@ class App extends Component {
                             inCompare={this.inCompare}
                         />
                     </Grid>
-                    <Grid item xs={12} md={4}>
+                    <Grid item xs={12} md ={12} lg={4}>
                         <Paper elevation={0} variant="outlined" sx={{
                             borderColor: this.state.color.border,
                             display: 'flex',
@@ -254,7 +254,7 @@ class App extends Component {
                             />
                         </Paper>
                     </Grid>
-                    <Grid item xs={12} md={8}>
+                    <Grid item xs={12} md={12} lg={8}>
                         <Paper elevation={0} variant="outlined" sx={{borderColor: this.state.color.border}}>
                             <Details
                                 driver={this.state.driver}
