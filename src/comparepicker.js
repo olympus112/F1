@@ -13,13 +13,19 @@ import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 import Avatar from "@mui/material/Avatar";
 import * as PropTypes from "prop-types";
-
+import * as d3 from "d3";
 
 class CancelIcon extends React.Component {
     render() {
         return null;
     }
 }
+
+let FULL_OPACITY = 1.0;
+let DEFAULT_OPACITY = 0.35;
+let FOCUS_OPACITY = 0.7;
+let IGNORE_OPACITY = 0.1;
+
 
 CancelIcon.propTypes = {onMouseDown: PropTypes.func};
 export default function ComparePicker(props) {
@@ -41,90 +47,6 @@ export default function ComparePicker(props) {
     ]
 
     return (
-        // <Paper elevation={0} variant="outlined" sx={{borderColor: props.color.border}}>
-        //     <Grid container spacing={2}>
-        //         <Grid item xs={6} sx={{position: "relative", left: 10, top: 10}}>
-        //             <FormControl style={{width: '100%'}} component="fieldset" variant="standard">
-        //                 <FormLabel component="legend">
-        //                     <Typography component={"span"}>
-        //                         Chosen drivers <Chip label={props.compare.length + 1} size={'small'}/>
-        //                     </Typography>
-        //                 </FormLabel>
-        //
-        //                 <List style={{maxHeight: 120, overflow: 'auto'}}>
-        //                     <ListItem key={props.driver.id} disablePadding>
-        //                         <FormControlLabel
-        //                             control={<Checkbox checked sx={{
-        //                                 paddingLeft: 2,
-        //                                 transform: "scale(0.8)",
-        //                                 width: 40,
-        //                                 height: 30,
-        //                                 color: props.color.driver[800],
-        //                                 '&.Mui-checked': {
-        //                                     color: props.color.driver[600],
-        //                                 }
-        //                             }}/>}
-        //                             label={getLabel(props.driver)}
-        //                         />
-        //                     </ListItem>
-        //                     {props.compare.map((driver, index) => {
-        //                         return (
-        //                             <ListItem key={driver.id} disablePadding>
-        //                                 <FormControlLabel
-        //                                     control={<Checkbox checked onChange={event => props.removeCompare(driver)}
-        //                                                        sx={{
-        //                                                            paddingLeft: 2,
-        //                                                            transform: "scale(0.8)",
-        //                                                            width: 40,
-        //                                                            height: 30,
-        //                                                            color: props.color.compare[index][800],
-        //                                                            '&.Mui-checked': {
-        //                                                                color: props.color.compare[index][600],
-        //                                                            }
-        //                                                        }}/>}
-        //                                     label={getLabel(driver)}
-        //                                 />
-        //                             </ListItem>
-        //                         );
-        //                     })}
-        //                 </List>
-        //             </FormControl>
-        //         </Grid>
-        //
-        //         <Grid item xs={6}>
-        //             <Box sx={{height: 10, width: 10}}/>
-        //             <FormControl style={{width: '100%'}} component="fieldset" variant="standard">
-        //                 <FormLabel component="legend">Choose drivers</FormLabel>
-        //                 <List style={{maxHeight: 120, overflow: 'auto'}}>
-        //                     {compareDrivers.map(driver => {
-        //                         return (
-        //                             <ListItem key={driver.id} disablePadding>
-        //                                 <FormControlLabel
-        //                                     style={{width: "100%"}}
-        //                                     control={
-        //                                         <Checkbox sx={{
-        //                                             transform: "scale(0.8)",
-        //                                             paddingLeft: 2,
-        //                                             width: 40,
-        //                                             height: 30
-        //                                         }}
-        //                                                   checked={false}
-        //                                                   disabled={props.compare.length >= compareLimit}
-        //                                                   onChange={event => props.addCompare(driver)}/>}
-        //                                     label={getLabel(driver)}
-        //                                 />
-        //                             </ListItem>
-        //                         );
-        //                     })}
-        //                 </List>
-        //                 <FormHelperText>You can
-        //                     compare {compareLimit === props.compare.length ? "no" : compareLimit - props.compare.length} more
-        //                     drivers</FormHelperText>
-        //             </FormControl>
-        //         </Grid>
-        //     </Grid>
-        // </Paper>
-
         <Paper elevation={0} sx={{borderColor: props.color.border}}>
             <FormControl sx={{width: "100%"}}>
                 <InputLabel>Choose drivers to compare</InputLabel>
@@ -152,6 +74,23 @@ export default function ComparePicker(props) {
                                         onDelete={index === 0 ? null : (event) => props.removeCompare(driver)}
                                         onMouseDown={(event) => {
                                             event.stopPropagation();
+                                        }}
+                                        onMouseEnter={(event) => {
+                                            d3.selectAll(".area")
+                                                .transition().duration(200)
+                                                .style("fill-opacity", IGNORE_OPACITY);
+                                            // Bring back the hovered over blob
+                                            d3.selectAll(`.driver_${driver.id}`)
+                                                .transition().duration(200)
+                                                .style("fill-opacity", FOCUS_OPACITY);
+                                        }}
+                                        onMouseLeave={(event) => {
+                                            d3.selectAll(".area")
+                                                .transition().duration(200)
+                                                .style("fill-opacity", DEFAULT_OPACITY);
+                                            d3.selectAll(".area_opaque")
+                                                .transition().duration(200)
+                                                .style("fill-opacity", FULL_OPACITY);
                                         }}
                                     />
                                 );
