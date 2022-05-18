@@ -432,7 +432,7 @@ function preprocessCharacteristics(allRaces, allResults, allLapTimes, allQualifi
                 // Race consistency
                 rcData.push({
                     date: date,
-                    value: invalid(result.position) ? 20 : parseInt(result.position)
+                    value: invalid(result.position) ? 100 : parseInt(result.position)
                 });
             }
         });
@@ -441,7 +441,7 @@ function preprocessCharacteristics(allRaces, allResults, allLapTimes, allQualifi
             // Race consistency
             rcData.push({
                 date: date,
-                value: 20
+                value: 100
             })
         }
     });
@@ -458,7 +458,17 @@ function preprocessCharacteristics(allRaces, allResults, allLapTimes, allQualifi
 
     // Race consistency
     rcData = rcData.sort((a, b) => (a.date > b.date) ? 1 : -1)
-    rcScore = leastSquareMethod(rcData);
+
+    let rcDa = []
+    rcData.forEach(element => {
+        if(element.value != 100){
+            element.value = 20
+        }
+        else{
+            rcDa.push(element)
+        }
+    });
+    rcScore = leastSquareMethod(rcDa);
     let raceConsistency = {data: rcData, lsm: rcScore};
 
     // Time consistency
